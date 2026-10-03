@@ -182,17 +182,23 @@ export interface FunnelSummary {
   totalLeads: number
 }
 
-function sumValues(rows: FunnelLeadRow[]): number {
-  let total = new Prisma.Decimal(0)
-  for (const row of rows) {
-    if (row.value === null || row.value === undefined) continue
-    try {
-      total = total.plus(new Prisma.Decimal(row.value as Prisma.Decimal))
-    } catch {
-      // Ignore unparseable values rather than failing the whole funnel render.
-    }
+/**
+ * Sum a row's value in Decimal. Lead value is money, so it must never be
+ * accumulated as a JS float — only converted once, at the render boundary.
+ */
+function rowValue(row: FunnelLeadRow): Prisma.Decimal {
+  if (row.value === null || row.value === undefined) return new Prisma.Decimal(0)
+  try {
+    return new Prisma.Decimal(row.value as Prisma.Decimal)
+  } catch {
+    // Ignore an unparseable value rather than failing the whole funnel render.
+    return new Prisma.Decimal(0)
   }
-  return Number(total.toFixed(2))
+}
+
+/** Decimal -> number, applied only where a display type requires it. */
+function toDisplayNumber(value: Prisma.Decimal): number {
+  return Number(value.toFixed(2))
 }
 
 /**
@@ -203,25 +209,27 @@ function sumValues(rows: FunnelLeadRow[]): number {
  */
 export function aggregateFunnel(rows: FunnelLeadRow[]): FunnelSummary {
   const counts = Object.fromEntries(FUNNEL_STAGES.map((s) => [s, 0])) as Record<FunnelStage, number>
-  const values = Object.fromEntries(FUNNEL_STAGES.map((s) => [s, 0])) as Record<FunnelStage, number>
+  const values = Object.fromEntries(
+    FUNNEL_STAGES.map((s) => [s, new Prisma.Decimal(0)])
+  ) as Record<FunnelStage, Prisma.Decimal>
+  let lostValue = new Prisma.Decimal(0)
+  let unstagedValue = new Prisma.Decimal(0)
   let lostCount = 0
-  let lostValue = 0
   let unstagedCount = 0
-  let unstagedValue = 0
 
   for (const row of rows) {
+    const value = rowValue(row)
     if (row.funnelStage && counts[row.funnelStage] !== undefined) {
       counts[row.funnelStage] += 1
-      values[row.funnelStage] += sumValues([row])
+      values[row.funnelStage] = values[row.funnelStage].plus(value)
       continue
     }
-    const value = sumValues([row])
     if (row.status === 'LOST') {
       lostCount += 1
-      lostValue += value
+      lostValue = lostValue.plus(value)
     } else {
       unstagedCount += 1
-      unstagedValue += value
+      unstagedValue = unstagedValue.plus(value)
     }
   }
 
@@ -236,7 +244,7 @@ export function aggregateFunnel(rows: FunnelLeadRow[]): FunnelSummary {
       textColor: meta.textColor,
       count: counts[stage],
       cumulative: cumulativeCount(counts, stage),
-      totalValue: round2(values[stage]),
+      totalValue: toDisplayNumber(values[stage]),
       conversion: conversionToNext(counts, stage),
     }
   })
@@ -244,11 +252,11 @@ export function aggregateFunnel(rows: FunnelLeadRow[]): FunnelSummary {
   return {
     stages,
     lostCount,
-    lostValue: round2(lostValue),
+    lostValue: toDisplayNumber(lostValue),
     overallConversion: overallConversion(counts),
     totalLeads: rows.length,
     unstagedCount,
-    unstagedValue: round2(unstagedValue),
+    unstagedValue: toDisplayNumber(unstagedValue),
   }
 }
 

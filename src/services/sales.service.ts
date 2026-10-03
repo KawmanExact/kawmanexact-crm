@@ -17,6 +17,7 @@ import type { Session } from '@/lib/auth'
 import {
   buildSalesOrderBy,
   buildSalesWhere,
+  describeSalesFilters,
   parseSalesFilters,
   salesScopeWhere,
   DEFAULT_PAGE_SIZE,
@@ -249,7 +250,7 @@ export function computeSalespersonBreakdown(
   return Array.from(groups.entries())
     .map(([salespersonId, sellerRows]) => {
       const name = sellerRows[0].salespersonName
-      const { single } = groupUnit(sellerRows)
+      const { single, byUnit } = groupUnit(sellerRows)
       let totalSalesValue = new PrismaNS.Decimal(0)
       let amountPaid = new PrismaNS.Decimal(0)
       for (const row of sellerRows) {
@@ -261,7 +262,8 @@ export function computeSalespersonBreakdown(
         salespersonId,
         salespersonName: name,
         unit: sellerRows[0].unit,
-        totalQuantity: single ?? 0,
+        totalQuantity: single,
+        quantityByUnit: byUnit,
         totalSalesValue: value.toNumber(),
         amountPaid: toMoney(amountPaid).toNumber(),
         pendingAmount: toMoney(value.minus(amountPaid)).toNumber(),
@@ -343,12 +345,15 @@ export async function getSalesPage(
       salespersonName: name,
       totalProductsSold: entry ? new Set(entry.products.map((p) => p.key)).size : 0,
       totalQuantity: entry?.totalQuantity ?? 0,
+      quantityByUnit: entry?.quantityByUnit ?? [],
       totalSalesValue: entry?.totalSalesValue ?? 0,
       amountPaid: entry?.amountPaid ?? 0,
       pendingAmount: entry?.pendingAmount ?? 0,
       products: entry?.products ?? [],
     }
   }
+
+  const filterLabels = await resolveSalesFilterLabels(filters)
 
   return {
     rows,
@@ -360,6 +365,8 @@ export async function getSalesPage(
     productBreakdown,
     salespersonBreakdown,
     salespersonSummary,
+    filters,
+    filterLabels,
     truncated,
   }
 }
@@ -388,6 +395,66 @@ export async function getAllSalesRows(
   return { rows: rows.map(mapSaleRow), total, filters, truncated: total > rows.length }
 }
 
+/** Organisation name and the caller's display name — report headers. */
+export async function getSalesExportMeta(): Promise<{ organizationName: string; generatedBy: string }> {
+  const session = await requireApiSession()
+  const org = await prisma.organization.findUnique({
+    where: { id: session.user.organizationId },
+    select: { name: true },
+  })
+  return { organizationName: org?.name ?? '', generatedBy: displayName(session.user) }
+}
+
+/**
+ * Everything the three exports need, computed ONCE from one filtered row set so
+ * the Excel, PDF and CSV files can never disagree with each other or with the
+ * screen. Rows are capped at SALES_AGGREGATE_CAP; `truncated` tells the caller to
+ * say so in the file rather than silently shipping partial totals.
+ */
+export async function getSalesExportData(
+  rawParams: RawQuery,
+  cap: number,
+  now: Date = new Date()
+): Promise<{
+  rows: SalesTransactionRow[]
+  total: number
+  truncated: boolean
+  filters: SalesFilters
+  filterLines: string[]
+  kpis: SalesKpis
+  products: ProductBreakdownRow[]
+  salespeople: SalespersonBreakdownRow[]
+  organizationName: string
+  generatedBy: string
+}> {
+  const session = await requireApiSession()
+  const { rows, total, filters, truncated } = await getAllSalesRows(rawParams, now)
+  // getAllSalesRows applies the 50k aggregate cap; re-read nothing, just honour
+  // the caller's (smaller) format cap on top of it.
+  const capped = rows.slice(0, cap)
+
+  const [labels, org] = await Promise.all([
+    resolveSalesFilterLabels(filters),
+    prisma.organization.findUnique({
+      where: { id: session.user.organizationId },
+      select: { name: true },
+    }),
+  ])
+
+  return {
+    rows: capped,
+    total,
+    truncated: truncated || rows.length > capped.length,
+    filters,
+    filterLines: describeSalesFilters(filters, labels),
+    kpis: computeSalesKpis(capped),
+    products: computeProductBreakdown(capped),
+    salespeople: computeSalespersonBreakdown(capped),
+    organizationName: org?.name ?? '',
+    generatedBy: displayName(session.user),
+  }
+}
+
 /** One sale (all lines sharing a groupId) for the edit form. */
 export async function getSaleGroup(groupId: string): Promise<SalesTransactionRow[]> {
   const session = await requireApiSession()
@@ -398,6 +465,28 @@ export async function getSaleGroup(groupId: string): Promise<SalesTransactionRow
     include: SALE_INCLUDE,
   })
   return rows.map(mapSaleRow)
+}
+
+/**
+ * The `where` a WRITE must use: organisation scope PLUS the caller's record
+ * scope. A user with sales.update who is not sales.view_all must not be able to
+ * rewrite or delete another salesperson's invoice just because they guessed its
+ * groupId, so every mutating action resolves its target through this.
+ */
+export async function salesWriteWhere(groupId: string): Promise<Prisma.SalesTransactionWhereInput> {
+  const session = await requireApiSession()
+  return {
+    ...salesScopeWhere(
+      session.user.organizationId,
+      {
+        id: session.user.id,
+        permissions: session.user.permissions as string[],
+        departmentId: session.user.department?.id ?? null,
+      },
+      (session.user.roles ?? []) as string[]
+    ),
+    groupId,
+  }
 }
 
 /** Distinct typed "Other" product names in use, with how often each appears. */

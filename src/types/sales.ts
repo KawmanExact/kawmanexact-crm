@@ -5,6 +5,7 @@
 
 import type { PaymentStatus } from '@/lib/sales-money'
 import type { FunnelStage } from '@/lib/funnel'
+import type { SalesFilters } from '@/lib/sales-filters'
 
 export type { PaymentStatus, FunnelStage }
 
@@ -99,7 +100,9 @@ export interface SalespersonBreakdownRow {
   salespersonId: string
   salespersonName: string
   unit: string
-  totalQuantity: number
+  /** Null when this person's rows mix units — see quantityByUnit. */
+  totalQuantity: number | null
+  quantityByUnit: Array<{ unit: string; quantity: number }>
   totalSalesValue: number
   amountPaid: number
   pendingAmount: number
@@ -121,12 +124,17 @@ export interface SalesPageData {
     salespersonId: string
     salespersonName: string
     totalProductsSold: number
-    totalQuantity: number
+    /** Null when the filtered rows mix units — see quantityByUnit. */
+    totalQuantity: number | null
+    quantityByUnit: Array<{ unit: string; quantity: number }>
     totalSalesValue: number
     amountPaid: number
     pendingAmount: number
     products: ProductBreakdownRow[]
   } | null
+  /** The parsed filters, so the UI and print view can restate what is applied. */
+  filters: SalesFilters
+  filterLabels: { salesperson?: string; customer?: string; product?: string }
   truncated: boolean
 }
 

@@ -274,10 +274,15 @@ export function buildSalesWhere(
 export function buildSalesOrderBy(
   filters: SalesFilters
 ): Prisma.SalesTransactionOrderByWithRelationInput[] {
-  const key: SalesSortKey = filters.sort ?? 'saleDate'
+  // Guards a caller that hands over an unparsed filter: an unknown key would
+  // otherwise produce `{ undefined: 'asc' }` and Prisma would reject the query.
+  const key: SalesSortKey = (SALES_SORT_KEYS as readonly string[]).includes(filters.sort ?? '')
+    ? (filters.sort as SalesSortKey)
+    : 'saleDate'
   const dir: 'asc' | 'desc' = filters.dir ?? 'desc'
   // Relations cannot be sorted through `orderBy` in every case, so they use
-  // their foreign key — deterministic and index-backed.
+  // their foreign key — deterministic and index-backed. The lineNumber
+  // tiebreaker keeps an invoice's lines in order on every page boundary.
   return [{ [SORT_FIELDS[key]]: dir }, { lineNumber: 'asc' }]
 }
 
