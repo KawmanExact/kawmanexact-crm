@@ -8,47 +8,49 @@ datasource db {
 }
 
 model Organization {
-  id              String           @id @default(cuid())
-  name            String
-  slug            String           @unique
-  logo            String?
-  website         String?
-  industry        String?
-  address         String?
-  phone           String?
-  email           String?
-  timezone        String           @default("Asia/Kolkata")
-  currency        String           @default("INR")
-  dateFormat      String           @default("DD/MM/YYYY")
-  settings        Json?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  aiConversations AIConversation[]
-  aiInsights      AIInsight[]
-  aiReports       AIReport[]
-  activities      Activity[]
-  auditLogs       AuditLog[]
-  companies       Company[]
-  contacts        Contact[]
-  deals           Deal[]
-  departments     Department[]
-  visits          FieldVisit[]
-  files           File[]
-  fileCategories  FileCategory[]
-  folders         Folder[]
-  followUps       FollowUp[]
-  geoFences       GeoFence[]
-  integrations    Integration[]
-  leads           Lead[]
-  meetings        Meeting[]
-  notifications   Notification[]
-  savedViews      SavedView[]
-  teams           Team[]
-  users           User[]
-  liveLocations   UserLiveLocation[]
-  dailyReports    DailyReport[]
-   aiUsages        AIUsage[]
-   resourceGrants  ResourceGrant[]
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  logo              String?
+  website           String?
+  industry          String?
+  address           String?
+  phone             String?
+  email             String?
+  timezone          String             @default("Asia/Kolkata")
+  currency          String             @default("INR")
+  dateFormat        String             @default("DD/MM/YYYY")
+  settings          Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  aiConversations   AIConversation[]
+  aiInsights        AIInsight[]
+  aiReports         AIReport[]
+  activities        Activity[]
+  auditLogs         AuditLog[]
+  companies         Company[]
+  contacts          Contact[]
+  deals             Deal[]
+  departments       Department[]
+  visits            FieldVisit[]
+  files             File[]
+  fileCategories    FileCategory[]
+  folders           Folder[]
+  followUps         FollowUp[]
+  geoFences         GeoFence[]
+  integrations      Integration[]
+  leads             Lead[]
+  meetings          Meeting[]
+  notifications     Notification[]
+  savedViews        SavedView[]
+  teams             Team[]
+  users             User[]
+  liveLocations     UserLiveLocation[]
+  dailyReports      DailyReport[]
+  aiUsages          AIUsage[]
+  resourceGrants    ResourceGrant[]
+  products          Product[]
+  salesTransactions SalesTransaction[]
 
   @@index([slug])
   @@index([createdAt])
@@ -102,15 +104,16 @@ model User {
   sessions               Session[]
   managedTeams           Team[]               @relation("TeamManager")
   department             Department?          @relation("UserDepartment", fields: [departmentId], references: [id])
-   manager                User?                @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
+  manager                User?                @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
   subordinates           User[]               @relation("UserManager")
   organization           Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   team                   Team?                @relation("TeamMembers", fields: [teamId], references: [id])
-   roles                  UserRole[]
-   visitReports           VisitReport[]        @relation("VisitReportCreator")
-   dailyReports           DailyReport[]
-   aiUsages               AIUsage[]
-   grantsGiven            ResourceGrant[]     @relation("GrantsGiven")
+  roles                  UserRole[]
+  visitReports           VisitReport[]        @relation("VisitReportCreator")
+  dailyReports           DailyReport[]
+  aiUsages               AIUsage[]
+  grantsGiven            ResourceGrant[]      @relation("GrantsGiven")
+  salesTransactions      SalesTransaction[]   @relation("SalesSalesperson")
 
   @@index([organizationId])
   @@index([email])
@@ -122,16 +125,16 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  expiresAt DateTime
-  token     String   @unique
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  endedAt   DateTime?
+  id         String    @id @default(cuid())
+  expiresAt  DateTime
+  token      String    @unique
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endedAt    DateTime?
   lastSeenAt DateTime?
 
   @@index([userId])
@@ -139,17 +142,17 @@ model Session {
 }
 
 model UserLiveLocation {
-  id             String   @id @default(cuid())
-  userId         String   @unique
+  id             String       @id @default(cuid())
+  userId         String       @unique
   organizationId String
-  latitude       Decimal  @db.Decimal(10, 8)
-  longitude      Decimal  @db.Decimal(11, 8)
-  accuracy       Decimal? @db.Decimal(10, 2)
-  heading        Decimal? @db.Decimal(10, 2)
-  speed          Decimal? @db.Decimal(10, 2)
-  isTracking     Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  latitude       Decimal      @db.Decimal(10, 8)
+  longitude      Decimal      @db.Decimal(11, 8)
+  accuracy       Decimal?     @db.Decimal(10, 2)
+  heading        Decimal?     @db.Decimal(10, 2)
+  speed          Decimal?     @db.Decimal(10, 2)
+  isTracking     Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -170,7 +173,7 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  issuer                String?   // Required by better-auth for credential provider
+  issuer                String? // Required by better-auth for credential provider
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -191,15 +194,15 @@ model Verification {
 }
 
 model Role {
-  id          String           @id @default(cuid())
-  name        RoleType         @unique
-  description String?
-  isSystem    Boolean          @default(false)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-   permissions RolePermission[]
-   users       UserRole[]
-   resourceGrants ResourceGrant[]
+  id             String           @id @default(cuid())
+  name           RoleType         @unique
+  description    String?
+  isSystem       Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  permissions    RolePermission[]
+  users          UserRole[]
+  resourceGrants ResourceGrant[]
 
   @@index([name])
 }
@@ -236,29 +239,29 @@ model UserRole {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roleId])
-   @@index([userId])
-   @@index([roleId])
- }
+  @@index([userId])
+  @@index([roleId])
+}
 
- model ResourceGrant {
-   id            String   @id @default(cuid())
-   organizationId String
-   roleId        String
-   resourceType  String   @default("record") // 'record', 'report', 'file', 'team' etc.
-   resourceId    String?  // null = grant applies to all resources of type; set = single resource
-   permission    String   // e.g. 'view', 'edit', 'delete', 'share'
-   grantedBy     String
-   grantedAt     DateTime @default(now())
-   expiresAt     DateTime?
-   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   role            Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
-   grantor         User         @relation("GrantsGiven", fields: [grantedBy], references: [id], onDelete: Cascade)
+model ResourceGrant {
+  id             String       @id @default(cuid())
+  organizationId String
+  roleId         String
+  resourceType   String       @default("record") // 'record', 'report', 'file', 'team' etc.
+  resourceId     String? // null = grant applies to all resources of type; set = single resource
+  permission     String // e.g. 'view', 'edit', 'delete', 'share'
+  grantedBy      String
+  grantedAt      DateTime     @default(now())
+  expiresAt      DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  grantor        User         @relation("GrantsGiven", fields: [grantedBy], references: [id], onDelete: Cascade)
 
-   @@index([organizationId])
-   @@index([roleId])
-   @@index([resourceType, resourceId])
-   @@index([expiresAt])
- }
+  @@index([organizationId])
+  @@index([roleId])
+  @@index([resourceType, resourceId])
+  @@index([expiresAt])
+}
 
 model Department {
   id              String           @id @default(cuid())
@@ -268,7 +271,7 @@ model Department {
   managerId       String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-   manager         User?            @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+  manager         User?            @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
   organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   filePermissions FilePermission[]
   teams           Team[]
@@ -290,7 +293,7 @@ model Team {
   updatedAt       DateTime         @updatedAt
   filePermissions FilePermission[]
   department      Department?      @relation(fields: [departmentId], references: [id])
-   manager         User?            @relation("TeamManager", fields: [managerId], references: [id], onDelete: SetNull)
+  manager         User?            @relation("TeamManager", fields: [managerId], references: [id], onDelete: SetNull)
   organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   users           User[]           @relation("TeamMembers")
 
@@ -309,7 +312,7 @@ model Folder {
   updatedAt      DateTime         @updatedAt
   files          File[]
   permissions    FilePermission[]
-   createdBy      User             @relation("FolderCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy      User             @relation("FolderCreator", fields: [createdById], references: [id], onDelete: Cascade)
   organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   parent         Folder?          @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children       Folder[]         @relation("FolderHierarchy")
@@ -338,7 +341,7 @@ model File {
   updatedAt              DateTime                @updatedAt
   folder                 Folder?                 @relation(fields: [folderId], references: [id])
   organization           Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   uploadedBy             User                    @relation("FileUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedBy             User                    @relation("FileUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
   activities             FileActivity[]
   permissions            FilePermission[]
   shares                 FileShare[]
@@ -367,7 +370,7 @@ model FileVersion {
   uploadedById           String
   createdAt              DateTime @default(now())
   file                   File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
-   uploadedBy             User     @relation("FileVersionUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedBy             User     @relation("FileVersionUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
 
   @@unique([fileId, versionNumber])
   @@index([fileId])
@@ -400,7 +403,7 @@ model FilePermission {
   createdAt    DateTime            @default(now())
   createdById  String
   folderId     String?
-   createdBy    User                @relation("FilePermissionCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy    User                @relation("FilePermissionCreator", fields: [createdById], references: [id], onDelete: Cascade)
   department   Department?         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   file         File?               @relation(fields: [fileId], references: [id], onDelete: Cascade)
   folder       Folder?             @relation(fields: [folderId], references: [id], onDelete: Cascade)
@@ -423,7 +426,7 @@ model FileShare {
   expiresAt    DateTime?
   createdAt    DateTime            @default(now())
   file         File                @relation(fields: [fileId], references: [id], onDelete: Cascade)
-   sharedBy     User                @relation("FileShareBy", fields: [sharedById], references: [id], onDelete: Cascade)
+  sharedBy     User                @relation("FileShareBy", fields: [sharedById], references: [id], onDelete: Cascade)
   sharedWith   User                @relation("FileShareWith", fields: [sharedWithId], references: [id], onDelete: Cascade)
 
   @@index([fileId])
@@ -462,31 +465,51 @@ model FileActivity {
 }
 
 model Lead {
-  id             String       @id @default(cuid())
-  name           String
-  company        String?
-  email          String?
-  phone          String?
-  source         String?
-  status         LeadStatus   @default(NEW)
-  score          Int          @default(0)
-  value          Decimal?     @db.Decimal(15, 2)
-  segment        String?
-  notes          String?
-  organizationId String
-  ownerId        String
-  companyId      String?
-  contactId      String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  lastActivityAt DateTime?
-  activities     Activity[]
-  deals          Deal[]
-  followUps      FollowUp[]
-  companyRef     Company?     @relation(fields: [companyId], references: [id])
-  contact        Contact?     @relation(fields: [contactId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   owner          User         @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  id                  String       @id @default(cuid())
+  name                String
+  company             String?
+  email               String?
+  phone               String?
+  source              String?
+  status              LeadStatus   @default(NEW)
+  score               Int          @default(0)
+  value               Decimal?     @db.Decimal(15, 2)
+  segment             String?
+  notes               String?
+  organizationId      String
+  ownerId             String
+  companyId           String?
+  contactId           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  lastActivityAt      DateTime?
+  // ---- Sales Funnel (SPANCOP) tracking — additive columns only ----
+  // `status` above is the pre-existing LeadStatus lifecycle and is left
+  // completely untouched. `funnelStage` is the separate SPANCOP position:
+  // SUSPECT -> PROSPECT -> APPROACH_ANALYSE -> NEGOTIATE -> CLOSE ->
+  // ORDER -> PAYMENT. LOST leads are represented by `status = LOST` with a
+  // NULL funnelStage and are shown separately by the funnel view.
+  funnelStage         FunnelStage?
+  enquiryDate         DateTime?
+  region              String?
+  location            String?
+  purposeOfVisit      String?
+  meetingMode         String?
+  productsDiscussed   String[]     @default([])
+  keyDiscussionPoints String?
+  customerRequirement String?
+  cdaStatus           String?
+  cdaDate             DateTime?
+  samplingStatus      String?
+  rndFeedback         String?
+  nextAction          String?
+  activities          Activity[]
+  deals               Deal[]
+  followUps           FollowUp[]
+  companyRef          Company?     @relation(fields: [companyId], references: [id])
+  contact             Contact?     @relation(fields: [contactId], references: [id])
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner               User         @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([ownerId])
@@ -495,36 +518,39 @@ model Lead {
   @@index([email])
   @@index([createdAt])
   @@index([lastActivityAt])
+  @@index([funnelStage])
+  @@index([region])
 }
 
 model Company {
-  id             String       @id @default(cuid())
-  name           String
-  industry       String?
-  website        String?
-  phone          String?
-  email          String?
-  address        String?
-  city           String?
-  state          String?
-  country        String?      @default("India")
-  employees      Int?
-  revenue        Decimal?     @db.Decimal(15, 2)
-  status         String       @default("ACTIVE")
-  organizationId String
-  ownerId        String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  activities     Activity[]
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   owner          User         @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  contacts       Contact[]
-  deals          Deal[]
-  visits         FieldVisit[]
-  followUps      FollowUp[]
-  geoFences      GeoFence[]
-  leads          Lead[]
-  meetings       Meeting[]
+  id                String             @id @default(cuid())
+  name              String
+  industry          String?
+  website           String?
+  phone             String?
+  email             String?
+  address           String?
+  city              String?
+  state             String?
+  country           String?            @default("India")
+  employees         Int?
+  revenue           Decimal?           @db.Decimal(15, 2)
+  status            String             @default("ACTIVE")
+  organizationId    String
+  ownerId           String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  activities        Activity[]
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner             User               @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  contacts          Contact[]
+  deals             Deal[]
+  visits            FieldVisit[]
+  followUps         FollowUp[]
+  geoFences         GeoFence[]
+  leads             Lead[]
+  meetings          Meeting[]
+  salesTransactions SalesTransaction[]
 
   @@index([organizationId])
   @@index([ownerId])
@@ -538,11 +564,11 @@ model Contact {
   name           String
   designation    String?
   email          String?
-   phone          String?
-   mobile         String?
-   address        String?
-   segment        String?
-   status         String       @default("ACTIVE")
+  phone          String?
+  mobile         String?
+  address        String?
+  segment        String?
+  status         String       @default("ACTIVE")
   organizationId String
   companyId      String?
   ownerId        String
@@ -553,18 +579,18 @@ model Contact {
   activities     Activity[]
   company        Company?     @relation(fields: [companyId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   owner          User         @relation("ContactOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner          User         @relation("ContactOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   deals          Deal[]
   visits         FieldVisit[]
   leads          Lead[]
   meetings       Meeting[]
 
+  @@unique([organizationId, emailKey])
   @@index([organizationId])
   @@index([companyId])
   @@index([ownerId])
   @@index([status])
   @@index([createdAt])
-  @@unique([organizationId, emailKey])
 }
 
 model Deal {
@@ -590,7 +616,7 @@ model Deal {
   contact        Contact?     @relation(fields: [contactId], references: [id])
   lead           Lead?        @relation(fields: [leadId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   owner          User         @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner          User         @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   visits         FieldVisit[]
   followUps      FollowUp[]
   meetings       Meeting[]
@@ -605,6 +631,91 @@ model Deal {
   @@index([createdAt])
 }
 
+/// Product catalog — the organisation's sellable products, reused by the
+/// sales entry form dropdowns and matched by the lead importer's
+/// "Products Discussed" column. Scoped per organization.
+model Product {
+  id                String             @id @default(cuid())
+  organizationId    String
+  name              String
+  sku               String?
+  /// e.g. Nutraceutical, Cosmetic, Food & Beverage
+  category          String?
+  /// e.g. "Food Grade", "Pharma Grade"
+  grade             String?
+  /// e.g. "1% WD", "0.1% WS", "RD"
+  variant           String?
+  /// Unit the product is sold in — "kg" by default (ingredients sell by kg).
+  unit              String             @default("kg")
+  defaultUnitPrice  Decimal?           @db.Decimal(15, 2)
+  description       String?
+  /// Optional extra key/value metadata edited on the catalog form.
+  attributes        Json?
+  /// Products referenced by sales are deactivated rather than deleted, so
+  /// historic sales lines keep their product row.
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  salesTransactions SalesTransaction[]
+
+  @@unique([organizationId, name, variant])
+  @@index([organizationId])
+  @@index([name])
+  @@index([isActive])
+  @@index([category])
+}
+
+/// One row per product line of a sale. All lines belonging to the same sale
+/// share `groupId`, `invoiceNumber` and `invoiceKey`; `lineNumber` is the
+/// 1-based position of the line within its group and is unique per invoice.
+///
+/// No user / customer / product names are denormalised here — read them
+/// through `salesperson`, `customer` and `product` relations.
+///
+/// Exactly one of `productId` / `otherProductName` is set (enforced in zod and
+/// in the service, not by a DB constraint).
+model SalesTransaction {
+  id               String        @id @default(cuid())
+  organizationId   String
+  salespersonId    String
+  customerId       String
+  productId        String?
+  /// Typed by the user when the sale is not for a catalog product.
+  otherProductName String?
+  saleDate         DateTime
+  invoiceNumber    String
+  /// Trimmed + lower-cased copy of `invoiceNumber`, the case-insensitive
+  /// uniqueness key (mirrors Contact.emailKey).
+  invoiceKey       String
+  /// Shared by every line of one sale; groups lines into a single invoice.
+  groupId          String
+  lineNumber       Int
+  quantity         Decimal       @db.Decimal(15, 3)
+  unitPrice        Decimal       @db.Decimal(15, 2)
+  totalAmount      Decimal       @db.Decimal(15, 2)
+  amountPaid       Decimal       @db.Decimal(15, 2)
+  balanceAmount    Decimal       @db.Decimal(15, 2)
+  paymentStatus    PaymentStatus @default(PENDING)
+  paymentDate      DateTime?
+  remarks          String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  salesperson      User          @relation("SalesSalesperson", fields: [salespersonId], references: [id], onDelete: Cascade)
+  customer         Company       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product          Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, invoiceKey, lineNumber])
+  @@index([organizationId])
+  @@index([salespersonId])
+  @@index([customerId])
+  @@index([productId])
+  @@index([saleDate])
+  @@index([paymentStatus])
+  @@index([groupId])
+}
+
 model Activity {
   id             String       @id @default(cuid())
   type           String
@@ -617,7 +728,7 @@ model Activity {
   contactId      String?
   dealId         String?
   createdAt      DateTime     @default(now())
-   actor          User         @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Cascade)
+  actor          User         @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Cascade)
   company        Company?     @relation(fields: [companyId], references: [id])
   contact        Contact?     @relation(fields: [contactId], references: [id])
   deal           Deal?        @relation(fields: [dealId], references: [id])
@@ -634,35 +745,35 @@ model Activity {
 }
 
 model DailyReport {
-  id                       String              @id @default(cuid())
+  id                       String            @id @default(cuid())
   userId                   String
   organizationId           String
-  date                     DateTime            @db.Date
+  date                     DateTime          @db.Date
   workDescription          String?
   completedWork            String?
   pendingWork              String?
   blockers                 String?
   tomorrowPlan             String?
-  tasksCompletedCount      Int                 @default(0)
-  crmRecordsUpdatedCount   Int                 @default(0)
-  leadsWorkedOnCount       Int                 @default(0)
-  filesUploadedCount       Int                 @default(0)
-  activeWorkingTimeMinutes Int                 @default(0)
-  status                   DailyReportStatus   @default(DRAFT)
-  createdAt                DateTime            @default(now())
-  updatedAt                DateTime            @updatedAt
-  user                     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization             Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tasksCompletedCount      Int               @default(0)
+  crmRecordsUpdatedCount   Int               @default(0)
+  leadsWorkedOnCount       Int               @default(0)
+  filesUploadedCount       Int               @default(0)
+  activeWorkingTimeMinutes Int               @default(0)
+  status                   DailyReportStatus @default(DRAFT)
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+  user                     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization             Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   aiReport                 AIReport?
 
   @@unique([userId, date])
-   @@index([organizationId])
-   @@index([userId])
-   @@index([date])
-   @@index([status])
-   @@index([userId, date, status])
-   @@index([organizationId, date, status])
- }
+  @@index([organizationId])
+  @@index([userId])
+  @@index([date])
+  @@index([status])
+  @@index([userId, date, status])
+  @@index([organizationId, date, status])
+}
 
 model FollowUp {
   id             String         @id @default(cuid())
@@ -683,7 +794,7 @@ model FollowUp {
   deal           Deal?          @relation(fields: [dealId], references: [id])
   lead           Lead?          @relation(fields: [leadId], references: [id])
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-   owner          User           @relation("FollowUpOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner          User           @relation("FollowUpOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([ownerId])
@@ -713,7 +824,7 @@ model FieldVisit {
   updatedAt      DateTime      @updatedAt
   completedAt    DateTime?
   checkIns       CheckIn[]
-   assignee       User          @relation("VisitAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+  assignee       User          @relation("VisitAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
   company        Company?      @relation(fields: [companyId], references: [id])
   contact        Contact?      @relation(fields: [contactId], references: [id])
   deal           Deal?         @relation(fields: [dealId], references: [id])
@@ -721,14 +832,14 @@ model FieldVisit {
   visitReports   VisitReport[]
 
   @@index([organizationId])
-   @@index([assigneeId])
-   @@index([companyId])
-   @@index([status])
-   @@index([scheduledAt])
-   @@index([createdAt])
-   @@index([assigneeId, status])
-   @@index([organizationId, scheduledAt])
- }
+  @@index([assigneeId])
+  @@index([companyId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+  @@index([assigneeId, status])
+  @@index([organizationId, scheduledAt])
+}
 
 model CheckIn {
   id                   String     @id @default(cuid())
@@ -783,7 +894,7 @@ model VisitReport {
   createdById      String
   createdAt        DateTime                @default(now())
   updatedAt        DateTime                @updatedAt
-   createdBy        User                    @relation("VisitReportCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy        User                    @relation("VisitReportCreator", fields: [createdById], references: [id], onDelete: Cascade)
   visit            FieldVisit              @relation(fields: [visitId], references: [id], onDelete: Cascade)
   attachments      VisitReportAttachment[]
 
@@ -896,7 +1007,7 @@ model MeetingSummary {
   editedById       String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-   editedBy         User?    @relation("MeetingSummaryEditor", fields: [editedById], references: [id], onDelete: SetNull)
+  editedBy         User?    @relation("MeetingSummaryEditor", fields: [editedById], references: [id], onDelete: SetNull)
   meeting          Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   @@index([meetingId])
@@ -932,18 +1043,18 @@ model AIMessage {
 }
 
 model AIUsage {
-  id              String       @id @default(cuid())
-  organizationId  String
-  userId          String
-  model           String
-  provider        String
-  inputTokens     Int
-  outputTokens    Int
-  estimatedCost   Float
-  feature         String  // 'chat', 'report', 'summary', 'data-analysis'
-  createdAt       DateTime @default(now())
-  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  model          String
+  provider       String
+  inputTokens    Int
+  outputTokens   Int
+  estimatedCost  Float
+  feature        String // 'chat', 'report', 'summary', 'data-analysis'
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, createdAt])
   @@index([userId, createdAt])
@@ -976,7 +1087,7 @@ model AIReport {
   generatedById  String
   dailyReportId  String?      @unique
   createdAt      DateTime     @default(now())
-   generatedBy    User         @relation("AIReportGenerator", fields: [generatedById], references: [id], onDelete: Cascade)
+  generatedBy    User         @relation("AIReportGenerator", fields: [generatedById], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   dailyReport    DailyReport? @relation(fields: [dailyReportId], references: [id])
 
@@ -1017,7 +1128,7 @@ model AuditLog {
   organizationId String
   actorId        String
   createdAt      DateTime     @default(now())
-   actor          User         @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  actor          User         @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
@@ -1029,15 +1140,15 @@ model AuditLog {
 }
 
 model Integration {
-  id             String       @id @default(cuid())
-  name           String
-  type           String
-  config         Json
-  isActive       Boolean      @default(true)
-  organizationId String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  id                String            @id @default(cuid())
+  name              String
+  type              String
+  config            Json
+  isActive          Boolean           @default(true)
+  organizationId    String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  organization      Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   webhookDeliveries WebhookDelivery[]
 
   @@unique([organizationId, name])
@@ -1046,7 +1157,7 @@ model Integration {
 }
 
 model WebhookDelivery {
-  id             String       @id @default(cuid())
+  id             String      @id @default(cuid())
   integrationId  String
   event          String
   url            String
@@ -1055,9 +1166,9 @@ model WebhookDelivery {
   responseBody   String?
   error          String?
   success        Boolean
-  attempt        Int          @default(1)
-  deliveredAt    DateTime     @default(now())
-  integration    Integration  @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  attempt        Int         @default(1)
+  deliveredAt    DateTime    @default(now())
+  integration    Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
 
   @@index([integrationId])
   @@index([event])
@@ -1116,6 +1227,23 @@ enum DealStage {
   NEGOTIATION
   WON
   LOST
+}
+
+/// SPANCOP sales-funnel position of a lead. Orthogonal to `LeadStatus`.
+enum FunnelStage {
+  SUSPECT
+  PROSPECT
+  APPROACH_ANALYSE
+  NEGOTIATE
+  CLOSE
+  ORDER
+  PAYMENT
+}
+
+enum PaymentStatus {
+  PAID
+  PARTIALLY_PAID
+  PENDING
 }
 
 enum FollowUpStatus {

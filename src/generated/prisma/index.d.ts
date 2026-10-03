@@ -139,6 +139,26 @@ export type Contact = $Result.DefaultSelection<Prisma.$ContactPayload>
  */
 export type Deal = $Result.DefaultSelection<Prisma.$DealPayload>
 /**
+ * Model Product
+ * Product catalog — the organisation's sellable products, reused by the
+ * sales entry form dropdowns and matched by the lead importer's
+ * "Products Discussed" column. Scoped per organization.
+ */
+export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
+/**
+ * Model SalesTransaction
+ * One row per product line of a sale. All lines belonging to the same sale
+ * share `groupId`, `invoiceNumber` and `invoiceKey`; `lineNumber` is the
+ * 1-based position of the line within its group and is unique per invoice.
+ * 
+ * No user / customer / product names are denormalised here — read them
+ * through `salesperson`, `customer` and `product` relations.
+ * 
+ * Exactly one of `productId` / `otherProductName` is set (enforced in zod and
+ * in the service, not by a DB constraint).
+ */
+export type SalesTransaction = $Result.DefaultSelection<Prisma.$SalesTransactionPayload>
+/**
  * Model Activity
  * 
  */
@@ -324,6 +344,28 @@ export const DealStage: {
 export type DealStage = (typeof DealStage)[keyof typeof DealStage]
 
 
+export const FunnelStage: {
+  SUSPECT: 'SUSPECT',
+  PROSPECT: 'PROSPECT',
+  APPROACH_ANALYSE: 'APPROACH_ANALYSE',
+  NEGOTIATE: 'NEGOTIATE',
+  CLOSE: 'CLOSE',
+  ORDER: 'ORDER',
+  PAYMENT: 'PAYMENT'
+};
+
+export type FunnelStage = (typeof FunnelStage)[keyof typeof FunnelStage]
+
+
+export const PaymentStatus: {
+  PAID: 'PAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  PENDING: 'PENDING'
+};
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
 export const FollowUpStatus: {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
@@ -438,6 +480,14 @@ export const LeadStatus: typeof $Enums.LeadStatus
 export type DealStage = $Enums.DealStage
 
 export const DealStage: typeof $Enums.DealStage
+
+export type FunnelStage = $Enums.FunnelStage
+
+export const FunnelStage: typeof $Enums.FunnelStage
+
+export type PaymentStatus = $Enums.PaymentStatus
+
+export const PaymentStatus: typeof $Enums.PaymentStatus
 
 export type FollowUpStatus = $Enums.FollowUpStatus
 
@@ -837,6 +887,26 @@ export class PrismaClient<
     * ```
     */
   get deal(): Prisma.DealDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.product`: Exposes CRUD operations for the **Product** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Products
+    * const products = await prisma.product.findMany()
+    * ```
+    */
+  get product(): Prisma.ProductDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.salesTransaction`: Exposes CRUD operations for the **SalesTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SalesTransactions
+    * const salesTransactions = await prisma.salesTransaction.findMany()
+    * ```
+    */
+  get salesTransaction(): Prisma.SalesTransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.activity`: Exposes CRUD operations for the **Activity** model.
@@ -1529,6 +1599,8 @@ export namespace Prisma {
     Company: 'Company',
     Contact: 'Contact',
     Deal: 'Deal',
+    Product: 'Product',
+    SalesTransaction: 'SalesTransaction',
     Activity: 'Activity',
     DailyReport: 'DailyReport',
     FollowUp: 'FollowUp',
@@ -1566,7 +1638,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "meeting" | "meetingParticipant" | "meetingRecording" | "meetingTranscript" | "meetingSummary" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "auditLog" | "integration" | "webhookDelivery"
+      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "product" | "salesTransaction" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "meeting" | "meetingParticipant" | "meetingRecording" | "meetingTranscript" | "meetingSummary" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "auditLog" | "integration" | "webhookDelivery"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3420,6 +3492,154 @@ export namespace Prisma {
           }
         }
       }
+      Product: {
+        payload: Prisma.$ProductPayload<ExtArgs>
+        fields: Prisma.ProductFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProductFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProductFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          findFirst: {
+            args: Prisma.ProductFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProductFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          findMany: {
+            args: Prisma.ProductFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>[]
+          }
+          create: {
+            args: Prisma.ProductCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          createMany: {
+            args: Prisma.ProductCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProductCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>[]
+          }
+          delete: {
+            args: Prisma.ProductDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          update: {
+            args: Prisma.ProductUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProductDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProductUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProductUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>[]
+          }
+          upsert: {
+            args: Prisma.ProductUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductPayload>
+          }
+          aggregate: {
+            args: Prisma.ProductAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProduct>
+          }
+          groupBy: {
+            args: Prisma.ProductGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProductGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProductCountArgs<ExtArgs>
+            result: $Utils.Optional<ProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      SalesTransaction: {
+        payload: Prisma.$SalesTransactionPayload<ExtArgs>
+        fields: Prisma.SalesTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SalesTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SalesTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.SalesTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SalesTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.SalesTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.SalesTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.SalesTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SalesTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.SalesTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          update: {
+            args: Prisma.SalesTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.SalesTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SalesTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SalesTransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>[]
+          }
+          upsert: {
+            args: Prisma.SalesTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SalesTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.SalesTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSalesTransaction>
+          }
+          groupBy: {
+            args: Prisma.SalesTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SalesTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SalesTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<SalesTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
       Activity: {
         payload: Prisma.$ActivityPayload<ExtArgs>
         fields: Prisma.ActivityFieldRefs
@@ -5196,6 +5416,8 @@ export namespace Prisma {
     company?: CompanyOmit
     contact?: ContactOmit
     deal?: DealOmit
+    product?: ProductOmit
+    salesTransaction?: SalesTransactionOmit
     activity?: ActivityOmit
     dailyReport?: DailyReportOmit
     followUp?: FollowUpOmit
@@ -5324,6 +5546,8 @@ export namespace Prisma {
     dailyReports: number
     aiUsages: number
     resourceGrants: number
+    products: number
+    salesTransactions: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5353,6 +5577,8 @@ export namespace Prisma {
     dailyReports?: boolean | OrganizationCountOutputTypeCountDailyReportsArgs
     aiUsages?: boolean | OrganizationCountOutputTypeCountAiUsagesArgs
     resourceGrants?: boolean | OrganizationCountOutputTypeCountResourceGrantsArgs
+    products?: boolean | OrganizationCountOutputTypeCountProductsArgs
+    salesTransactions?: boolean | OrganizationCountOutputTypeCountSalesTransactionsArgs
   }
 
   // Custom InputTypes
@@ -5548,6 +5774,20 @@ export namespace Prisma {
     where?: ResourceGrantWhereInput
   }
 
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountSalesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTransactionWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -5588,6 +5828,7 @@ export namespace Prisma {
     dailyReports: number
     aiUsages: number
     grantsGiven: number
+    salesTransactions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5625,6 +5866,7 @@ export namespace Prisma {
     dailyReports?: boolean | UserCountOutputTypeCountDailyReportsArgs
     aiUsages?: boolean | UserCountOutputTypeCountAiUsagesArgs
     grantsGiven?: boolean | UserCountOutputTypeCountGrantsGivenArgs
+    salesTransactions?: boolean | UserCountOutputTypeCountSalesTransactionsArgs
   }
 
   // Custom InputTypes
@@ -5874,6 +6116,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGrantsGivenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ResourceGrantWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSalesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTransactionWhereInput
   }
 
 
@@ -6224,6 +6473,7 @@ export namespace Prisma {
     geoFences: number
     leads: number
     meetings: number
+    salesTransactions: number
   }
 
   export type CompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6235,6 +6485,7 @@ export namespace Prisma {
     geoFences?: boolean | CompanyCountOutputTypeCountGeoFencesArgs
     leads?: boolean | CompanyCountOutputTypeCountLeadsArgs
     meetings?: boolean | CompanyCountOutputTypeCountMeetingsArgs
+    salesTransactions?: boolean | CompanyCountOutputTypeCountSalesTransactionsArgs
   }
 
   // Custom InputTypes
@@ -6302,6 +6553,13 @@ export namespace Prisma {
    */
   export type CompanyCountOutputTypeCountMeetingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MeetingWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountSalesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTransactionWhereInput
   }
 
 
@@ -6427,6 +6685,37 @@ export namespace Prisma {
    */
   export type DealCountOutputTypeCountMeetingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MeetingWhereInput
+  }
+
+
+  /**
+   * Count Type ProductCountOutputType
+   */
+
+  export type ProductCountOutputType = {
+    salesTransactions: number
+  }
+
+  export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    salesTransactions?: boolean | ProductCountOutputTypeCountSalesTransactionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductCountOutputType
+     */
+    select?: ProductCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountSalesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTransactionWhereInput
   }
 
 
@@ -6882,6 +7171,8 @@ export namespace Prisma {
     dailyReports?: boolean | Organization$dailyReportsArgs<ExtArgs>
     aiUsages?: boolean | Organization$aiUsagesArgs<ExtArgs>
     resourceGrants?: boolean | Organization$resourceGrantsArgs<ExtArgs>
+    products?: boolean | Organization$productsArgs<ExtArgs>
+    salesTransactions?: boolean | Organization$salesTransactionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -6967,6 +7258,8 @@ export namespace Prisma {
     dailyReports?: boolean | Organization$dailyReportsArgs<ExtArgs>
     aiUsages?: boolean | Organization$aiUsagesArgs<ExtArgs>
     resourceGrants?: boolean | Organization$resourceGrantsArgs<ExtArgs>
+    products?: boolean | Organization$productsArgs<ExtArgs>
+    salesTransactions?: boolean | Organization$salesTransactionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -7001,6 +7294,8 @@ export namespace Prisma {
       dailyReports: Prisma.$DailyReportPayload<ExtArgs>[]
       aiUsages: Prisma.$AIUsagePayload<ExtArgs>[]
       resourceGrants: Prisma.$ResourceGrantPayload<ExtArgs>[]
+      products: Prisma.$ProductPayload<ExtArgs>[]
+      salesTransactions: Prisma.$SalesTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7438,6 +7733,8 @@ export namespace Prisma {
     dailyReports<T extends Organization$dailyReportsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$dailyReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiUsages<T extends Organization$aiUsagesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$aiUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     resourceGrants<T extends Organization$resourceGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$resourceGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourceGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    products<T extends Organization$productsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    salesTransactions<T extends Organization$salesTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$salesTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8499,6 +8796,54 @@ export namespace Prisma {
   }
 
   /**
+   * Organization.products
+   */
+  export type Organization$productsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    cursor?: ProductWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.salesTransactions
+   */
+  export type Organization$salesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    where?: SalesTransactionWhereInput
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    cursor?: SalesTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
+  }
+
+  /**
    * Organization without action
    */
   export type OrganizationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8816,6 +9161,7 @@ export namespace Prisma {
     dailyReports?: boolean | User$dailyReportsArgs<ExtArgs>
     aiUsages?: boolean | User$aiUsagesArgs<ExtArgs>
     grantsGiven?: boolean | User$grantsGivenArgs<ExtArgs>
+    salesTransactions?: boolean | User$salesTransactionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8928,6 +9274,7 @@ export namespace Prisma {
     dailyReports?: boolean | User$dailyReportsArgs<ExtArgs>
     aiUsages?: boolean | User$aiUsagesArgs<ExtArgs>
     grantsGiven?: boolean | User$grantsGivenArgs<ExtArgs>
+    salesTransactions?: boolean | User$salesTransactionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8985,6 +9332,7 @@ export namespace Prisma {
       dailyReports: Prisma.$DailyReportPayload<ExtArgs>[]
       aiUsages: Prisma.$AIUsagePayload<ExtArgs>[]
       grantsGiven: Prisma.$ResourceGrantPayload<ExtArgs>[]
+      salesTransactions: Prisma.$SalesTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9437,6 +9785,7 @@ export namespace Prisma {
     dailyReports<T extends User$dailyReportsArgs<ExtArgs> = {}>(args?: Subset<T, User$dailyReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiUsages<T extends User$aiUsagesArgs<ExtArgs> = {}>(args?: Subset<T, User$aiUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     grantsGiven<T extends User$grantsGivenArgs<ExtArgs> = {}>(args?: Subset<T, User$grantsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourceGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    salesTransactions<T extends User$salesTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10773,6 +11122,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ResourceGrantScalarFieldEnum | ResourceGrantScalarFieldEnum[]
+  }
+
+  /**
+   * User.salesTransactions
+   */
+  export type User$salesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    where?: SalesTransactionWhereInput
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    cursor?: SalesTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
   }
 
   /**
@@ -32707,6 +33080,19 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastActivityAt: Date | null
+    funnelStage: $Enums.FunnelStage | null
+    enquiryDate: Date | null
+    region: string | null
+    location: string | null
+    purposeOfVisit: string | null
+    meetingMode: string | null
+    keyDiscussionPoints: string | null
+    customerRequirement: string | null
+    cdaStatus: string | null
+    cdaDate: Date | null
+    samplingStatus: string | null
+    rndFeedback: string | null
+    nextAction: string | null
   }
 
   export type LeadMaxAggregateOutputType = {
@@ -32728,6 +33114,19 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     lastActivityAt: Date | null
+    funnelStage: $Enums.FunnelStage | null
+    enquiryDate: Date | null
+    region: string | null
+    location: string | null
+    purposeOfVisit: string | null
+    meetingMode: string | null
+    keyDiscussionPoints: string | null
+    customerRequirement: string | null
+    cdaStatus: string | null
+    cdaDate: Date | null
+    samplingStatus: string | null
+    rndFeedback: string | null
+    nextAction: string | null
   }
 
   export type LeadCountAggregateOutputType = {
@@ -32749,6 +33148,20 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     lastActivityAt: number
+    funnelStage: number
+    enquiryDate: number
+    region: number
+    location: number
+    purposeOfVisit: number
+    meetingMode: number
+    productsDiscussed: number
+    keyDiscussionPoints: number
+    customerRequirement: number
+    cdaStatus: number
+    cdaDate: number
+    samplingStatus: number
+    rndFeedback: number
+    nextAction: number
     _all: number
   }
 
@@ -32782,6 +33195,19 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastActivityAt?: true
+    funnelStage?: true
+    enquiryDate?: true
+    region?: true
+    location?: true
+    purposeOfVisit?: true
+    meetingMode?: true
+    keyDiscussionPoints?: true
+    customerRequirement?: true
+    cdaStatus?: true
+    cdaDate?: true
+    samplingStatus?: true
+    rndFeedback?: true
+    nextAction?: true
   }
 
   export type LeadMaxAggregateInputType = {
@@ -32803,6 +33229,19 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastActivityAt?: true
+    funnelStage?: true
+    enquiryDate?: true
+    region?: true
+    location?: true
+    purposeOfVisit?: true
+    meetingMode?: true
+    keyDiscussionPoints?: true
+    customerRequirement?: true
+    cdaStatus?: true
+    cdaDate?: true
+    samplingStatus?: true
+    rndFeedback?: true
+    nextAction?: true
   }
 
   export type LeadCountAggregateInputType = {
@@ -32824,6 +33263,20 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     lastActivityAt?: true
+    funnelStage?: true
+    enquiryDate?: true
+    region?: true
+    location?: true
+    purposeOfVisit?: true
+    meetingMode?: true
+    productsDiscussed?: true
+    keyDiscussionPoints?: true
+    customerRequirement?: true
+    cdaStatus?: true
+    cdaDate?: true
+    samplingStatus?: true
+    rndFeedback?: true
+    nextAction?: true
     _all?: true
   }
 
@@ -32932,6 +33385,20 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     lastActivityAt: Date | null
+    funnelStage: $Enums.FunnelStage | null
+    enquiryDate: Date | null
+    region: string | null
+    location: string | null
+    purposeOfVisit: string | null
+    meetingMode: string | null
+    productsDiscussed: string[]
+    keyDiscussionPoints: string | null
+    customerRequirement: string | null
+    cdaStatus: string | null
+    cdaDate: Date | null
+    samplingStatus: string | null
+    rndFeedback: string | null
+    nextAction: string | null
     _count: LeadCountAggregateOutputType | null
     _avg: LeadAvgAggregateOutputType | null
     _sum: LeadSumAggregateOutputType | null
@@ -32972,6 +33439,20 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastActivityAt?: boolean
+    funnelStage?: boolean
+    enquiryDate?: boolean
+    region?: boolean
+    location?: boolean
+    purposeOfVisit?: boolean
+    meetingMode?: boolean
+    productsDiscussed?: boolean
+    keyDiscussionPoints?: boolean
+    customerRequirement?: boolean
+    cdaStatus?: boolean
+    cdaDate?: boolean
+    samplingStatus?: boolean
+    rndFeedback?: boolean
+    nextAction?: boolean
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     deals?: boolean | Lead$dealsArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
@@ -33001,6 +33482,20 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastActivityAt?: boolean
+    funnelStage?: boolean
+    enquiryDate?: boolean
+    region?: boolean
+    location?: boolean
+    purposeOfVisit?: boolean
+    meetingMode?: boolean
+    productsDiscussed?: boolean
+    keyDiscussionPoints?: boolean
+    customerRequirement?: boolean
+    cdaStatus?: boolean
+    cdaDate?: boolean
+    samplingStatus?: boolean
+    rndFeedback?: boolean
+    nextAction?: boolean
     companyRef?: boolean | Lead$companyRefArgs<ExtArgs>
     contact?: boolean | Lead$contactArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33026,6 +33521,20 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastActivityAt?: boolean
+    funnelStage?: boolean
+    enquiryDate?: boolean
+    region?: boolean
+    location?: boolean
+    purposeOfVisit?: boolean
+    meetingMode?: boolean
+    productsDiscussed?: boolean
+    keyDiscussionPoints?: boolean
+    customerRequirement?: boolean
+    cdaStatus?: boolean
+    cdaDate?: boolean
+    samplingStatus?: boolean
+    rndFeedback?: boolean
+    nextAction?: boolean
     companyRef?: boolean | Lead$companyRefArgs<ExtArgs>
     contact?: boolean | Lead$contactArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33051,9 +33560,23 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     lastActivityAt?: boolean
+    funnelStage?: boolean
+    enquiryDate?: boolean
+    region?: boolean
+    location?: boolean
+    purposeOfVisit?: boolean
+    meetingMode?: boolean
+    productsDiscussed?: boolean
+    keyDiscussionPoints?: boolean
+    customerRequirement?: boolean
+    cdaStatus?: boolean
+    cdaDate?: boolean
+    samplingStatus?: boolean
+    rndFeedback?: boolean
+    nextAction?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "company" | "email" | "phone" | "source" | "status" | "score" | "value" | "segment" | "notes" | "organizationId" | "ownerId" | "companyId" | "contactId" | "createdAt" | "updatedAt" | "lastActivityAt", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "company" | "email" | "phone" | "source" | "status" | "score" | "value" | "segment" | "notes" | "organizationId" | "ownerId" | "companyId" | "contactId" | "createdAt" | "updatedAt" | "lastActivityAt" | "funnelStage" | "enquiryDate" | "region" | "location" | "purposeOfVisit" | "meetingMode" | "productsDiscussed" | "keyDiscussionPoints" | "customerRequirement" | "cdaStatus" | "cdaDate" | "samplingStatus" | "rndFeedback" | "nextAction", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     deals?: boolean | Lead$dealsArgs<ExtArgs>
@@ -33107,6 +33630,20 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       lastActivityAt: Date | null
+      funnelStage: $Enums.FunnelStage | null
+      enquiryDate: Date | null
+      region: string | null
+      location: string | null
+      purposeOfVisit: string | null
+      meetingMode: string | null
+      productsDiscussed: string[]
+      keyDiscussionPoints: string | null
+      customerRequirement: string | null
+      cdaStatus: string | null
+      cdaDate: Date | null
+      samplingStatus: string | null
+      rndFeedback: string | null
+      nextAction: string | null
     }, ExtArgs["result"]["lead"]>
     composites: {}
   }
@@ -33555,6 +34092,20 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
     readonly lastActivityAt: FieldRef<"Lead", 'DateTime'>
+    readonly funnelStage: FieldRef<"Lead", 'FunnelStage'>
+    readonly enquiryDate: FieldRef<"Lead", 'DateTime'>
+    readonly region: FieldRef<"Lead", 'String'>
+    readonly location: FieldRef<"Lead", 'String'>
+    readonly purposeOfVisit: FieldRef<"Lead", 'String'>
+    readonly meetingMode: FieldRef<"Lead", 'String'>
+    readonly productsDiscussed: FieldRef<"Lead", 'String[]'>
+    readonly keyDiscussionPoints: FieldRef<"Lead", 'String'>
+    readonly customerRequirement: FieldRef<"Lead", 'String'>
+    readonly cdaStatus: FieldRef<"Lead", 'String'>
+    readonly cdaDate: FieldRef<"Lead", 'DateTime'>
+    readonly samplingStatus: FieldRef<"Lead", 'String'>
+    readonly rndFeedback: FieldRef<"Lead", 'String'>
+    readonly nextAction: FieldRef<"Lead", 'String'>
   }
     
 
@@ -34392,6 +34943,7 @@ export namespace Prisma {
     geoFences?: boolean | Company$geoFencesArgs<ExtArgs>
     leads?: boolean | Company$leadsArgs<ExtArgs>
     meetings?: boolean | Company$meetingsArgs<ExtArgs>
+    salesTransactions?: boolean | Company$salesTransactionsArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["company"]>
 
@@ -34471,6 +35023,7 @@ export namespace Prisma {
     geoFences?: boolean | Company$geoFencesArgs<ExtArgs>
     leads?: boolean | Company$leadsArgs<ExtArgs>
     meetings?: boolean | Company$meetingsArgs<ExtArgs>
+    salesTransactions?: boolean | Company$salesTransactionsArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CompanyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -34495,6 +35048,7 @@ export namespace Prisma {
       geoFences: Prisma.$GeoFencePayload<ExtArgs>[]
       leads: Prisma.$LeadPayload<ExtArgs>[]
       meetings: Prisma.$MeetingPayload<ExtArgs>[]
+      salesTransactions: Prisma.$SalesTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -34918,6 +35472,7 @@ export namespace Prisma {
     geoFences<T extends Company$geoFencesArgs<ExtArgs> = {}>(args?: Subset<T, Company$geoFencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GeoFencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leads<T extends Company$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Company$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     meetings<T extends Company$meetingsArgs<ExtArgs> = {}>(args?: Subset<T, Company$meetingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MeetingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    salesTransactions<T extends Company$salesTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Company$salesTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -35554,6 +36109,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MeetingScalarFieldEnum | MeetingScalarFieldEnum[]
+  }
+
+  /**
+   * Company.salesTransactions
+   */
+  export type Company$salesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    where?: SalesTransactionWhereInput
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    cursor?: SalesTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
   }
 
   /**
@@ -38415,6 +38994,2643 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: DealInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Product
+   */
+
+  export type AggregateProduct = {
+    _count: ProductCountAggregateOutputType | null
+    _avg: ProductAvgAggregateOutputType | null
+    _sum: ProductSumAggregateOutputType | null
+    _min: ProductMinAggregateOutputType | null
+    _max: ProductMaxAggregateOutputType | null
+  }
+
+  export type ProductAvgAggregateOutputType = {
+    defaultUnitPrice: Decimal | null
+  }
+
+  export type ProductSumAggregateOutputType = {
+    defaultUnitPrice: Decimal | null
+  }
+
+  export type ProductMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    sku: string | null
+    category: string | null
+    grade: string | null
+    variant: string | null
+    unit: string | null
+    defaultUnitPrice: Decimal | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ProductMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    sku: string | null
+    category: string | null
+    grade: string | null
+    variant: string | null
+    unit: string | null
+    defaultUnitPrice: Decimal | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ProductCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    name: number
+    sku: number
+    category: number
+    grade: number
+    variant: number
+    unit: number
+    defaultUnitPrice: number
+    description: number
+    attributes: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ProductAvgAggregateInputType = {
+    defaultUnitPrice?: true
+  }
+
+  export type ProductSumAggregateInputType = {
+    defaultUnitPrice?: true
+  }
+
+  export type ProductMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    sku?: true
+    category?: true
+    grade?: true
+    variant?: true
+    unit?: true
+    defaultUnitPrice?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ProductMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    sku?: true
+    category?: true
+    grade?: true
+    variant?: true
+    unit?: true
+    defaultUnitPrice?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ProductCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    sku?: true
+    category?: true
+    grade?: true
+    variant?: true
+    unit?: true
+    defaultUnitPrice?: true
+    description?: true
+    attributes?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ProductAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Product to aggregate.
+     */
+    where?: ProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Products to fetch.
+     */
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Products from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Products.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Products
+    **/
+    _count?: true | ProductCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProductAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProductSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProductMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProductMaxAggregateInputType
+  }
+
+  export type GetProductAggregateType<T extends ProductAggregateArgs> = {
+        [P in keyof T & keyof AggregateProduct]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProduct[P]>
+      : GetScalarType<T[P], AggregateProduct[P]>
+  }
+
+
+
+
+  export type ProductGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductWhereInput
+    orderBy?: ProductOrderByWithAggregationInput | ProductOrderByWithAggregationInput[]
+    by: ProductScalarFieldEnum[] | ProductScalarFieldEnum
+    having?: ProductScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProductCountAggregateInputType | true
+    _avg?: ProductAvgAggregateInputType
+    _sum?: ProductSumAggregateInputType
+    _min?: ProductMinAggregateInputType
+    _max?: ProductMaxAggregateInputType
+  }
+
+  export type ProductGroupByOutputType = {
+    id: string
+    organizationId: string
+    name: string
+    sku: string | null
+    category: string | null
+    grade: string | null
+    variant: string | null
+    unit: string
+    defaultUnitPrice: Decimal | null
+    description: string | null
+    attributes: JsonValue | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: ProductCountAggregateOutputType | null
+    _avg: ProductAvgAggregateOutputType | null
+    _sum: ProductSumAggregateOutputType | null
+    _min: ProductMinAggregateOutputType | null
+    _max: ProductMaxAggregateOutputType | null
+  }
+
+  type GetProductGroupByPayload<T extends ProductGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProductGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProductGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProductGroupByOutputType[P]>
+            : GetScalarType<T[P], ProductGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProductSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    sku?: boolean
+    category?: boolean
+    grade?: boolean
+    variant?: boolean
+    unit?: boolean
+    defaultUnitPrice?: boolean
+    description?: boolean
+    attributes?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesTransactions?: boolean | Product$salesTransactionsArgs<ExtArgs>
+    _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["product"]>
+
+  export type ProductSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    sku?: boolean
+    category?: boolean
+    grade?: boolean
+    variant?: boolean
+    unit?: boolean
+    defaultUnitPrice?: boolean
+    description?: boolean
+    attributes?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["product"]>
+
+  export type ProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    sku?: boolean
+    category?: boolean
+    grade?: boolean
+    variant?: boolean
+    unit?: boolean
+    defaultUnitPrice?: boolean
+    description?: boolean
+    attributes?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["product"]>
+
+  export type ProductSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    sku?: boolean
+    category?: boolean
+    grade?: boolean
+    variant?: boolean
+    unit?: boolean
+    defaultUnitPrice?: boolean
+    description?: boolean
+    attributes?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "sku" | "category" | "grade" | "variant" | "unit" | "defaultUnitPrice" | "description" | "attributes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesTransactions?: boolean | Product$salesTransactionsArgs<ExtArgs>
+    _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type ProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Product"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      salesTransactions: Prisma.$SalesTransactionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      name: string
+      sku: string | null
+      /**
+       * e.g. Nutraceutical, Cosmetic, Food & Beverage
+       */
+      category: string | null
+      /**
+       * e.g. "Food Grade", "Pharma Grade"
+       */
+      grade: string | null
+      /**
+       * e.g. "1% WD", "0.1% WS", "RD"
+       */
+      variant: string | null
+      /**
+       * Unit the product is sold in — "kg" by default (ingredients sell by kg).
+       */
+      unit: string
+      defaultUnitPrice: Prisma.Decimal | null
+      description: string | null
+      /**
+       * Optional extra key/value metadata edited on the catalog form.
+       */
+      attributes: Prisma.JsonValue | null
+      /**
+       * Products referenced by sales are deactivated rather than deleted, so
+       * historic sales lines keep their product row.
+       */
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["product"]>
+    composites: {}
+  }
+
+  type ProductGetPayload<S extends boolean | null | undefined | ProductDefaultArgs> = $Result.GetResult<Prisma.$ProductPayload, S>
+
+  type ProductCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProductFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProductCountAggregateInputType | true
+    }
+
+  export interface ProductDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Product'], meta: { name: 'Product' } }
+    /**
+     * Find zero or one Product that matches the filter.
+     * @param {ProductFindUniqueArgs} args - Arguments to find a Product
+     * @example
+     * // Get one Product
+     * const product = await prisma.product.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProductFindUniqueArgs>(args: SelectSubset<T, ProductFindUniqueArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Product that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProductFindUniqueOrThrowArgs} args - Arguments to find a Product
+     * @example
+     * // Get one Product
+     * const product = await prisma.product.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProductFindUniqueOrThrowArgs>(args: SelectSubset<T, ProductFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Product that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductFindFirstArgs} args - Arguments to find a Product
+     * @example
+     * // Get one Product
+     * const product = await prisma.product.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProductFindFirstArgs>(args?: SelectSubset<T, ProductFindFirstArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Product that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductFindFirstOrThrowArgs} args - Arguments to find a Product
+     * @example
+     * // Get one Product
+     * const product = await prisma.product.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProductFindFirstOrThrowArgs>(args?: SelectSubset<T, ProductFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Products that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Products
+     * const products = await prisma.product.findMany()
+     * 
+     * // Get first 10 Products
+     * const products = await prisma.product.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const productWithIdOnly = await prisma.product.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProductFindManyArgs>(args?: SelectSubset<T, ProductFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Product.
+     * @param {ProductCreateArgs} args - Arguments to create a Product.
+     * @example
+     * // Create one Product
+     * const Product = await prisma.product.create({
+     *   data: {
+     *     // ... data to create a Product
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProductCreateArgs>(args: SelectSubset<T, ProductCreateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Products.
+     * @param {ProductCreateManyArgs} args - Arguments to create many Products.
+     * @example
+     * // Create many Products
+     * const product = await prisma.product.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProductCreateManyArgs>(args?: SelectSubset<T, ProductCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Products and returns the data saved in the database.
+     * @param {ProductCreateManyAndReturnArgs} args - Arguments to create many Products.
+     * @example
+     * // Create many Products
+     * const product = await prisma.product.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Products and only return the `id`
+     * const productWithIdOnly = await prisma.product.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProductCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Product.
+     * @param {ProductDeleteArgs} args - Arguments to delete one Product.
+     * @example
+     * // Delete one Product
+     * const Product = await prisma.product.delete({
+     *   where: {
+     *     // ... filter to delete one Product
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProductDeleteArgs>(args: SelectSubset<T, ProductDeleteArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Product.
+     * @param {ProductUpdateArgs} args - Arguments to update one Product.
+     * @example
+     * // Update one Product
+     * const product = await prisma.product.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProductUpdateArgs>(args: SelectSubset<T, ProductUpdateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Products.
+     * @param {ProductDeleteManyArgs} args - Arguments to filter Products to delete.
+     * @example
+     * // Delete a few Products
+     * const { count } = await prisma.product.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProductDeleteManyArgs>(args?: SelectSubset<T, ProductDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Products.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Products
+     * const product = await prisma.product.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProductUpdateManyArgs>(args: SelectSubset<T, ProductUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Products and returns the data updated in the database.
+     * @param {ProductUpdateManyAndReturnArgs} args - Arguments to update many Products.
+     * @example
+     * // Update many Products
+     * const product = await prisma.product.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Products and only return the `id`
+     * const productWithIdOnly = await prisma.product.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProductUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Product.
+     * @param {ProductUpsertArgs} args - Arguments to update or create a Product.
+     * @example
+     * // Update or create a Product
+     * const product = await prisma.product.upsert({
+     *   create: {
+     *     // ... data to create a Product
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Product we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProductUpsertArgs>(args: SelectSubset<T, ProductUpsertArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Products.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductCountArgs} args - Arguments to filter Products to count.
+     * @example
+     * // Count the number of Products
+     * const count = await prisma.product.count({
+     *   where: {
+     *     // ... the filter for the Products we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProductCountArgs>(
+      args?: Subset<T, ProductCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProductCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Product.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProductAggregateArgs>(args: Subset<T, ProductAggregateArgs>): Prisma.PrismaPromise<GetProductAggregateType<T>>
+
+    /**
+     * Group by Product.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProductGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProductGroupByArgs['orderBy'] }
+        : { orderBy?: ProductGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProductGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProductGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Product model
+   */
+  readonly fields: ProductFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Product.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    salesTransactions<T extends Product$salesTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Product$salesTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Product model
+   */
+  interface ProductFieldRefs {
+    readonly id: FieldRef<"Product", 'String'>
+    readonly organizationId: FieldRef<"Product", 'String'>
+    readonly name: FieldRef<"Product", 'String'>
+    readonly sku: FieldRef<"Product", 'String'>
+    readonly category: FieldRef<"Product", 'String'>
+    readonly grade: FieldRef<"Product", 'String'>
+    readonly variant: FieldRef<"Product", 'String'>
+    readonly unit: FieldRef<"Product", 'String'>
+    readonly defaultUnitPrice: FieldRef<"Product", 'Decimal'>
+    readonly description: FieldRef<"Product", 'String'>
+    readonly attributes: FieldRef<"Product", 'Json'>
+    readonly isActive: FieldRef<"Product", 'Boolean'>
+    readonly createdAt: FieldRef<"Product", 'DateTime'>
+    readonly updatedAt: FieldRef<"Product", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Product findUnique
+   */
+  export type ProductFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter, which Product to fetch.
+     */
+    where: ProductWhereUniqueInput
+  }
+
+  /**
+   * Product findUniqueOrThrow
+   */
+  export type ProductFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter, which Product to fetch.
+     */
+    where: ProductWhereUniqueInput
+  }
+
+  /**
+   * Product findFirst
+   */
+  export type ProductFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter, which Product to fetch.
+     */
+    where?: ProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Products to fetch.
+     */
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Products.
+     */
+    cursor?: ProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Products from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Products.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Products.
+     */
+    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Product findFirstOrThrow
+   */
+  export type ProductFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter, which Product to fetch.
+     */
+    where?: ProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Products to fetch.
+     */
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Products.
+     */
+    cursor?: ProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Products from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Products.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Products.
+     */
+    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Product findMany
+   */
+  export type ProductFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter, which Products to fetch.
+     */
+    where?: ProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Products to fetch.
+     */
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Products.
+     */
+    cursor?: ProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Products from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Products.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Products.
+     */
+    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Product create
+   */
+  export type ProductCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Product.
+     */
+    data: XOR<ProductCreateInput, ProductUncheckedCreateInput>
+  }
+
+  /**
+   * Product createMany
+   */
+  export type ProductCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Products.
+     */
+    data: ProductCreateManyInput | ProductCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Product createManyAndReturn
+   */
+  export type ProductCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * The data used to create many Products.
+     */
+    data: ProductCreateManyInput | ProductCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Product update
+   */
+  export type ProductUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Product.
+     */
+    data: XOR<ProductUpdateInput, ProductUncheckedUpdateInput>
+    /**
+     * Choose, which Product to update.
+     */
+    where: ProductWhereUniqueInput
+  }
+
+  /**
+   * Product updateMany
+   */
+  export type ProductUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Products.
+     */
+    data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyInput>
+    /**
+     * Filter which Products to update
+     */
+    where?: ProductWhereInput
+    /**
+     * Limit how many Products to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Product updateManyAndReturn
+   */
+  export type ProductUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * The data used to update Products.
+     */
+    data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyInput>
+    /**
+     * Filter which Products to update
+     */
+    where?: ProductWhereInput
+    /**
+     * Limit how many Products to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Product upsert
+   */
+  export type ProductUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Product to update in case it exists.
+     */
+    where: ProductWhereUniqueInput
+    /**
+     * In case the Product found by the `where` argument doesn't exist, create a new Product with this data.
+     */
+    create: XOR<ProductCreateInput, ProductUncheckedCreateInput>
+    /**
+     * In case the Product was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProductUpdateInput, ProductUncheckedUpdateInput>
+  }
+
+  /**
+   * Product delete
+   */
+  export type ProductDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    /**
+     * Filter which Product to delete.
+     */
+    where: ProductWhereUniqueInput
+  }
+
+  /**
+   * Product deleteMany
+   */
+  export type ProductDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Products to delete
+     */
+    where?: ProductWhereInput
+    /**
+     * Limit how many Products to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Product.salesTransactions
+   */
+  export type Product$salesTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    where?: SalesTransactionWhereInput
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    cursor?: SalesTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Product without action
+   */
+  export type ProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SalesTransaction
+   */
+
+  export type AggregateSalesTransaction = {
+    _count: SalesTransactionCountAggregateOutputType | null
+    _avg: SalesTransactionAvgAggregateOutputType | null
+    _sum: SalesTransactionSumAggregateOutputType | null
+    _min: SalesTransactionMinAggregateOutputType | null
+    _max: SalesTransactionMaxAggregateOutputType | null
+  }
+
+  export type SalesTransactionAvgAggregateOutputType = {
+    lineNumber: number | null
+    quantity: Decimal | null
+    unitPrice: Decimal | null
+    totalAmount: Decimal | null
+    amountPaid: Decimal | null
+    balanceAmount: Decimal | null
+  }
+
+  export type SalesTransactionSumAggregateOutputType = {
+    lineNumber: number | null
+    quantity: Decimal | null
+    unitPrice: Decimal | null
+    totalAmount: Decimal | null
+    amountPaid: Decimal | null
+    balanceAmount: Decimal | null
+  }
+
+  export type SalesTransactionMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    salespersonId: string | null
+    customerId: string | null
+    productId: string | null
+    otherProductName: string | null
+    saleDate: Date | null
+    invoiceNumber: string | null
+    invoiceKey: string | null
+    groupId: string | null
+    lineNumber: number | null
+    quantity: Decimal | null
+    unitPrice: Decimal | null
+    totalAmount: Decimal | null
+    amountPaid: Decimal | null
+    balanceAmount: Decimal | null
+    paymentStatus: $Enums.PaymentStatus | null
+    paymentDate: Date | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SalesTransactionMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    salespersonId: string | null
+    customerId: string | null
+    productId: string | null
+    otherProductName: string | null
+    saleDate: Date | null
+    invoiceNumber: string | null
+    invoiceKey: string | null
+    groupId: string | null
+    lineNumber: number | null
+    quantity: Decimal | null
+    unitPrice: Decimal | null
+    totalAmount: Decimal | null
+    amountPaid: Decimal | null
+    balanceAmount: Decimal | null
+    paymentStatus: $Enums.PaymentStatus | null
+    paymentDate: Date | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SalesTransactionCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    salespersonId: number
+    customerId: number
+    productId: number
+    otherProductName: number
+    saleDate: number
+    invoiceNumber: number
+    invoiceKey: number
+    groupId: number
+    lineNumber: number
+    quantity: number
+    unitPrice: number
+    totalAmount: number
+    amountPaid: number
+    balanceAmount: number
+    paymentStatus: number
+    paymentDate: number
+    remarks: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SalesTransactionAvgAggregateInputType = {
+    lineNumber?: true
+    quantity?: true
+    unitPrice?: true
+    totalAmount?: true
+    amountPaid?: true
+    balanceAmount?: true
+  }
+
+  export type SalesTransactionSumAggregateInputType = {
+    lineNumber?: true
+    quantity?: true
+    unitPrice?: true
+    totalAmount?: true
+    amountPaid?: true
+    balanceAmount?: true
+  }
+
+  export type SalesTransactionMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    salespersonId?: true
+    customerId?: true
+    productId?: true
+    otherProductName?: true
+    saleDate?: true
+    invoiceNumber?: true
+    invoiceKey?: true
+    groupId?: true
+    lineNumber?: true
+    quantity?: true
+    unitPrice?: true
+    totalAmount?: true
+    amountPaid?: true
+    balanceAmount?: true
+    paymentStatus?: true
+    paymentDate?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SalesTransactionMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    salespersonId?: true
+    customerId?: true
+    productId?: true
+    otherProductName?: true
+    saleDate?: true
+    invoiceNumber?: true
+    invoiceKey?: true
+    groupId?: true
+    lineNumber?: true
+    quantity?: true
+    unitPrice?: true
+    totalAmount?: true
+    amountPaid?: true
+    balanceAmount?: true
+    paymentStatus?: true
+    paymentDate?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SalesTransactionCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    salespersonId?: true
+    customerId?: true
+    productId?: true
+    otherProductName?: true
+    saleDate?: true
+    invoiceNumber?: true
+    invoiceKey?: true
+    groupId?: true
+    lineNumber?: true
+    quantity?: true
+    unitPrice?: true
+    totalAmount?: true
+    amountPaid?: true
+    balanceAmount?: true
+    paymentStatus?: true
+    paymentDate?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SalesTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SalesTransaction to aggregate.
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SalesTransactions to fetch.
+     */
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SalesTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SalesTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SalesTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SalesTransactions
+    **/
+    _count?: true | SalesTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SalesTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SalesTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SalesTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SalesTransactionMaxAggregateInputType
+  }
+
+  export type GetSalesTransactionAggregateType<T extends SalesTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateSalesTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSalesTransaction[P]>
+      : GetScalarType<T[P], AggregateSalesTransaction[P]>
+  }
+
+
+
+
+  export type SalesTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SalesTransactionWhereInput
+    orderBy?: SalesTransactionOrderByWithAggregationInput | SalesTransactionOrderByWithAggregationInput[]
+    by: SalesTransactionScalarFieldEnum[] | SalesTransactionScalarFieldEnum
+    having?: SalesTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SalesTransactionCountAggregateInputType | true
+    _avg?: SalesTransactionAvgAggregateInputType
+    _sum?: SalesTransactionSumAggregateInputType
+    _min?: SalesTransactionMinAggregateInputType
+    _max?: SalesTransactionMaxAggregateInputType
+  }
+
+  export type SalesTransactionGroupByOutputType = {
+    id: string
+    organizationId: string
+    salespersonId: string
+    customerId: string
+    productId: string | null
+    otherProductName: string | null
+    saleDate: Date
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal
+    unitPrice: Decimal
+    totalAmount: Decimal
+    amountPaid: Decimal
+    balanceAmount: Decimal
+    paymentStatus: $Enums.PaymentStatus
+    paymentDate: Date | null
+    remarks: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SalesTransactionCountAggregateOutputType | null
+    _avg: SalesTransactionAvgAggregateOutputType | null
+    _sum: SalesTransactionSumAggregateOutputType | null
+    _min: SalesTransactionMinAggregateOutputType | null
+    _max: SalesTransactionMaxAggregateOutputType | null
+  }
+
+  type GetSalesTransactionGroupByPayload<T extends SalesTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SalesTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SalesTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SalesTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], SalesTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SalesTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    salespersonId?: boolean
+    customerId?: boolean
+    productId?: boolean
+    otherProductName?: boolean
+    saleDate?: boolean
+    invoiceNumber?: boolean
+    invoiceKey?: boolean
+    groupId?: boolean
+    lineNumber?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    totalAmount?: boolean
+    amountPaid?: boolean
+    balanceAmount?: boolean
+    paymentStatus?: boolean
+    paymentDate?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }, ExtArgs["result"]["salesTransaction"]>
+
+  export type SalesTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    salespersonId?: boolean
+    customerId?: boolean
+    productId?: boolean
+    otherProductName?: boolean
+    saleDate?: boolean
+    invoiceNumber?: boolean
+    invoiceKey?: boolean
+    groupId?: boolean
+    lineNumber?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    totalAmount?: boolean
+    amountPaid?: boolean
+    balanceAmount?: boolean
+    paymentStatus?: boolean
+    paymentDate?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }, ExtArgs["result"]["salesTransaction"]>
+
+  export type SalesTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    salespersonId?: boolean
+    customerId?: boolean
+    productId?: boolean
+    otherProductName?: boolean
+    saleDate?: boolean
+    invoiceNumber?: boolean
+    invoiceKey?: boolean
+    groupId?: boolean
+    lineNumber?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    totalAmount?: boolean
+    amountPaid?: boolean
+    balanceAmount?: boolean
+    paymentStatus?: boolean
+    paymentDate?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }, ExtArgs["result"]["salesTransaction"]>
+
+  export type SalesTransactionSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    salespersonId?: boolean
+    customerId?: boolean
+    productId?: boolean
+    otherProductName?: boolean
+    saleDate?: boolean
+    invoiceNumber?: boolean
+    invoiceKey?: boolean
+    groupId?: boolean
+    lineNumber?: boolean
+    quantity?: boolean
+    unitPrice?: boolean
+    totalAmount?: boolean
+    amountPaid?: boolean
+    balanceAmount?: boolean
+    paymentStatus?: boolean
+    paymentDate?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SalesTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "salespersonId" | "customerId" | "productId" | "otherProductName" | "saleDate" | "invoiceNumber" | "invoiceKey" | "groupId" | "lineNumber" | "quantity" | "unitPrice" | "totalAmount" | "amountPaid" | "balanceAmount" | "paymentStatus" | "paymentDate" | "remarks" | "createdAt" | "updatedAt", ExtArgs["result"]["salesTransaction"]>
+  export type SalesTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }
+  export type SalesTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }
+  export type SalesTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    salesperson?: boolean | UserDefaultArgs<ExtArgs>
+    customer?: boolean | CompanyDefaultArgs<ExtArgs>
+    product?: boolean | SalesTransaction$productArgs<ExtArgs>
+  }
+
+  export type $SalesTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SalesTransaction"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      salesperson: Prisma.$UserPayload<ExtArgs>
+      customer: Prisma.$CompanyPayload<ExtArgs>
+      product: Prisma.$ProductPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      salespersonId: string
+      customerId: string
+      productId: string | null
+      /**
+       * Typed by the user when the sale is not for a catalog product.
+       */
+      otherProductName: string | null
+      saleDate: Date
+      invoiceNumber: string
+      /**
+       * Trimmed + lower-cased copy of `invoiceNumber`, the case-insensitive
+       * uniqueness key (mirrors Contact.emailKey).
+       */
+      invoiceKey: string
+      /**
+       * Shared by every line of one sale; groups lines into a single invoice.
+       */
+      groupId: string
+      lineNumber: number
+      quantity: Prisma.Decimal
+      unitPrice: Prisma.Decimal
+      totalAmount: Prisma.Decimal
+      amountPaid: Prisma.Decimal
+      balanceAmount: Prisma.Decimal
+      paymentStatus: $Enums.PaymentStatus
+      paymentDate: Date | null
+      remarks: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["salesTransaction"]>
+    composites: {}
+  }
+
+  type SalesTransactionGetPayload<S extends boolean | null | undefined | SalesTransactionDefaultArgs> = $Result.GetResult<Prisma.$SalesTransactionPayload, S>
+
+  type SalesTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SalesTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SalesTransactionCountAggregateInputType | true
+    }
+
+  export interface SalesTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SalesTransaction'], meta: { name: 'SalesTransaction' } }
+    /**
+     * Find zero or one SalesTransaction that matches the filter.
+     * @param {SalesTransactionFindUniqueArgs} args - Arguments to find a SalesTransaction
+     * @example
+     * // Get one SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SalesTransactionFindUniqueArgs>(args: SelectSubset<T, SalesTransactionFindUniqueArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SalesTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SalesTransactionFindUniqueOrThrowArgs} args - Arguments to find a SalesTransaction
+     * @example
+     * // Get one SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SalesTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, SalesTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SalesTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionFindFirstArgs} args - Arguments to find a SalesTransaction
+     * @example
+     * // Get one SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SalesTransactionFindFirstArgs>(args?: SelectSubset<T, SalesTransactionFindFirstArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SalesTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionFindFirstOrThrowArgs} args - Arguments to find a SalesTransaction
+     * @example
+     * // Get one SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SalesTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, SalesTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SalesTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SalesTransactions
+     * const salesTransactions = await prisma.salesTransaction.findMany()
+     * 
+     * // Get first 10 SalesTransactions
+     * const salesTransactions = await prisma.salesTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const salesTransactionWithIdOnly = await prisma.salesTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SalesTransactionFindManyArgs>(args?: SelectSubset<T, SalesTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SalesTransaction.
+     * @param {SalesTransactionCreateArgs} args - Arguments to create a SalesTransaction.
+     * @example
+     * // Create one SalesTransaction
+     * const SalesTransaction = await prisma.salesTransaction.create({
+     *   data: {
+     *     // ... data to create a SalesTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends SalesTransactionCreateArgs>(args: SelectSubset<T, SalesTransactionCreateArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SalesTransactions.
+     * @param {SalesTransactionCreateManyArgs} args - Arguments to create many SalesTransactions.
+     * @example
+     * // Create many SalesTransactions
+     * const salesTransaction = await prisma.salesTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SalesTransactionCreateManyArgs>(args?: SelectSubset<T, SalesTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SalesTransactions and returns the data saved in the database.
+     * @param {SalesTransactionCreateManyAndReturnArgs} args - Arguments to create many SalesTransactions.
+     * @example
+     * // Create many SalesTransactions
+     * const salesTransaction = await prisma.salesTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SalesTransactions and only return the `id`
+     * const salesTransactionWithIdOnly = await prisma.salesTransaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SalesTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, SalesTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SalesTransaction.
+     * @param {SalesTransactionDeleteArgs} args - Arguments to delete one SalesTransaction.
+     * @example
+     * // Delete one SalesTransaction
+     * const SalesTransaction = await prisma.salesTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one SalesTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SalesTransactionDeleteArgs>(args: SelectSubset<T, SalesTransactionDeleteArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SalesTransaction.
+     * @param {SalesTransactionUpdateArgs} args - Arguments to update one SalesTransaction.
+     * @example
+     * // Update one SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SalesTransactionUpdateArgs>(args: SelectSubset<T, SalesTransactionUpdateArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SalesTransactions.
+     * @param {SalesTransactionDeleteManyArgs} args - Arguments to filter SalesTransactions to delete.
+     * @example
+     * // Delete a few SalesTransactions
+     * const { count } = await prisma.salesTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SalesTransactionDeleteManyArgs>(args?: SelectSubset<T, SalesTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SalesTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SalesTransactions
+     * const salesTransaction = await prisma.salesTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SalesTransactionUpdateManyArgs>(args: SelectSubset<T, SalesTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SalesTransactions and returns the data updated in the database.
+     * @param {SalesTransactionUpdateManyAndReturnArgs} args - Arguments to update many SalesTransactions.
+     * @example
+     * // Update many SalesTransactions
+     * const salesTransaction = await prisma.salesTransaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SalesTransactions and only return the `id`
+     * const salesTransactionWithIdOnly = await prisma.salesTransaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SalesTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, SalesTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SalesTransaction.
+     * @param {SalesTransactionUpsertArgs} args - Arguments to update or create a SalesTransaction.
+     * @example
+     * // Update or create a SalesTransaction
+     * const salesTransaction = await prisma.salesTransaction.upsert({
+     *   create: {
+     *     // ... data to create a SalesTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SalesTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SalesTransactionUpsertArgs>(args: SelectSubset<T, SalesTransactionUpsertArgs<ExtArgs>>): Prisma__SalesTransactionClient<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SalesTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionCountArgs} args - Arguments to filter SalesTransactions to count.
+     * @example
+     * // Count the number of SalesTransactions
+     * const count = await prisma.salesTransaction.count({
+     *   where: {
+     *     // ... the filter for the SalesTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends SalesTransactionCountArgs>(
+      args?: Subset<T, SalesTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SalesTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SalesTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SalesTransactionAggregateArgs>(args: Subset<T, SalesTransactionAggregateArgs>): Prisma.PrismaPromise<GetSalesTransactionAggregateType<T>>
+
+    /**
+     * Group by SalesTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SalesTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SalesTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SalesTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: SalesTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SalesTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSalesTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SalesTransaction model
+   */
+  readonly fields: SalesTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SalesTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SalesTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    salesperson<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    customer<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    product<T extends SalesTransaction$productArgs<ExtArgs> = {}>(args?: Subset<T, SalesTransaction$productArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SalesTransaction model
+   */
+  interface SalesTransactionFieldRefs {
+    readonly id: FieldRef<"SalesTransaction", 'String'>
+    readonly organizationId: FieldRef<"SalesTransaction", 'String'>
+    readonly salespersonId: FieldRef<"SalesTransaction", 'String'>
+    readonly customerId: FieldRef<"SalesTransaction", 'String'>
+    readonly productId: FieldRef<"SalesTransaction", 'String'>
+    readonly otherProductName: FieldRef<"SalesTransaction", 'String'>
+    readonly saleDate: FieldRef<"SalesTransaction", 'DateTime'>
+    readonly invoiceNumber: FieldRef<"SalesTransaction", 'String'>
+    readonly invoiceKey: FieldRef<"SalesTransaction", 'String'>
+    readonly groupId: FieldRef<"SalesTransaction", 'String'>
+    readonly lineNumber: FieldRef<"SalesTransaction", 'Int'>
+    readonly quantity: FieldRef<"SalesTransaction", 'Decimal'>
+    readonly unitPrice: FieldRef<"SalesTransaction", 'Decimal'>
+    readonly totalAmount: FieldRef<"SalesTransaction", 'Decimal'>
+    readonly amountPaid: FieldRef<"SalesTransaction", 'Decimal'>
+    readonly balanceAmount: FieldRef<"SalesTransaction", 'Decimal'>
+    readonly paymentStatus: FieldRef<"SalesTransaction", 'PaymentStatus'>
+    readonly paymentDate: FieldRef<"SalesTransaction", 'DateTime'>
+    readonly remarks: FieldRef<"SalesTransaction", 'String'>
+    readonly createdAt: FieldRef<"SalesTransaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"SalesTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SalesTransaction findUnique
+   */
+  export type SalesTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which SalesTransaction to fetch.
+     */
+    where: SalesTransactionWhereUniqueInput
+  }
+
+  /**
+   * SalesTransaction findUniqueOrThrow
+   */
+  export type SalesTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which SalesTransaction to fetch.
+     */
+    where: SalesTransactionWhereUniqueInput
+  }
+
+  /**
+   * SalesTransaction findFirst
+   */
+  export type SalesTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which SalesTransaction to fetch.
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SalesTransactions to fetch.
+     */
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SalesTransactions.
+     */
+    cursor?: SalesTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SalesTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SalesTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SalesTransactions.
+     */
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * SalesTransaction findFirstOrThrow
+   */
+  export type SalesTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which SalesTransaction to fetch.
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SalesTransactions to fetch.
+     */
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SalesTransactions.
+     */
+    cursor?: SalesTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SalesTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SalesTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SalesTransactions.
+     */
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * SalesTransaction findMany
+   */
+  export type SalesTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which SalesTransactions to fetch.
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SalesTransactions to fetch.
+     */
+    orderBy?: SalesTransactionOrderByWithRelationInput | SalesTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SalesTransactions.
+     */
+    cursor?: SalesTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SalesTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SalesTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SalesTransactions.
+     */
+    distinct?: SalesTransactionScalarFieldEnum | SalesTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * SalesTransaction create
+   */
+  export type SalesTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SalesTransaction.
+     */
+    data: XOR<SalesTransactionCreateInput, SalesTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * SalesTransaction createMany
+   */
+  export type SalesTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SalesTransactions.
+     */
+    data: SalesTransactionCreateManyInput | SalesTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SalesTransaction createManyAndReturn
+   */
+  export type SalesTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to create many SalesTransactions.
+     */
+    data: SalesTransactionCreateManyInput | SalesTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SalesTransaction update
+   */
+  export type SalesTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SalesTransaction.
+     */
+    data: XOR<SalesTransactionUpdateInput, SalesTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which SalesTransaction to update.
+     */
+    where: SalesTransactionWhereUniqueInput
+  }
+
+  /**
+   * SalesTransaction updateMany
+   */
+  export type SalesTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SalesTransactions.
+     */
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which SalesTransactions to update
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * Limit how many SalesTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SalesTransaction updateManyAndReturn
+   */
+  export type SalesTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to update SalesTransactions.
+     */
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which SalesTransactions to update
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * Limit how many SalesTransactions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SalesTransaction upsert
+   */
+  export type SalesTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SalesTransaction to update in case it exists.
+     */
+    where: SalesTransactionWhereUniqueInput
+    /**
+     * In case the SalesTransaction found by the `where` argument doesn't exist, create a new SalesTransaction with this data.
+     */
+    create: XOR<SalesTransactionCreateInput, SalesTransactionUncheckedCreateInput>
+    /**
+     * In case the SalesTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SalesTransactionUpdateInput, SalesTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * SalesTransaction delete
+   */
+  export type SalesTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
+    /**
+     * Filter which SalesTransaction to delete.
+     */
+    where: SalesTransactionWhereUniqueInput
+  }
+
+  /**
+   * SalesTransaction deleteMany
+   */
+  export type SalesTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SalesTransactions to delete
+     */
+    where?: SalesTransactionWhereInput
+    /**
+     * Limit how many SalesTransactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SalesTransaction.product
+   */
+  export type SalesTransaction$productArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
+  }
+
+  /**
+   * SalesTransaction without action
+   */
+  export type SalesTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SalesTransaction
+     */
+    select?: SalesTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SalesTransaction
+     */
+    omit?: SalesTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SalesTransactionInclude<ExtArgs> | null
   }
 
 
@@ -64712,7 +67928,21 @@ export namespace Prisma {
     contactId: 'contactId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    lastActivityAt: 'lastActivityAt'
+    lastActivityAt: 'lastActivityAt',
+    funnelStage: 'funnelStage',
+    enquiryDate: 'enquiryDate',
+    region: 'region',
+    location: 'location',
+    purposeOfVisit: 'purposeOfVisit',
+    meetingMode: 'meetingMode',
+    productsDiscussed: 'productsDiscussed',
+    keyDiscussionPoints: 'keyDiscussionPoints',
+    customerRequirement: 'customerRequirement',
+    cdaStatus: 'cdaStatus',
+    cdaDate: 'cdaDate',
+    samplingStatus: 'samplingStatus',
+    rndFeedback: 'rndFeedback',
+    nextAction: 'nextAction'
   };
 
   export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
@@ -64784,6 +68014,53 @@ export namespace Prisma {
   };
 
   export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
+
+
+  export const ProductScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    name: 'name',
+    sku: 'sku',
+    category: 'category',
+    grade: 'grade',
+    variant: 'variant',
+    unit: 'unit',
+    defaultUnitPrice: 'defaultUnitPrice',
+    description: 'description',
+    attributes: 'attributes',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+  export const SalesTransactionScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    salespersonId: 'salespersonId',
+    customerId: 'customerId',
+    productId: 'productId',
+    otherProductName: 'otherProductName',
+    saleDate: 'saleDate',
+    invoiceNumber: 'invoiceNumber',
+    invoiceKey: 'invoiceKey',
+    groupId: 'groupId',
+    lineNumber: 'lineNumber',
+    quantity: 'quantity',
+    unitPrice: 'unitPrice',
+    totalAmount: 'totalAmount',
+    amountPaid: 'amountPaid',
+    balanceAmount: 'balanceAmount',
+    paymentStatus: 'paymentStatus',
+    paymentDate: 'paymentDate',
+    remarks: 'remarks',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SalesTransactionScalarFieldEnum = (typeof SalesTransactionScalarFieldEnum)[keyof typeof SalesTransactionScalarFieldEnum]
 
 
   export const ActivityScalarFieldEnum: {
@@ -65356,6 +68633,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'FunnelStage'
+   */
+  export type EnumFunnelStageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FunnelStage'>
+    
+
+
+  /**
+   * Reference to a field of type 'FunnelStage[]'
+   */
+  export type ListEnumFunnelStageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FunnelStage[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DealStage'
    */
   export type EnumDealStageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DealStage'>
@@ -65366,6 +68657,20 @@ export namespace Prisma {
    * Reference to a field of type 'DealStage[]'
    */
   export type ListEnumDealStageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DealStage[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus'
+   */
+  export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus[]'
+   */
+  export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
     
 
 
@@ -65529,6 +68834,8 @@ export namespace Prisma {
     dailyReports?: DailyReportListRelationFilter
     aiUsages?: AIUsageListRelationFilter
     resourceGrants?: ResourceGrantListRelationFilter
+    products?: ProductListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -65573,6 +68880,8 @@ export namespace Prisma {
     dailyReports?: DailyReportOrderByRelationAggregateInput
     aiUsages?: AIUsageOrderByRelationAggregateInput
     resourceGrants?: ResourceGrantOrderByRelationAggregateInput
+    products?: ProductOrderByRelationAggregateInput
+    salesTransactions?: SalesTransactionOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -65620,6 +68929,8 @@ export namespace Prisma {
     dailyReports?: DailyReportListRelationFilter
     aiUsages?: AIUsageListRelationFilter
     resourceGrants?: ResourceGrantListRelationFilter
+    products?: ProductListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }, "id" | "slug">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -65724,6 +69035,7 @@ export namespace Prisma {
     dailyReports?: DailyReportListRelationFilter
     aiUsages?: AIUsageListRelationFilter
     grantsGiven?: ResourceGrantListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -65783,6 +69095,7 @@ export namespace Prisma {
     dailyReports?: DailyReportOrderByRelationAggregateInput
     aiUsages?: AIUsageOrderByRelationAggregateInput
     grantsGiven?: ResourceGrantOrderByRelationAggregateInput
+    salesTransactions?: SalesTransactionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -65845,6 +69158,7 @@ export namespace Prisma {
     dailyReports?: DailyReportListRelationFilter
     aiUsages?: AIUsageListRelationFilter
     grantsGiven?: ResourceGrantListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -67391,6 +70705,20 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     lastActivityAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    funnelStage?: EnumFunnelStageNullableFilter<"Lead"> | $Enums.FunnelStage | null
+    enquiryDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    region?: StringNullableFilter<"Lead"> | string | null
+    location?: StringNullableFilter<"Lead"> | string | null
+    purposeOfVisit?: StringNullableFilter<"Lead"> | string | null
+    meetingMode?: StringNullableFilter<"Lead"> | string | null
+    productsDiscussed?: StringNullableListFilter<"Lead">
+    keyDiscussionPoints?: StringNullableFilter<"Lead"> | string | null
+    customerRequirement?: StringNullableFilter<"Lead"> | string | null
+    cdaStatus?: StringNullableFilter<"Lead"> | string | null
+    cdaDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    samplingStatus?: StringNullableFilter<"Lead"> | string | null
+    rndFeedback?: StringNullableFilter<"Lead"> | string | null
+    nextAction?: StringNullableFilter<"Lead"> | string | null
     activities?: ActivityListRelationFilter
     deals?: DealListRelationFilter
     followUps?: FollowUpListRelationFilter
@@ -67419,6 +70747,20 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastActivityAt?: SortOrderInput | SortOrder
+    funnelStage?: SortOrderInput | SortOrder
+    enquiryDate?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    purposeOfVisit?: SortOrderInput | SortOrder
+    meetingMode?: SortOrderInput | SortOrder
+    productsDiscussed?: SortOrder
+    keyDiscussionPoints?: SortOrderInput | SortOrder
+    customerRequirement?: SortOrderInput | SortOrder
+    cdaStatus?: SortOrderInput | SortOrder
+    cdaDate?: SortOrderInput | SortOrder
+    samplingStatus?: SortOrderInput | SortOrder
+    rndFeedback?: SortOrderInput | SortOrder
+    nextAction?: SortOrderInput | SortOrder
     activities?: ActivityOrderByRelationAggregateInput
     deals?: DealOrderByRelationAggregateInput
     followUps?: FollowUpOrderByRelationAggregateInput
@@ -67450,6 +70792,20 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     lastActivityAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    funnelStage?: EnumFunnelStageNullableFilter<"Lead"> | $Enums.FunnelStage | null
+    enquiryDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    region?: StringNullableFilter<"Lead"> | string | null
+    location?: StringNullableFilter<"Lead"> | string | null
+    purposeOfVisit?: StringNullableFilter<"Lead"> | string | null
+    meetingMode?: StringNullableFilter<"Lead"> | string | null
+    productsDiscussed?: StringNullableListFilter<"Lead">
+    keyDiscussionPoints?: StringNullableFilter<"Lead"> | string | null
+    customerRequirement?: StringNullableFilter<"Lead"> | string | null
+    cdaStatus?: StringNullableFilter<"Lead"> | string | null
+    cdaDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    samplingStatus?: StringNullableFilter<"Lead"> | string | null
+    rndFeedback?: StringNullableFilter<"Lead"> | string | null
+    nextAction?: StringNullableFilter<"Lead"> | string | null
     activities?: ActivityListRelationFilter
     deals?: DealListRelationFilter
     followUps?: FollowUpListRelationFilter
@@ -67478,6 +70834,20 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastActivityAt?: SortOrderInput | SortOrder
+    funnelStage?: SortOrderInput | SortOrder
+    enquiryDate?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    purposeOfVisit?: SortOrderInput | SortOrder
+    meetingMode?: SortOrderInput | SortOrder
+    productsDiscussed?: SortOrder
+    keyDiscussionPoints?: SortOrderInput | SortOrder
+    customerRequirement?: SortOrderInput | SortOrder
+    cdaStatus?: SortOrderInput | SortOrder
+    cdaDate?: SortOrderInput | SortOrder
+    samplingStatus?: SortOrderInput | SortOrder
+    rndFeedback?: SortOrderInput | SortOrder
+    nextAction?: SortOrderInput | SortOrder
     _count?: LeadCountOrderByAggregateInput
     _avg?: LeadAvgOrderByAggregateInput
     _max?: LeadMaxOrderByAggregateInput
@@ -67507,6 +70877,20 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     lastActivityAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    funnelStage?: EnumFunnelStageNullableWithAggregatesFilter<"Lead"> | $Enums.FunnelStage | null
+    enquiryDate?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    region?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    location?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    purposeOfVisit?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    meetingMode?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    productsDiscussed?: StringNullableListFilter<"Lead">
+    keyDiscussionPoints?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    customerRequirement?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    cdaStatus?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    cdaDate?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    samplingStatus?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    rndFeedback?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    nextAction?: StringNullableWithAggregatesFilter<"Lead"> | string | null
   }
 
   export type CompanyWhereInput = {
@@ -67540,6 +70924,7 @@ export namespace Prisma {
     geoFences?: GeoFenceListRelationFilter
     leads?: LeadListRelationFilter
     meetings?: MeetingListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }
 
   export type CompanyOrderByWithRelationInput = {
@@ -67570,6 +70955,7 @@ export namespace Prisma {
     geoFences?: GeoFenceOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
     meetings?: MeetingOrderByRelationAggregateInput
+    salesTransactions?: SalesTransactionOrderByRelationAggregateInput
   }
 
   export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -67603,6 +70989,7 @@ export namespace Prisma {
     geoFences?: GeoFenceListRelationFilter
     leads?: LeadListRelationFilter
     meetings?: MeetingListRelationFilter
+    salesTransactions?: SalesTransactionListRelationFilter
   }, "id">
 
   export type CompanyOrderByWithAggregationInput = {
@@ -67924,6 +71311,259 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Deal"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Deal"> | Date | string
     closedAt?: DateTimeNullableWithAggregatesFilter<"Deal"> | Date | string | null
+  }
+
+  export type ProductWhereInput = {
+    AND?: ProductWhereInput | ProductWhereInput[]
+    OR?: ProductWhereInput[]
+    NOT?: ProductWhereInput | ProductWhereInput[]
+    id?: StringFilter<"Product"> | string
+    organizationId?: StringFilter<"Product"> | string
+    name?: StringFilter<"Product"> | string
+    sku?: StringNullableFilter<"Product"> | string | null
+    category?: StringNullableFilter<"Product"> | string | null
+    grade?: StringNullableFilter<"Product"> | string | null
+    variant?: StringNullableFilter<"Product"> | string | null
+    unit?: StringFilter<"Product"> | string
+    defaultUnitPrice?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
+    description?: StringNullableFilter<"Product"> | string | null
+    attributes?: JsonNullableFilter<"Product">
+    isActive?: BoolFilter<"Product"> | boolean
+    createdAt?: DateTimeFilter<"Product"> | Date | string
+    updatedAt?: DateTimeFilter<"Product"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    salesTransactions?: SalesTransactionListRelationFilter
+  }
+
+  export type ProductOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    sku?: SortOrderInput | SortOrder
+    category?: SortOrderInput | SortOrder
+    grade?: SortOrderInput | SortOrder
+    variant?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    defaultUnitPrice?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    attributes?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    salesTransactions?: SalesTransactionOrderByRelationAggregateInput
+  }
+
+  export type ProductWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_name_variant?: ProductOrganizationIdNameVariantCompoundUniqueInput
+    AND?: ProductWhereInput | ProductWhereInput[]
+    OR?: ProductWhereInput[]
+    NOT?: ProductWhereInput | ProductWhereInput[]
+    organizationId?: StringFilter<"Product"> | string
+    name?: StringFilter<"Product"> | string
+    sku?: StringNullableFilter<"Product"> | string | null
+    category?: StringNullableFilter<"Product"> | string | null
+    grade?: StringNullableFilter<"Product"> | string | null
+    variant?: StringNullableFilter<"Product"> | string | null
+    unit?: StringFilter<"Product"> | string
+    defaultUnitPrice?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
+    description?: StringNullableFilter<"Product"> | string | null
+    attributes?: JsonNullableFilter<"Product">
+    isActive?: BoolFilter<"Product"> | boolean
+    createdAt?: DateTimeFilter<"Product"> | Date | string
+    updatedAt?: DateTimeFilter<"Product"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    salesTransactions?: SalesTransactionListRelationFilter
+  }, "id" | "organizationId_name_variant">
+
+  export type ProductOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    sku?: SortOrderInput | SortOrder
+    category?: SortOrderInput | SortOrder
+    grade?: SortOrderInput | SortOrder
+    variant?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    defaultUnitPrice?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    attributes?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ProductCountOrderByAggregateInput
+    _avg?: ProductAvgOrderByAggregateInput
+    _max?: ProductMaxOrderByAggregateInput
+    _min?: ProductMinOrderByAggregateInput
+    _sum?: ProductSumOrderByAggregateInput
+  }
+
+  export type ProductScalarWhereWithAggregatesInput = {
+    AND?: ProductScalarWhereWithAggregatesInput | ProductScalarWhereWithAggregatesInput[]
+    OR?: ProductScalarWhereWithAggregatesInput[]
+    NOT?: ProductScalarWhereWithAggregatesInput | ProductScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Product"> | string
+    organizationId?: StringWithAggregatesFilter<"Product"> | string
+    name?: StringWithAggregatesFilter<"Product"> | string
+    sku?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    category?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    grade?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    variant?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    unit?: StringWithAggregatesFilter<"Product"> | string
+    defaultUnitPrice?: DecimalNullableWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
+    description?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    attributes?: JsonNullableWithAggregatesFilter<"Product">
+    isActive?: BoolWithAggregatesFilter<"Product"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
+  }
+
+  export type SalesTransactionWhereInput = {
+    AND?: SalesTransactionWhereInput | SalesTransactionWhereInput[]
+    OR?: SalesTransactionWhereInput[]
+    NOT?: SalesTransactionWhereInput | SalesTransactionWhereInput[]
+    id?: StringFilter<"SalesTransaction"> | string
+    organizationId?: StringFilter<"SalesTransaction"> | string
+    salespersonId?: StringFilter<"SalesTransaction"> | string
+    customerId?: StringFilter<"SalesTransaction"> | string
+    productId?: StringNullableFilter<"SalesTransaction"> | string | null
+    otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
+    invoiceNumber?: StringFilter<"SalesTransaction"> | string
+    invoiceKey?: StringFilter<"SalesTransaction"> | string
+    groupId?: StringFilter<"SalesTransaction"> | string
+    lineNumber?: IntFilter<"SalesTransaction"> | number
+    quantity?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFilter<"SalesTransaction"> | $Enums.PaymentStatus
+    paymentDate?: DateTimeNullableFilter<"SalesTransaction"> | Date | string | null
+    remarks?: StringNullableFilter<"SalesTransaction"> | string | null
+    createdAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    salesperson?: XOR<UserScalarRelationFilter, UserWhereInput>
+    customer?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    product?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
+  }
+
+  export type SalesTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    salespersonId?: SortOrder
+    customerId?: SortOrder
+    productId?: SortOrderInput | SortOrder
+    otherProductName?: SortOrderInput | SortOrder
+    saleDate?: SortOrder
+    invoiceNumber?: SortOrder
+    invoiceKey?: SortOrder
+    groupId?: SortOrder
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+    paymentStatus?: SortOrder
+    paymentDate?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    salesperson?: UserOrderByWithRelationInput
+    customer?: CompanyOrderByWithRelationInput
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type SalesTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_invoiceKey_lineNumber?: SalesTransactionOrganizationIdInvoiceKeyLineNumberCompoundUniqueInput
+    AND?: SalesTransactionWhereInput | SalesTransactionWhereInput[]
+    OR?: SalesTransactionWhereInput[]
+    NOT?: SalesTransactionWhereInput | SalesTransactionWhereInput[]
+    organizationId?: StringFilter<"SalesTransaction"> | string
+    salespersonId?: StringFilter<"SalesTransaction"> | string
+    customerId?: StringFilter<"SalesTransaction"> | string
+    productId?: StringNullableFilter<"SalesTransaction"> | string | null
+    otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
+    invoiceNumber?: StringFilter<"SalesTransaction"> | string
+    invoiceKey?: StringFilter<"SalesTransaction"> | string
+    groupId?: StringFilter<"SalesTransaction"> | string
+    lineNumber?: IntFilter<"SalesTransaction"> | number
+    quantity?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFilter<"SalesTransaction"> | $Enums.PaymentStatus
+    paymentDate?: DateTimeNullableFilter<"SalesTransaction"> | Date | string | null
+    remarks?: StringNullableFilter<"SalesTransaction"> | string | null
+    createdAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    salesperson?: XOR<UserScalarRelationFilter, UserWhereInput>
+    customer?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    product?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
+  }, "id" | "organizationId_invoiceKey_lineNumber">
+
+  export type SalesTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    salespersonId?: SortOrder
+    customerId?: SortOrder
+    productId?: SortOrderInput | SortOrder
+    otherProductName?: SortOrderInput | SortOrder
+    saleDate?: SortOrder
+    invoiceNumber?: SortOrder
+    invoiceKey?: SortOrder
+    groupId?: SortOrder
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+    paymentStatus?: SortOrder
+    paymentDate?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SalesTransactionCountOrderByAggregateInput
+    _avg?: SalesTransactionAvgOrderByAggregateInput
+    _max?: SalesTransactionMaxOrderByAggregateInput
+    _min?: SalesTransactionMinOrderByAggregateInput
+    _sum?: SalesTransactionSumOrderByAggregateInput
+  }
+
+  export type SalesTransactionScalarWhereWithAggregatesInput = {
+    AND?: SalesTransactionScalarWhereWithAggregatesInput | SalesTransactionScalarWhereWithAggregatesInput[]
+    OR?: SalesTransactionScalarWhereWithAggregatesInput[]
+    NOT?: SalesTransactionScalarWhereWithAggregatesInput | SalesTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    organizationId?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    salespersonId?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    customerId?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    productId?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
+    otherProductName?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
+    saleDate?: DateTimeWithAggregatesFilter<"SalesTransaction"> | Date | string
+    invoiceNumber?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    invoiceKey?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    groupId?: StringWithAggregatesFilter<"SalesTransaction"> | string
+    lineNumber?: IntWithAggregatesFilter<"SalesTransaction"> | number
+    quantity?: DecimalWithAggregatesFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalWithAggregatesFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalWithAggregatesFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalWithAggregatesFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalWithAggregatesFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusWithAggregatesFilter<"SalesTransaction"> | $Enums.PaymentStatus
+    paymentDate?: DateTimeNullableWithAggregatesFilter<"SalesTransaction"> | Date | string | null
+    remarks?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SalesTransaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SalesTransaction"> | Date | string
   }
 
   export type ActivityWhereInput = {
@@ -69882,6 +73522,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -69926,6 +73568,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -69970,6 +73614,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -70014,6 +73660,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -70123,6 +73771,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -70178,6 +73827,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUpdateInput = {
@@ -70233,6 +73883,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -70288,6 +73939,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -71889,6 +75541,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
@@ -71917,6 +75583,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
@@ -71937,6 +75617,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
@@ -71965,6 +75659,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
@@ -71989,6 +75697,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
   }
 
   export type LeadUpdateManyMutationInput = {
@@ -72006,6 +75728,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LeadUncheckedUpdateManyInput = {
@@ -72027,6 +75763,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CompanyCreateInput = {
@@ -72055,6 +75805,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateInput = {
@@ -72083,6 +75834,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUpdateInput = {
@@ -72111,6 +75863,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateInput = {
@@ -72139,6 +75892,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyCreateManyInput = {
@@ -72498,6 +76252,292 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ProductCreateInput = {
+    id?: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutProductsInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutProductsNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductCreateManyInput = {
+    id?: string
+    organizationId: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ProductUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProductUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionCreateInput = {
+    id?: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutSalesTransactionsInput
+    salesperson: UserCreateNestedOneWithoutSalesTransactionsInput
+    customer: CompanyCreateNestedOneWithoutSalesTransactionsInput
+    product?: ProductCreateNestedOneWithoutSalesTransactionsInput
+  }
+
+  export type SalesTransactionUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    salesperson?: UserUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    customer?: CompanyUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    product?: ProductUpdateOneWithoutSalesTransactionsNestedInput
+  }
+
+  export type SalesTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionCreateManyInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ActivityCreateInput = {
@@ -74731,6 +78771,18 @@ export namespace Prisma {
     none?: ResourceGrantWhereInput
   }
 
+  export type ProductListRelationFilter = {
+    every?: ProductWhereInput
+    some?: ProductWhereInput
+    none?: ProductWhereInput
+  }
+
+  export type SalesTransactionListRelationFilter = {
+    every?: SalesTransactionWhereInput
+    some?: SalesTransactionWhereInput
+    none?: SalesTransactionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -74837,6 +78889,14 @@ export namespace Prisma {
   }
 
   export type ResourceGrantOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProductOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SalesTransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -76190,6 +80250,21 @@ export namespace Prisma {
     not?: NestedEnumLeadStatusFilter<$PrismaModel> | $Enums.LeadStatus
   }
 
+  export type EnumFunnelStageNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FunnelStage | EnumFunnelStageFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFunnelStageNullableFilter<$PrismaModel> | $Enums.FunnelStage | null
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type CompanyNullableScalarRelationFilter = {
     is?: CompanyWhereInput | null
     isNot?: CompanyWhereInput | null
@@ -76219,6 +80294,20 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastActivityAt?: SortOrder
+    funnelStage?: SortOrder
+    enquiryDate?: SortOrder
+    region?: SortOrder
+    location?: SortOrder
+    purposeOfVisit?: SortOrder
+    meetingMode?: SortOrder
+    productsDiscussed?: SortOrder
+    keyDiscussionPoints?: SortOrder
+    customerRequirement?: SortOrder
+    cdaStatus?: SortOrder
+    cdaDate?: SortOrder
+    samplingStatus?: SortOrder
+    rndFeedback?: SortOrder
+    nextAction?: SortOrder
   }
 
   export type LeadAvgOrderByAggregateInput = {
@@ -76245,6 +80334,19 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastActivityAt?: SortOrder
+    funnelStage?: SortOrder
+    enquiryDate?: SortOrder
+    region?: SortOrder
+    location?: SortOrder
+    purposeOfVisit?: SortOrder
+    meetingMode?: SortOrder
+    keyDiscussionPoints?: SortOrder
+    customerRequirement?: SortOrder
+    cdaStatus?: SortOrder
+    cdaDate?: SortOrder
+    samplingStatus?: SortOrder
+    rndFeedback?: SortOrder
+    nextAction?: SortOrder
   }
 
   export type LeadMinOrderByAggregateInput = {
@@ -76266,6 +80368,19 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastActivityAt?: SortOrder
+    funnelStage?: SortOrder
+    enquiryDate?: SortOrder
+    region?: SortOrder
+    location?: SortOrder
+    purposeOfVisit?: SortOrder
+    meetingMode?: SortOrder
+    keyDiscussionPoints?: SortOrder
+    customerRequirement?: SortOrder
+    cdaStatus?: SortOrder
+    cdaDate?: SortOrder
+    samplingStatus?: SortOrder
+    rndFeedback?: SortOrder
+    nextAction?: SortOrder
   }
 
   export type LeadSumOrderByAggregateInput = {
@@ -76281,6 +80396,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumLeadStatusFilter<$PrismaModel>
     _max?: NestedEnumLeadStatusFilter<$PrismaModel>
+  }
+
+  export type EnumFunnelStageNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FunnelStage | EnumFunnelStageFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFunnelStageNullableWithAggregatesFilter<$PrismaModel> | $Enums.FunnelStage | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFunnelStageNullableFilter<$PrismaModel>
+    _max?: NestedEnumFunnelStageNullableFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -76532,6 +80657,192 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDealStageFilter<$PrismaModel>
     _max?: NestedEnumDealStageFilter<$PrismaModel>
+  }
+
+  export type ProductOrganizationIdNameVariantCompoundUniqueInput = {
+    organizationId: string
+    name: string
+    variant: string
+  }
+
+  export type ProductCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    sku?: SortOrder
+    category?: SortOrder
+    grade?: SortOrder
+    variant?: SortOrder
+    unit?: SortOrder
+    defaultUnitPrice?: SortOrder
+    description?: SortOrder
+    attributes?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProductAvgOrderByAggregateInput = {
+    defaultUnitPrice?: SortOrder
+  }
+
+  export type ProductMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    sku?: SortOrder
+    category?: SortOrder
+    grade?: SortOrder
+    variant?: SortOrder
+    unit?: SortOrder
+    defaultUnitPrice?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProductMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    sku?: SortOrder
+    category?: SortOrder
+    grade?: SortOrder
+    variant?: SortOrder
+    unit?: SortOrder
+    defaultUnitPrice?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProductSumOrderByAggregateInput = {
+    defaultUnitPrice?: SortOrder
+  }
+
+  export type EnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type CompanyScalarRelationFilter = {
+    is?: CompanyWhereInput
+    isNot?: CompanyWhereInput
+  }
+
+  export type ProductNullableScalarRelationFilter = {
+    is?: ProductWhereInput | null
+    isNot?: ProductWhereInput | null
+  }
+
+  export type SalesTransactionOrganizationIdInvoiceKeyLineNumberCompoundUniqueInput = {
+    organizationId: string
+    invoiceKey: string
+    lineNumber: number
+  }
+
+  export type SalesTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    salespersonId?: SortOrder
+    customerId?: SortOrder
+    productId?: SortOrder
+    otherProductName?: SortOrder
+    saleDate?: SortOrder
+    invoiceNumber?: SortOrder
+    invoiceKey?: SortOrder
+    groupId?: SortOrder
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+    paymentStatus?: SortOrder
+    paymentDate?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SalesTransactionAvgOrderByAggregateInput = {
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+  }
+
+  export type SalesTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    salespersonId?: SortOrder
+    customerId?: SortOrder
+    productId?: SortOrder
+    otherProductName?: SortOrder
+    saleDate?: SortOrder
+    invoiceNumber?: SortOrder
+    invoiceKey?: SortOrder
+    groupId?: SortOrder
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+    paymentStatus?: SortOrder
+    paymentDate?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SalesTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    salespersonId?: SortOrder
+    customerId?: SortOrder
+    productId?: SortOrder
+    otherProductName?: SortOrder
+    saleDate?: SortOrder
+    invoiceNumber?: SortOrder
+    invoiceKey?: SortOrder
+    groupId?: SortOrder
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+    paymentStatus?: SortOrder
+    paymentDate?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SalesTransactionSumOrderByAggregateInput = {
+    lineNumber?: SortOrder
+    quantity?: SortOrder
+    unitPrice?: SortOrder
+    totalAmount?: SortOrder
+    amountPaid?: SortOrder
+    balanceAmount?: SortOrder
+  }
+
+  export type EnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
   export type DealNullableScalarRelationFilter = {
@@ -77918,6 +82229,20 @@ export namespace Prisma {
     connect?: ResourceGrantWhereUniqueInput | ResourceGrantWhereUniqueInput[]
   }
 
+  export type ProductCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput> | ProductCreateWithoutOrganizationInput[] | ProductUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutOrganizationInput | ProductCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ProductCreateManyOrganizationInputEnvelope
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type SalesTransactionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput> | SalesTransactionCreateWithoutOrganizationInput[] | SalesTransactionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutOrganizationInput | SalesTransactionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: SalesTransactionCreateManyOrganizationInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+  }
+
   export type AIConversationUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<AIConversationCreateWithoutOrganizationInput, AIConversationUncheckedCreateWithoutOrganizationInput> | AIConversationCreateWithoutOrganizationInput[] | AIConversationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutOrganizationInput | AIConversationCreateOrConnectWithoutOrganizationInput[]
@@ -78098,6 +82423,20 @@ export namespace Prisma {
     connectOrCreate?: ResourceGrantCreateOrConnectWithoutOrganizationInput | ResourceGrantCreateOrConnectWithoutOrganizationInput[]
     createMany?: ResourceGrantCreateManyOrganizationInputEnvelope
     connect?: ResourceGrantWhereUniqueInput | ResourceGrantWhereUniqueInput[]
+  }
+
+  export type ProductUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput> | ProductCreateWithoutOrganizationInput[] | ProductUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutOrganizationInput | ProductCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ProductCreateManyOrganizationInputEnvelope
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput> | SalesTransactionCreateWithoutOrganizationInput[] | SalesTransactionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutOrganizationInput | SalesTransactionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: SalesTransactionCreateManyOrganizationInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -78476,6 +82815,34 @@ export namespace Prisma {
     deleteMany?: ResourceGrantScalarWhereInput | ResourceGrantScalarWhereInput[]
   }
 
+  export type ProductUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput> | ProductCreateWithoutOrganizationInput[] | ProductUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutOrganizationInput | ProductCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ProductUpsertWithWhereUniqueWithoutOrganizationInput | ProductUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ProductCreateManyOrganizationInputEnvelope
+    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    update?: ProductUpdateWithWhereUniqueWithoutOrganizationInput | ProductUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ProductUpdateManyWithWhereWithoutOrganizationInput | ProductUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  }
+
+  export type SalesTransactionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput> | SalesTransactionCreateWithoutOrganizationInput[] | SalesTransactionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutOrganizationInput | SalesTransactionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutOrganizationInput | SalesTransactionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: SalesTransactionCreateManyOrganizationInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutOrganizationInput | SalesTransactionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutOrganizationInput | SalesTransactionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
   export type AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIConversationCreateWithoutOrganizationInput, AIConversationUncheckedCreateWithoutOrganizationInput> | AIConversationCreateWithoutOrganizationInput[] | AIConversationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutOrganizationInput | AIConversationCreateOrConnectWithoutOrganizationInput[]
@@ -78840,6 +83207,34 @@ export namespace Prisma {
     deleteMany?: ResourceGrantScalarWhereInput | ResourceGrantScalarWhereInput[]
   }
 
+  export type ProductUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput> | ProductCreateWithoutOrganizationInput[] | ProductUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutOrganizationInput | ProductCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ProductUpsertWithWhereUniqueWithoutOrganizationInput | ProductUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ProductCreateManyOrganizationInputEnvelope
+    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    update?: ProductUpdateWithWhereUniqueWithoutOrganizationInput | ProductUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ProductUpdateManyWithWhereWithoutOrganizationInput | ProductUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput> | SalesTransactionCreateWithoutOrganizationInput[] | SalesTransactionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutOrganizationInput | SalesTransactionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutOrganizationInput | SalesTransactionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: SalesTransactionCreateManyOrganizationInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutOrganizationInput | SalesTransactionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutOrganizationInput | SalesTransactionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
   export type AIConversationCreateNestedManyWithoutUserInput = {
     create?: XOR<AIConversationCreateWithoutUserInput, AIConversationUncheckedCreateWithoutUserInput> | AIConversationCreateWithoutUserInput[] | AIConversationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutUserInput | AIConversationCreateOrConnectWithoutUserInput[]
@@ -79108,6 +83503,13 @@ export namespace Prisma {
     connect?: ResourceGrantWhereUniqueInput | ResourceGrantWhereUniqueInput[]
   }
 
+  export type SalesTransactionCreateNestedManyWithoutSalespersonInput = {
+    create?: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput> | SalesTransactionCreateWithoutSalespersonInput[] | SalesTransactionUncheckedCreateWithoutSalespersonInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutSalespersonInput | SalesTransactionCreateOrConnectWithoutSalespersonInput[]
+    createMany?: SalesTransactionCreateManySalespersonInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+  }
+
   export type AIConversationUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AIConversationCreateWithoutUserInput, AIConversationUncheckedCreateWithoutUserInput> | AIConversationCreateWithoutUserInput[] | AIConversationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutUserInput | AIConversationCreateOrConnectWithoutUserInput[]
@@ -79350,6 +83752,13 @@ export namespace Prisma {
     connectOrCreate?: ResourceGrantCreateOrConnectWithoutGrantorInput | ResourceGrantCreateOrConnectWithoutGrantorInput[]
     createMany?: ResourceGrantCreateManyGrantorInputEnvelope
     connect?: ResourceGrantWhereUniqueInput | ResourceGrantWhereUniqueInput[]
+  }
+
+  export type SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput = {
+    create?: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput> | SalesTransactionCreateWithoutSalespersonInput[] | SalesTransactionUncheckedCreateWithoutSalespersonInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutSalespersonInput | SalesTransactionCreateOrConnectWithoutSalespersonInput[]
+    createMany?: SalesTransactionCreateManySalespersonInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
   }
 
   export type EnumUserStatusFieldUpdateOperationsInput = {
@@ -79888,6 +84297,20 @@ export namespace Prisma {
     deleteMany?: ResourceGrantScalarWhereInput | ResourceGrantScalarWhereInput[]
   }
 
+  export type SalesTransactionUpdateManyWithoutSalespersonNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput> | SalesTransactionCreateWithoutSalespersonInput[] | SalesTransactionUncheckedCreateWithoutSalespersonInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutSalespersonInput | SalesTransactionCreateOrConnectWithoutSalespersonInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutSalespersonInput | SalesTransactionUpsertWithWhereUniqueWithoutSalespersonInput[]
+    createMany?: SalesTransactionCreateManySalespersonInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutSalespersonInput | SalesTransactionUpdateWithWhereUniqueWithoutSalespersonInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutSalespersonInput | SalesTransactionUpdateManyWithWhereWithoutSalespersonInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
   export type AIConversationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AIConversationCreateWithoutUserInput, AIConversationUncheckedCreateWithoutUserInput> | AIConversationCreateWithoutUserInput[] | AIConversationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutUserInput | AIConversationCreateOrConnectWithoutUserInput[]
@@ -80372,6 +84795,20 @@ export namespace Prisma {
     update?: ResourceGrantUpdateWithWhereUniqueWithoutGrantorInput | ResourceGrantUpdateWithWhereUniqueWithoutGrantorInput[]
     updateMany?: ResourceGrantUpdateManyWithWhereWithoutGrantorInput | ResourceGrantUpdateManyWithWhereWithoutGrantorInput[]
     deleteMany?: ResourceGrantScalarWhereInput | ResourceGrantScalarWhereInput[]
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput> | SalesTransactionCreateWithoutSalespersonInput[] | SalesTransactionUncheckedCreateWithoutSalespersonInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutSalespersonInput | SalesTransactionCreateOrConnectWithoutSalespersonInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutSalespersonInput | SalesTransactionUpsertWithWhereUniqueWithoutSalespersonInput[]
+    createMany?: SalesTransactionCreateManySalespersonInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutSalespersonInput | SalesTransactionUpdateWithWhereUniqueWithoutSalespersonInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutSalespersonInput | SalesTransactionUpdateManyWithWhereWithoutSalespersonInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -81684,6 +86121,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFileActivitiesInput, UserUpdateWithoutFileActivitiesInput>, UserUncheckedUpdateWithoutFileActivitiesInput>
   }
 
+  export type LeadCreateproductsDiscussedInput = {
+    set: string[]
+  }
+
   export type ActivityCreateNestedManyWithoutLeadInput = {
     create?: XOR<ActivityCreateWithoutLeadInput, ActivityUncheckedCreateWithoutLeadInput> | ActivityCreateWithoutLeadInput[] | ActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutLeadInput | ActivityCreateOrConnectWithoutLeadInput[]
@@ -81752,6 +86193,15 @@ export namespace Prisma {
 
   export type EnumLeadStatusFieldUpdateOperationsInput = {
     set?: $Enums.LeadStatus
+  }
+
+  export type NullableEnumFunnelStageFieldUpdateOperationsInput = {
+    set?: $Enums.FunnelStage | null
+  }
+
+  export type LeadUpdateproductsDiscussedInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ActivityUpdateManyWithoutLeadNestedInput = {
@@ -81942,6 +86392,13 @@ export namespace Prisma {
     connect?: MeetingWhereUniqueInput | MeetingWhereUniqueInput[]
   }
 
+  export type SalesTransactionCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput> | SalesTransactionCreateWithoutCustomerInput[] | SalesTransactionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutCustomerInput | SalesTransactionCreateOrConnectWithoutCustomerInput[]
+    createMany?: SalesTransactionCreateManyCustomerInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+  }
+
   export type ActivityUncheckedCreateNestedManyWithoutCompanyInput = {
     create?: XOR<ActivityCreateWithoutCompanyInput, ActivityUncheckedCreateWithoutCompanyInput> | ActivityCreateWithoutCompanyInput[] | ActivityUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutCompanyInput | ActivityCreateOrConnectWithoutCompanyInput[]
@@ -81996,6 +86453,13 @@ export namespace Prisma {
     connectOrCreate?: MeetingCreateOrConnectWithoutCompanyInput | MeetingCreateOrConnectWithoutCompanyInput[]
     createMany?: MeetingCreateManyCompanyInputEnvelope
     connect?: MeetingWhereUniqueInput | MeetingWhereUniqueInput[]
+  }
+
+  export type SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput> | SalesTransactionCreateWithoutCustomerInput[] | SalesTransactionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutCustomerInput | SalesTransactionCreateOrConnectWithoutCustomerInput[]
+    createMany?: SalesTransactionCreateManyCustomerInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -82134,6 +86598,20 @@ export namespace Prisma {
     deleteMany?: MeetingScalarWhereInput | MeetingScalarWhereInput[]
   }
 
+  export type SalesTransactionUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput> | SalesTransactionCreateWithoutCustomerInput[] | SalesTransactionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutCustomerInput | SalesTransactionCreateOrConnectWithoutCustomerInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutCustomerInput | SalesTransactionUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: SalesTransactionCreateManyCustomerInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutCustomerInput | SalesTransactionUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutCustomerInput | SalesTransactionUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
   export type ActivityUncheckedUpdateManyWithoutCompanyNestedInput = {
     create?: XOR<ActivityCreateWithoutCompanyInput, ActivityUncheckedCreateWithoutCompanyInput> | ActivityCreateWithoutCompanyInput[] | ActivityUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutCompanyInput | ActivityCreateOrConnectWithoutCompanyInput[]
@@ -82244,6 +86722,20 @@ export namespace Prisma {
     update?: MeetingUpdateWithWhereUniqueWithoutCompanyInput | MeetingUpdateWithWhereUniqueWithoutCompanyInput[]
     updateMany?: MeetingUpdateManyWithWhereWithoutCompanyInput | MeetingUpdateManyWithWhereWithoutCompanyInput[]
     deleteMany?: MeetingScalarWhereInput | MeetingScalarWhereInput[]
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput> | SalesTransactionCreateWithoutCustomerInput[] | SalesTransactionUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutCustomerInput | SalesTransactionCreateOrConnectWithoutCustomerInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutCustomerInput | SalesTransactionUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: SalesTransactionCreateManyCustomerInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutCustomerInput | SalesTransactionUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutCustomerInput | SalesTransactionUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
   }
 
   export type ActivityCreateNestedManyWithoutContactInput = {
@@ -82746,6 +87238,124 @@ export namespace Prisma {
     update?: MeetingUpdateWithWhereUniqueWithoutDealInput | MeetingUpdateWithWhereUniqueWithoutDealInput[]
     updateMany?: MeetingUpdateManyWithWhereWithoutDealInput | MeetingUpdateManyWithWhereWithoutDealInput[]
     deleteMany?: MeetingScalarWhereInput | MeetingScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutProductsInput = {
+    create?: XOR<OrganizationCreateWithoutProductsInput, OrganizationUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutProductsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type SalesTransactionCreateNestedManyWithoutProductInput = {
+    create?: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput> | SalesTransactionCreateWithoutProductInput[] | SalesTransactionUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutProductInput | SalesTransactionCreateOrConnectWithoutProductInput[]
+    createMany?: SalesTransactionCreateManyProductInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+  }
+
+  export type SalesTransactionUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput> | SalesTransactionCreateWithoutProductInput[] | SalesTransactionUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutProductInput | SalesTransactionCreateOrConnectWithoutProductInput[]
+    createMany?: SalesTransactionCreateManyProductInputEnvelope
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutProductsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutProductsInput, OrganizationUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutProductsInput
+    upsert?: OrganizationUpsertWithoutProductsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutProductsInput, OrganizationUpdateWithoutProductsInput>, OrganizationUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type SalesTransactionUpdateManyWithoutProductNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput> | SalesTransactionCreateWithoutProductInput[] | SalesTransactionUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutProductInput | SalesTransactionCreateOrConnectWithoutProductInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutProductInput | SalesTransactionUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: SalesTransactionCreateManyProductInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutProductInput | SalesTransactionUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutProductInput | SalesTransactionUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput> | SalesTransactionCreateWithoutProductInput[] | SalesTransactionUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: SalesTransactionCreateOrConnectWithoutProductInput | SalesTransactionCreateOrConnectWithoutProductInput[]
+    upsert?: SalesTransactionUpsertWithWhereUniqueWithoutProductInput | SalesTransactionUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: SalesTransactionCreateManyProductInputEnvelope
+    set?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    disconnect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    delete?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    connect?: SalesTransactionWhereUniqueInput | SalesTransactionWhereUniqueInput[]
+    update?: SalesTransactionUpdateWithWhereUniqueWithoutProductInput | SalesTransactionUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: SalesTransactionUpdateManyWithWhereWithoutProductInput | SalesTransactionUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutSalesTransactionsInput = {
+    create?: XOR<OrganizationCreateWithoutSalesTransactionsInput, OrganizationUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutSalesTransactionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutSalesTransactionsInput = {
+    create?: XOR<UserCreateWithoutSalesTransactionsInput, UserUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSalesTransactionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CompanyCreateNestedOneWithoutSalesTransactionsInput = {
+    create?: XOR<CompanyCreateWithoutSalesTransactionsInput, CompanyUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutSalesTransactionsInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type ProductCreateNestedOneWithoutSalesTransactionsInput = {
+    create?: XOR<ProductCreateWithoutSalesTransactionsInput, ProductUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutSalesTransactionsInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type EnumPaymentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutSalesTransactionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutSalesTransactionsInput, OrganizationUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutSalesTransactionsInput
+    upsert?: OrganizationUpsertWithoutSalesTransactionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutSalesTransactionsInput, OrganizationUpdateWithoutSalesTransactionsInput>, OrganizationUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutSalesTransactionsNestedInput = {
+    create?: XOR<UserCreateWithoutSalesTransactionsInput, UserUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSalesTransactionsInput
+    upsert?: UserUpsertWithoutSalesTransactionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSalesTransactionsInput, UserUpdateWithoutSalesTransactionsInput>, UserUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type CompanyUpdateOneRequiredWithoutSalesTransactionsNestedInput = {
+    create?: XOR<CompanyCreateWithoutSalesTransactionsInput, CompanyUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutSalesTransactionsInput
+    upsert?: CompanyUpsertWithoutSalesTransactionsInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutSalesTransactionsInput, CompanyUpdateWithoutSalesTransactionsInput>, CompanyUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type ProductUpdateOneWithoutSalesTransactionsNestedInput = {
+    create?: XOR<ProductCreateWithoutSalesTransactionsInput, ProductUncheckedCreateWithoutSalesTransactionsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutSalesTransactionsInput
+    upsert?: ProductUpsertWithoutSalesTransactionsInput
+    disconnect?: ProductWhereInput | boolean
+    delete?: ProductWhereInput | boolean
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutSalesTransactionsInput, ProductUpdateWithoutSalesTransactionsInput>, ProductUncheckedUpdateWithoutSalesTransactionsInput>
   }
 
   export type UserCreateNestedOneWithoutActivitiesInput = {
@@ -84328,6 +88938,13 @@ export namespace Prisma {
     not?: NestedEnumLeadStatusFilter<$PrismaModel> | $Enums.LeadStatus
   }
 
+  export type NestedEnumFunnelStageNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FunnelStage | EnumFunnelStageFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFunnelStageNullableFilter<$PrismaModel> | $Enums.FunnelStage | null
+  }
+
   export type NestedEnumLeadStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.LeadStatus | EnumLeadStatusFieldRefInput<$PrismaModel>
     in?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
@@ -84336,6 +88953,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumLeadStatusFilter<$PrismaModel>
     _max?: NestedEnumLeadStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumFunnelStageNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FunnelStage | EnumFunnelStageFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FunnelStage[] | ListEnumFunnelStageFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFunnelStageNullableWithAggregatesFilter<$PrismaModel> | $Enums.FunnelStage | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFunnelStageNullableFilter<$PrismaModel>
+    _max?: NestedEnumFunnelStageNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -84380,6 +89007,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDealStageFilter<$PrismaModel>
     _max?: NestedEnumDealStageFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumDailyReportStatusFilter<$PrismaModel = never> = {
@@ -84731,6 +89375,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutOrganizationInput = {
@@ -84758,6 +89403,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutOrganizationInput = {
@@ -85209,6 +89855,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
@@ -85235,6 +89895,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
@@ -85458,6 +90132,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -85512,6 +90187,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -85673,6 +90349,106 @@ export namespace Prisma {
 
   export type ResourceGrantCreateManyOrganizationInputEnvelope = {
     data: ResourceGrantCreateManyOrganizationInput | ResourceGrantCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProductCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutOrganizationInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ProductCreateManyOrganizationInputEnvelope = {
+    data: ProductCreateManyOrganizationInput | ProductCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SalesTransactionCreateWithoutOrganizationInput = {
+    id?: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    salesperson: UserCreateNestedOneWithoutSalesTransactionsInput
+    customer: CompanyCreateNestedOneWithoutSalesTransactionsInput
+    product?: ProductCreateNestedOneWithoutSalesTransactionsInput
+  }
+
+  export type SalesTransactionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    salespersonId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionCreateOrConnectWithoutOrganizationInput = {
+    where: SalesTransactionWhereUniqueInput
+    create: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type SalesTransactionCreateManyOrganizationInputEnvelope = {
+    data: SalesTransactionCreateManyOrganizationInput | SalesTransactionCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -86247,6 +91023,20 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     lastActivityAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    funnelStage?: EnumFunnelStageNullableFilter<"Lead"> | $Enums.FunnelStage | null
+    enquiryDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    region?: StringNullableFilter<"Lead"> | string | null
+    location?: StringNullableFilter<"Lead"> | string | null
+    purposeOfVisit?: StringNullableFilter<"Lead"> | string | null
+    meetingMode?: StringNullableFilter<"Lead"> | string | null
+    productsDiscussed?: StringNullableListFilter<"Lead">
+    keyDiscussionPoints?: StringNullableFilter<"Lead"> | string | null
+    customerRequirement?: StringNullableFilter<"Lead"> | string | null
+    cdaStatus?: StringNullableFilter<"Lead"> | string | null
+    cdaDate?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    samplingStatus?: StringNullableFilter<"Lead"> | string | null
+    rndFeedback?: StringNullableFilter<"Lead"> | string | null
+    nextAction?: StringNullableFilter<"Lead"> | string | null
   }
 
   export type MeetingUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -86555,6 +91345,85 @@ export namespace Prisma {
     expiresAt?: DateTimeNullableFilter<"ResourceGrant"> | Date | string | null
   }
 
+  export type ProductUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: ProductWhereUniqueInput
+    update: XOR<ProductUpdateWithoutOrganizationInput, ProductUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<ProductCreateWithoutOrganizationInput, ProductUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ProductUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: ProductWhereUniqueInput
+    data: XOR<ProductUpdateWithoutOrganizationInput, ProductUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type ProductUpdateManyWithWhereWithoutOrganizationInput = {
+    where: ProductScalarWhereInput
+    data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type ProductScalarWhereInput = {
+    AND?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    OR?: ProductScalarWhereInput[]
+    NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    id?: StringFilter<"Product"> | string
+    organizationId?: StringFilter<"Product"> | string
+    name?: StringFilter<"Product"> | string
+    sku?: StringNullableFilter<"Product"> | string | null
+    category?: StringNullableFilter<"Product"> | string | null
+    grade?: StringNullableFilter<"Product"> | string | null
+    variant?: StringNullableFilter<"Product"> | string | null
+    unit?: StringFilter<"Product"> | string
+    defaultUnitPrice?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
+    description?: StringNullableFilter<"Product"> | string | null
+    attributes?: JsonNullableFilter<"Product">
+    isActive?: BoolFilter<"Product"> | boolean
+    createdAt?: DateTimeFilter<"Product"> | Date | string
+    updatedAt?: DateTimeFilter<"Product"> | Date | string
+  }
+
+  export type SalesTransactionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: SalesTransactionWhereUniqueInput
+    update: XOR<SalesTransactionUpdateWithoutOrganizationInput, SalesTransactionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<SalesTransactionCreateWithoutOrganizationInput, SalesTransactionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type SalesTransactionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: SalesTransactionWhereUniqueInput
+    data: XOR<SalesTransactionUpdateWithoutOrganizationInput, SalesTransactionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type SalesTransactionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: SalesTransactionScalarWhereInput
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type SalesTransactionScalarWhereInput = {
+    AND?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+    OR?: SalesTransactionScalarWhereInput[]
+    NOT?: SalesTransactionScalarWhereInput | SalesTransactionScalarWhereInput[]
+    id?: StringFilter<"SalesTransaction"> | string
+    organizationId?: StringFilter<"SalesTransaction"> | string
+    salespersonId?: StringFilter<"SalesTransaction"> | string
+    customerId?: StringFilter<"SalesTransaction"> | string
+    productId?: StringNullableFilter<"SalesTransaction"> | string | null
+    otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
+    invoiceNumber?: StringFilter<"SalesTransaction"> | string
+    invoiceKey?: StringFilter<"SalesTransaction"> | string
+    groupId?: StringFilter<"SalesTransaction"> | string
+    lineNumber?: IntFilter<"SalesTransaction"> | number
+    quantity?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFilter<"SalesTransaction"> | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFilter<"SalesTransaction"> | $Enums.PaymentStatus
+    paymentDate?: DateTimeNullableFilter<"SalesTransaction"> | Date | string | null
+    remarks?: StringNullableFilter<"SalesTransaction"> | string | null
+    createdAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"SalesTransaction"> | Date | string
+  }
+
   export type AIConversationCreateWithoutUserInput = {
     id?: string
     title?: string | null
@@ -86819,6 +91688,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutOwnerInput = {
@@ -86846,6 +91716,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutOwnerInput = {
@@ -87385,6 +92256,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
@@ -87411,6 +92296,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
@@ -87763,6 +92662,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutSubordinatesInput = {
@@ -87817,6 +92717,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutSubordinatesInput = {
@@ -87876,6 +92777,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutManagerInput = {
@@ -87930,6 +92832,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutManagerInput = {
@@ -87983,6 +92886,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -88026,6 +92931,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -88239,6 +93146,62 @@ export namespace Prisma {
 
   export type ResourceGrantCreateManyGrantorInputEnvelope = {
     data: ResourceGrantCreateManyGrantorInput | ResourceGrantCreateManyGrantorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SalesTransactionCreateWithoutSalespersonInput = {
+    id?: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutSalesTransactionsInput
+    customer: CompanyCreateNestedOneWithoutSalesTransactionsInput
+    product?: ProductCreateNestedOneWithoutSalesTransactionsInput
+  }
+
+  export type SalesTransactionUncheckedCreateWithoutSalespersonInput = {
+    id?: string
+    organizationId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionCreateOrConnectWithoutSalespersonInput = {
+    where: SalesTransactionWhereUniqueInput
+    create: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput>
+  }
+
+  export type SalesTransactionCreateManySalespersonInputEnvelope = {
+    data: SalesTransactionCreateManySalespersonInput | SalesTransactionCreateManySalespersonInput[]
     skipDuplicates?: boolean
   }
 
@@ -88967,6 +93930,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubordinatesInput = {
@@ -89021,6 +93985,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutManagerInput = {
@@ -89091,6 +94056,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -89134,6 +94101,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type TeamUpsertWithoutUsersInput = {
@@ -89281,6 +94250,22 @@ export namespace Prisma {
     data: XOR<ResourceGrantUpdateManyMutationInput, ResourceGrantUncheckedUpdateManyWithoutGrantorInput>
   }
 
+  export type SalesTransactionUpsertWithWhereUniqueWithoutSalespersonInput = {
+    where: SalesTransactionWhereUniqueInput
+    update: XOR<SalesTransactionUpdateWithoutSalespersonInput, SalesTransactionUncheckedUpdateWithoutSalespersonInput>
+    create: XOR<SalesTransactionCreateWithoutSalespersonInput, SalesTransactionUncheckedCreateWithoutSalespersonInput>
+  }
+
+  export type SalesTransactionUpdateWithWhereUniqueWithoutSalespersonInput = {
+    where: SalesTransactionWhereUniqueInput
+    data: XOR<SalesTransactionUpdateWithoutSalespersonInput, SalesTransactionUncheckedUpdateWithoutSalespersonInput>
+  }
+
+  export type SalesTransactionUpdateManyWithWhereWithoutSalespersonInput = {
+    where: SalesTransactionScalarWhereInput
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyWithoutSalespersonInput>
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     email: string
@@ -89333,6 +94318,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -89387,6 +94373,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -89457,6 +94444,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -89511,6 +94499,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationCreateWithoutLiveLocationsInput = {
@@ -89554,6 +94543,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLiveLocationsInput = {
@@ -89597,6 +94588,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLiveLocationsInput = {
@@ -89656,6 +94649,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutLiveLocationInput = {
@@ -89710,6 +94704,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutLiveLocationInput = {
@@ -89769,6 +94764,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLiveLocationsInput = {
@@ -89812,6 +94809,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutLiveLocationInput = {
@@ -89877,6 +94876,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLiveLocationInput = {
@@ -89931,6 +94931,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -89985,6 +94986,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -90039,6 +95041,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -90109,6 +95112,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -90163,6 +95167,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type RolePermissionCreateWithoutRoleInput = {
@@ -90524,6 +95529,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutRolesInput = {
@@ -90578,6 +95584,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutRolesInput = {
@@ -90681,6 +95688,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRolesInput = {
@@ -90735,6 +95743,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationCreateWithoutResourceGrantsInput = {
@@ -90778,6 +95787,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutResourceGrantsInput = {
@@ -90821,6 +95832,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutResourceGrantsInput = {
@@ -90907,6 +95920,7 @@ export namespace Prisma {
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutGrantsGivenInput = {
@@ -90961,6 +95975,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutGrantsGivenInput = {
@@ -91020,6 +96035,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutResourceGrantsInput = {
@@ -91063,6 +96080,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RoleUpsertWithoutResourceGrantsInput = {
@@ -91161,6 +96180,7 @@ export namespace Prisma {
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGrantsGivenInput = {
@@ -91215,6 +96235,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserCreateWithoutManagedDepartmentsInput = {
@@ -91269,6 +96290,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutManagedDepartmentsInput = {
@@ -91323,6 +96345,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutManagedDepartmentsInput = {
@@ -91371,6 +96394,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDepartmentsInput = {
@@ -91414,6 +96439,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDepartmentsInput = {
@@ -91541,6 +96568,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutDepartmentInput = {
@@ -91595,6 +96623,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutDepartmentInput = {
@@ -91670,6 +96699,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedDepartmentsInput = {
@@ -91724,6 +96754,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutDepartmentsInput = {
@@ -91778,6 +96809,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDepartmentsInput = {
@@ -91821,6 +96854,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FilePermissionUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -91984,6 +97019,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutManagedTeamsInput = {
@@ -92038,6 +97074,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutManagedTeamsInput = {
@@ -92086,6 +97123,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutTeamsInput = {
@@ -92129,6 +97168,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutTeamsInput = {
@@ -92188,6 +97229,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutTeamInput = {
@@ -92242,6 +97284,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutTeamInput = {
@@ -92368,6 +97411,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagedTeamsInput = {
@@ -92422,6 +97466,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutTeamsInput = {
@@ -92476,6 +97521,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutTeamsInput = {
@@ -92519,6 +97566,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutTeamInput = {
@@ -92677,6 +97726,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutCreatedFoldersInput = {
@@ -92731,6 +97781,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutCreatedFoldersInput = {
@@ -92779,6 +97830,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFoldersInput = {
@@ -92822,6 +97875,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFoldersInput = {
@@ -92987,6 +98042,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedFoldersInput = {
@@ -93041,6 +98097,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutFoldersInput = {
@@ -93095,6 +98152,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFoldersInput = {
@@ -93138,6 +98197,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FolderUpsertWithoutChildrenInput = {
@@ -93261,6 +98322,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFilesInput = {
@@ -93304,6 +98367,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFilesInput = {
@@ -93363,6 +98428,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutUploadedFilesInput = {
@@ -93417,6 +98483,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutUploadedFilesInput = {
@@ -93657,6 +98724,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFilesInput = {
@@ -93700,6 +98769,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutUploadedFilesInput = {
@@ -93765,6 +98836,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedFilesInput = {
@@ -93819,6 +98891,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type FileActivityUpsertWithWhereUniqueWithoutFileInput = {
@@ -94014,6 +99087,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutUploadedFileVersionsInput = {
@@ -94068,6 +99142,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutUploadedFileVersionsInput = {
@@ -94195,6 +99270,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedFileVersionsInput = {
@@ -94249,6 +99325,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationCreateWithoutSavedViewsInput = {
@@ -94292,6 +99369,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSavedViewsInput = {
@@ -94335,6 +99414,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSavedViewsInput = {
@@ -94394,6 +99475,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutSavedViewsInput = {
@@ -94448,6 +99530,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutSavedViewsInput = {
@@ -94507,6 +99590,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSavedViewsInput = {
@@ -94550,6 +99635,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutSavedViewsInput = {
@@ -94615,6 +99702,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSavedViewsInput = {
@@ -94669,6 +99757,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserCreateWithoutCreatedFilePermissionsInput = {
@@ -94723,6 +99812,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutCreatedFilePermissionsInput = {
@@ -94777,6 +99867,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutCreatedFilePermissionsInput = {
@@ -94976,6 +100067,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutFilePermissionsInput = {
@@ -95030,6 +100122,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutFilePermissionsInput = {
@@ -95100,6 +100193,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedFilePermissionsInput = {
@@ -95154,6 +100248,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type DepartmentUpsertWithoutFilePermissionsInput = {
@@ -95383,6 +100478,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFilePermissionsInput = {
@@ -95437,6 +100533,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type FileCreateWithoutSharesInput = {
@@ -95542,6 +100639,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutFileSharesByInput = {
@@ -95596,6 +100694,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutFileSharesByInput = {
@@ -95655,6 +100754,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutFileSharesWithInput = {
@@ -95709,6 +100809,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutFileSharesWithInput = {
@@ -95836,6 +100937,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileSharesByInput = {
@@ -95890,6 +100992,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUpsertWithoutFileSharesWithInput = {
@@ -95955,6 +101058,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileSharesWithInput = {
@@ -96009,6 +101113,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationCreateWithoutFileCategoriesInput = {
@@ -96052,6 +101157,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFileCategoriesInput = {
@@ -96095,6 +101202,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFileCategoriesInput = {
@@ -96154,6 +101263,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFileCategoriesInput = {
@@ -96197,6 +101308,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FileCreateWithoutActivitiesInput = {
@@ -96302,6 +101415,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutFileActivitiesInput = {
@@ -96356,6 +101470,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutFileActivitiesInput = {
@@ -96483,6 +101598,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFileActivitiesInput = {
@@ -96537,6 +101653,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type ActivityCreateWithoutLeadInput = {
@@ -96698,6 +101815,7 @@ export namespace Prisma {
     followUps?: FollowUpCreateNestedManyWithoutCompanyInput
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutLeadsInput = {
@@ -96725,6 +101843,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutCompanyInput
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutLeadsInput = {
@@ -96824,6 +101943,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLeadsInput = {
@@ -96867,6 +101988,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLeadsInput = {
@@ -96926,6 +102049,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOwnedLeadsInput = {
@@ -96980,6 +102104,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOwnedLeadsInput = {
@@ -97071,6 +102196,7 @@ export namespace Prisma {
     followUps?: FollowUpUpdateManyWithoutCompanyNestedInput
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutLeadsInput = {
@@ -97098,6 +102224,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutCompanyNestedInput
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ContactUpsertWithoutLeadsInput = {
@@ -97209,6 +102336,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLeadsInput = {
@@ -97252,6 +102381,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedLeadsInput = {
@@ -97317,6 +102448,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedLeadsInput = {
@@ -97371,6 +102503,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type ActivityCreateWithoutCompanyInput = {
@@ -97450,6 +102583,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCompaniesInput = {
@@ -97493,6 +102628,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCompaniesInput = {
@@ -97552,6 +102689,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOwnedCompaniesInput = {
@@ -97606,6 +102744,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOwnedCompaniesInput = {
@@ -97866,6 +103005,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
@@ -97892,6 +103045,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
@@ -97965,6 +103132,62 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SalesTransactionCreateWithoutCustomerInput = {
+    id?: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutSalesTransactionsInput
+    salesperson: UserCreateNestedOneWithoutSalesTransactionsInput
+    product?: ProductCreateNestedOneWithoutSalesTransactionsInput
+  }
+
+  export type SalesTransactionUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionCreateOrConnectWithoutCustomerInput = {
+    where: SalesTransactionWhereUniqueInput
+    create: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type SalesTransactionCreateManyCustomerInputEnvelope = {
+    data: SalesTransactionCreateManyCustomerInput | SalesTransactionCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ActivityUpsertWithWhereUniqueWithoutCompanyInput = {
     where: ActivityWhereUniqueInput
     update: XOR<ActivityUpdateWithoutCompanyInput, ActivityUncheckedUpdateWithoutCompanyInput>
@@ -98033,6 +103256,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
@@ -98076,6 +103301,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedCompaniesInput = {
@@ -98141,6 +103368,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedCompaniesInput = {
@@ -98195,6 +103423,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type ContactUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -98309,6 +103538,22 @@ export namespace Prisma {
     data: XOR<MeetingUpdateManyMutationInput, MeetingUncheckedUpdateManyWithoutCompanyInput>
   }
 
+  export type SalesTransactionUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: SalesTransactionWhereUniqueInput
+    update: XOR<SalesTransactionUpdateWithoutCustomerInput, SalesTransactionUncheckedUpdateWithoutCustomerInput>
+    create: XOR<SalesTransactionCreateWithoutCustomerInput, SalesTransactionUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type SalesTransactionUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: SalesTransactionWhereUniqueInput
+    data: XOR<SalesTransactionUpdateWithoutCustomerInput, SalesTransactionUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type SalesTransactionUpdateManyWithWhereWithoutCustomerInput = {
+    where: SalesTransactionScalarWhereInput
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyWithoutCustomerInput>
+  }
+
   export type ActivityCreateWithoutContactInput = {
     id?: string
     type: string
@@ -98370,6 +103615,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutContactsInput = {
@@ -98397,6 +103643,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutContactsInput = {
@@ -98445,6 +103692,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutContactsInput = {
@@ -98488,6 +103737,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutContactsInput = {
@@ -98547,6 +103798,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOwnedContactsInput = {
@@ -98601,6 +103853,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOwnedContactsInput = {
@@ -98729,6 +103982,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
@@ -98755,6 +104022,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
@@ -98880,6 +104161,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutContactsInput = {
@@ -98907,6 +104189,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type OrganizationUpsertWithoutContactsInput = {
@@ -98961,6 +104244,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutContactsInput = {
@@ -99004,6 +104289,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedContactsInput = {
@@ -99069,6 +104356,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedContactsInput = {
@@ -99123,6 +104411,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type DealUpsertWithWhereUniqueWithoutContactInput = {
@@ -99250,6 +104539,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutDealsInput = {
@@ -99277,6 +104567,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutDealsInput = {
@@ -99350,6 +104641,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     companyRef?: CompanyCreateNestedOneWithoutLeadsInput
@@ -99377,6 +104682,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
   }
@@ -99427,6 +104746,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDealsInput = {
@@ -99470,6 +104791,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDealsInput = {
@@ -99529,6 +104852,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOwnedDealsInput = {
@@ -99583,6 +104907,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOwnedDealsInput = {
@@ -99792,6 +105117,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutDealsInput = {
@@ -99819,6 +105145,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ContactUpsertWithoutDealsInput = {
@@ -99904,6 +105231,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     companyRef?: CompanyUpdateOneWithoutLeadsNestedInput
@@ -99931,6 +105272,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
   }
@@ -99987,6 +105342,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDealsInput = {
@@ -100030,6 +105387,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedDealsInput = {
@@ -100095,6 +105454,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedDealsInput = {
@@ -100149,6 +105509,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type FieldVisitUpsertWithWhereUniqueWithoutDealInput = {
@@ -100197,6 +105558,918 @@ export namespace Prisma {
   export type MeetingUpdateManyWithWhereWithoutDealInput = {
     where: MeetingScalarWhereInput
     data: XOR<MeetingUpdateManyMutationInput, MeetingUncheckedUpdateManyWithoutDealInput>
+  }
+
+  export type OrganizationCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactCreateNestedManyWithoutOrganizationInput
+    deals?: DealCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryCreateNestedManyWithoutOrganizationInput
+    folders?: FolderCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
+    meetings?: MeetingCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
+    teams?: TeamCreateNestedManyWithoutOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightUncheckedCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportUncheckedCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutOrganizationInput
+    deals?: DealUncheckedCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceUncheckedCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
+    meetings?: MeetingUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
+    teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutProductsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutProductsInput, OrganizationUncheckedCreateWithoutProductsInput>
+  }
+
+  export type SalesTransactionCreateWithoutProductInput = {
+    id?: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutSalesTransactionsInput
+    salesperson: UserCreateNestedOneWithoutSalesTransactionsInput
+    customer: CompanyCreateNestedOneWithoutSalesTransactionsInput
+  }
+
+  export type SalesTransactionUncheckedCreateWithoutProductInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    customerId: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionCreateOrConnectWithoutProductInput = {
+    where: SalesTransactionWhereUniqueInput
+    create: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput>
+  }
+
+  export type SalesTransactionCreateManyProductInputEnvelope = {
+    data: SalesTransactionCreateManyProductInput | SalesTransactionCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationUpsertWithoutProductsInput = {
+    update: XOR<OrganizationUpdateWithoutProductsInput, OrganizationUncheckedUpdateWithoutProductsInput>
+    create: XOR<OrganizationCreateWithoutProductsInput, OrganizationUncheckedCreateWithoutProductsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutProductsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutProductsInput, OrganizationUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type OrganizationUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
+    meetings?: MeetingUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUpdateManyWithoutOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUncheckedUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUncheckedUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
+    meetings?: MeetingUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type SalesTransactionUpsertWithWhereUniqueWithoutProductInput = {
+    where: SalesTransactionWhereUniqueInput
+    update: XOR<SalesTransactionUpdateWithoutProductInput, SalesTransactionUncheckedUpdateWithoutProductInput>
+    create: XOR<SalesTransactionCreateWithoutProductInput, SalesTransactionUncheckedCreateWithoutProductInput>
+  }
+
+  export type SalesTransactionUpdateWithWhereUniqueWithoutProductInput = {
+    where: SalesTransactionWhereUniqueInput
+    data: XOR<SalesTransactionUpdateWithoutProductInput, SalesTransactionUncheckedUpdateWithoutProductInput>
+  }
+
+  export type SalesTransactionUpdateManyWithWhereWithoutProductInput = {
+    where: SalesTransactionScalarWhereInput
+    data: XOR<SalesTransactionUpdateManyMutationInput, SalesTransactionUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type OrganizationCreateWithoutSalesTransactionsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactCreateNestedManyWithoutOrganizationInput
+    deals?: DealCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryCreateNestedManyWithoutOrganizationInput
+    folders?: FolderCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
+    meetings?: MeetingCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
+    teams?: TeamCreateNestedManyWithoutOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutSalesTransactionsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightUncheckedCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportUncheckedCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutOrganizationInput
+    deals?: DealUncheckedCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceUncheckedCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
+    meetings?: MeetingUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
+    teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutSalesTransactionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutSalesTransactionsInput, OrganizationUncheckedCreateWithoutSalesTransactionsInput>
+  }
+
+  export type UserCreateWithoutSalesTransactionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportCreateNestedManyWithoutGeneratedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: ActivityCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactCreateNestedManyWithoutOwnerInput
+    ownedDeals?: DealCreateNestedManyWithoutOwnerInput
+    managedDepartments?: DepartmentCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
+    createdMeetings?: MeetingCreateNestedManyWithoutCreatedByInput
+    meetings?: MeetingParticipantCreateNestedManyWithoutUserInput
+    editedMeetingSummaries?: MeetingSummaryCreateNestedManyWithoutEditedByInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    savedViews?: SavedViewCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    managedTeams?: TeamCreateNestedManyWithoutManagerInput
+    department?: DepartmentCreateNestedOneWithoutUsersInput
+    manager?: UserCreateNestedOneWithoutSubordinatesInput
+    subordinates?: UserCreateNestedManyWithoutManagerInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    team?: TeamCreateNestedOneWithoutUsersInput
+    roles?: UserRoleCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
+    dailyReports?: DailyReportCreateNestedManyWithoutUserInput
+    aiUsages?: AIUsageCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+  }
+
+  export type UserUncheckedCreateWithoutSalesTransactionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    departmentId?: string | null
+    teamId?: string | null
+    managerId?: string | null
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportUncheckedCreateNestedManyWithoutGeneratedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyUncheckedCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactUncheckedCreateNestedManyWithoutOwnerInput
+    ownedDeals?: DealUncheckedCreateNestedManyWithoutOwnerInput
+    managedDepartments?: DepartmentUncheckedCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitUncheckedCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileUncheckedCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityUncheckedCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionUncheckedCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionUncheckedCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareUncheckedCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareUncheckedCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionUncheckedCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    createdMeetings?: MeetingUncheckedCreateNestedManyWithoutCreatedByInput
+    meetings?: MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+    editedMeetingSummaries?: MeetingSummaryUncheckedCreateNestedManyWithoutEditedByInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
+    subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
+    roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+  }
+
+  export type UserCreateOrConnectWithoutSalesTransactionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSalesTransactionsInput, UserUncheckedCreateWithoutSalesTransactionsInput>
+  }
+
+  export type CompanyCreateWithoutSalesTransactionsInput = {
+    id?: string
+    name: string
+    industry?: string | null
+    website?: string | null
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    employees?: number | null
+    revenue?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activities?: ActivityCreateNestedManyWithoutCompanyInput
+    organization: OrganizationCreateNestedOneWithoutCompaniesInput
+    owner: UserCreateNestedOneWithoutOwnedCompaniesInput
+    contacts?: ContactCreateNestedManyWithoutCompanyInput
+    deals?: DealCreateNestedManyWithoutCompanyInput
+    visits?: FieldVisitCreateNestedManyWithoutCompanyInput
+    followUps?: FollowUpCreateNestedManyWithoutCompanyInput
+    geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
+    leads?: LeadCreateNestedManyWithoutCompanyRefInput
+    meetings?: MeetingCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutSalesTransactionsInput = {
+    id?: string
+    name: string
+    industry?: string | null
+    website?: string | null
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    employees?: number | null
+    revenue?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    organizationId: string
+    ownerId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activities?: ActivityUncheckedCreateNestedManyWithoutCompanyInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutCompanyInput
+    deals?: DealUncheckedCreateNestedManyWithoutCompanyInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutCompanyInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutCompanyInput
+    geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
+    leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
+    meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutSalesTransactionsInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutSalesTransactionsInput, CompanyUncheckedCreateWithoutSalesTransactionsInput>
+  }
+
+  export type ProductCreateWithoutSalesTransactionsInput = {
+    id?: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutProductsInput
+  }
+
+  export type ProductUncheckedCreateWithoutSalesTransactionsInput = {
+    id?: string
+    organizationId: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ProductCreateOrConnectWithoutSalesTransactionsInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutSalesTransactionsInput, ProductUncheckedCreateWithoutSalesTransactionsInput>
+  }
+
+  export type OrganizationUpsertWithoutSalesTransactionsInput = {
+    update: XOR<OrganizationUpdateWithoutSalesTransactionsInput, OrganizationUncheckedUpdateWithoutSalesTransactionsInput>
+    create: XOR<OrganizationCreateWithoutSalesTransactionsInput, OrganizationUncheckedCreateWithoutSalesTransactionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutSalesTransactionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutSalesTransactionsInput, OrganizationUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type OrganizationUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
+    meetings?: MeetingUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUpdateManyWithoutOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUncheckedUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUncheckedUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
+    meetings?: MeetingUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutSalesTransactionsInput = {
+    update: XOR<UserUpdateWithoutSalesTransactionsInput, UserUncheckedUpdateWithoutSalesTransactionsInput>
+    create: XOR<UserCreateWithoutSalesTransactionsInput, UserUncheckedCreateWithoutSalesTransactionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSalesTransactionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSalesTransactionsInput, UserUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type UserUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUpdateManyWithoutGeneratedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: ActivityUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUpdateManyWithoutOwnerNestedInput
+    ownedDeals?: DealUpdateManyWithoutOwnerNestedInput
+    managedDepartments?: DepartmentUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
+    createdMeetings?: MeetingUpdateManyWithoutCreatedByNestedInput
+    meetings?: MeetingParticipantUpdateManyWithoutUserNestedInput
+    editedMeetingSummaries?: MeetingSummaryUpdateManyWithoutEditedByNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    savedViews?: SavedViewUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUpdateManyWithoutManagerNestedInput
+    department?: DepartmentUpdateOneWithoutUsersNestedInput
+    manager?: UserUpdateOneWithoutSubordinatesNestedInput
+    subordinates?: UserUpdateManyWithoutManagerNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    team?: TeamUpdateOneWithoutUsersNestedInput
+    roles?: UserRoleUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    managerId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedDeals?: DealUncheckedUpdateManyWithoutOwnerNestedInput
+    managedDepartments?: DepartmentUncheckedUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUncheckedUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUncheckedUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUncheckedUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUncheckedUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUncheckedUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUncheckedUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUncheckedUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    createdMeetings?: MeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+    meetings?: MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+    editedMeetingSummaries?: MeetingSummaryUncheckedUpdateManyWithoutEditedByNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
+    subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
+    roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+  }
+
+  export type CompanyUpsertWithoutSalesTransactionsInput = {
+    update: XOR<CompanyUpdateWithoutSalesTransactionsInput, CompanyUncheckedUpdateWithoutSalesTransactionsInput>
+    create: XOR<CompanyCreateWithoutSalesTransactionsInput, CompanyUncheckedCreateWithoutSalesTransactionsInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutSalesTransactionsInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutSalesTransactionsInput, CompanyUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type CompanyUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    employees?: NullableIntFieldUpdateOperationsInput | number | null
+    revenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activities?: ActivityUpdateManyWithoutCompanyNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutCompaniesNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedCompaniesNestedInput
+    contacts?: ContactUpdateManyWithoutCompanyNestedInput
+    deals?: DealUpdateManyWithoutCompanyNestedInput
+    visits?: FieldVisitUpdateManyWithoutCompanyNestedInput
+    followUps?: FollowUpUpdateManyWithoutCompanyNestedInput
+    geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUpdateManyWithoutCompanyRefNestedInput
+    meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    employees?: NullableIntFieldUpdateOperationsInput | number | null
+    revenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activities?: ActivityUncheckedUpdateManyWithoutCompanyNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutCompanyNestedInput
+    deals?: DealUncheckedUpdateManyWithoutCompanyNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutCompanyNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutCompanyNestedInput
+    geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
+    meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type ProductUpsertWithoutSalesTransactionsInput = {
+    update: XOR<ProductUpdateWithoutSalesTransactionsInput, ProductUncheckedUpdateWithoutSalesTransactionsInput>
+    create: XOR<ProductCreateWithoutSalesTransactionsInput, ProductUncheckedCreateWithoutSalesTransactionsInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutSalesTransactionsInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutSalesTransactionsInput, ProductUncheckedUpdateWithoutSalesTransactionsInput>
+  }
+
+  export type ProductUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutProductsNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutSalesTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutActivitiesInput = {
@@ -100251,6 +106524,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -100305,6 +106579,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -100337,6 +106612,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutActivitiesInput = {
@@ -100364,6 +106640,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutActivitiesInput = {
@@ -100488,6 +106765,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     deals?: DealCreateNestedManyWithoutLeadInput
     followUps?: FollowUpCreateNestedManyWithoutLeadInput
     companyRef?: CompanyCreateNestedOneWithoutLeadsInput
@@ -100515,6 +106806,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     followUps?: FollowUpUncheckedCreateNestedManyWithoutLeadInput
   }
@@ -100565,6 +106870,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutActivitiesInput = {
@@ -100608,6 +106915,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutActivitiesInput = {
@@ -100678,6 +106987,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -100732,6 +107042,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type CompanyUpsertWithoutActivitiesInput = {
@@ -100770,6 +107081,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutActivitiesInput = {
@@ -100797,6 +107109,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ContactUpsertWithoutActivitiesInput = {
@@ -100939,6 +107252,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
     companyRef?: CompanyUpdateOneWithoutLeadsNestedInput
@@ -100966,6 +107293,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
   }
@@ -101022,6 +107363,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutActivitiesInput = {
@@ -101065,6 +107408,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserCreateWithoutDailyReportsInput = {
@@ -101119,6 +107464,7 @@ export namespace Prisma {
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutDailyReportsInput = {
@@ -101173,6 +107519,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutDailyReportsInput = {
@@ -101221,6 +107568,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDailyReportsInput = {
@@ -101264,6 +107613,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDailyReportsInput = {
@@ -101361,6 +107712,7 @@ export namespace Prisma {
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDailyReportsInput = {
@@ -101415,6 +107767,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutDailyReportsInput = {
@@ -101469,6 +107822,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDailyReportsInput = {
@@ -101512,6 +107867,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AIReportUpsertWithoutDailyReportInput = {
@@ -101572,6 +107929,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutFollowUpsInput = {
@@ -101599,6 +107957,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutFollowUpsInput = {
@@ -101672,6 +108031,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     companyRef?: CompanyCreateNestedOneWithoutLeadsInput
@@ -101699,6 +108072,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
   }
@@ -101749,6 +108136,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFollowUpsInput = {
@@ -101792,6 +108181,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFollowUpsInput = {
@@ -101851,6 +108242,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutOwnedFollowUpsInput = {
@@ -101905,6 +108297,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutOwnedFollowUpsInput = {
@@ -101948,6 +108341,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutFollowUpsInput = {
@@ -101975,6 +108369,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type DealUpsertWithoutFollowUpsInput = {
@@ -102060,6 +108455,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     companyRef?: CompanyUpdateOneWithoutLeadsNestedInput
@@ -102087,6 +108496,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
   }
@@ -102143,6 +108566,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFollowUpsInput = {
@@ -102186,6 +108611,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedFollowUpsInput = {
@@ -102251,6 +108678,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedFollowUpsInput = {
@@ -102305,6 +108733,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type CheckInCreateWithoutVisitInput = {
@@ -102395,6 +108824,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutAssignedVisitsInput = {
@@ -102449,6 +108879,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutAssignedVisitsInput = {
@@ -102481,6 +108912,7 @@ export namespace Prisma {
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutVisitsInput = {
@@ -102508,6 +108940,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutVisitsInput = {
@@ -102658,6 +109091,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutVisitsInput = {
@@ -102701,6 +109136,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutVisitsInput = {
@@ -102827,6 +109264,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedVisitsInput = {
@@ -102881,6 +109319,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type CompanyUpsertWithoutVisitsInput = {
@@ -102919,6 +109358,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutVisitsInput = {
@@ -102946,6 +109386,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ContactUpsertWithoutVisitsInput = {
@@ -103114,6 +109555,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutVisitsInput = {
@@ -103157,6 +109600,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type VisitReportUpsertWithWhereUniqueWithoutVisitInput = {
@@ -103227,6 +109672,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutCheckInsInput = {
@@ -103281,6 +109727,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutCheckInsInput = {
@@ -103396,6 +109843,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCheckInsInput = {
@@ -103450,6 +109898,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type FieldVisitUpsertWithoutCheckInsInput = {
@@ -103528,6 +109977,7 @@ export namespace Prisma {
     followUps?: FollowUpCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutGeoFencesInput = {
@@ -103555,6 +110005,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
     meetings?: MeetingUncheckedCreateNestedManyWithoutCompanyInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutGeoFencesInput = {
@@ -103603,6 +110054,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutGeoFencesInput = {
@@ -103646,6 +110099,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutGeoFencesInput = {
@@ -103689,6 +110144,7 @@ export namespace Prisma {
     followUps?: FollowUpUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutGeoFencesInput = {
@@ -103716,6 +110172,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type OrganizationUpsertWithoutGeoFencesInput = {
@@ -103770,6 +110227,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutGeoFencesInput = {
@@ -103813,6 +110272,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserCreateWithoutVisitReportsInput = {
@@ -103867,6 +110328,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutVisitReportsInput = {
@@ -103921,6 +110383,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutVisitReportsInput = {
@@ -104058,6 +110521,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVisitReportsInput = {
@@ -104112,6 +110576,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type FieldVisitUpsertWithoutVisitReportsInput = {
@@ -104390,6 +110855,7 @@ export namespace Prisma {
     followUps?: FollowUpCreateNestedManyWithoutCompanyInput
     geoFences?: GeoFenceCreateNestedManyWithoutCompanyInput
     leads?: LeadCreateNestedManyWithoutCompanyRefInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyUncheckedCreateWithoutMeetingsInput = {
@@ -104417,6 +110883,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedCreateNestedManyWithoutCompanyInput
     geoFences?: GeoFenceUncheckedCreateNestedManyWithoutCompanyInput
     leads?: LeadUncheckedCreateNestedManyWithoutCompanyRefInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CompanyCreateOrConnectWithoutMeetingsInput = {
@@ -104527,6 +110994,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
@@ -104581,6 +111049,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutCreatedMeetingsInput = {
@@ -104680,6 +111149,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMeetingsInput = {
@@ -104723,6 +111194,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMeetingsInput = {
@@ -104879,6 +111352,7 @@ export namespace Prisma {
     followUps?: FollowUpUpdateManyWithoutCompanyNestedInput
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutMeetingsInput = {
@@ -104906,6 +111380,7 @@ export namespace Prisma {
     followUps?: FollowUpUncheckedUpdateManyWithoutCompanyNestedInput
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ContactUpsertWithoutMeetingsInput = {
@@ -105028,6 +111503,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
@@ -105082,6 +111558,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type DealUpsertWithoutMeetingsInput = {
@@ -105193,6 +111670,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMeetingsInput = {
@@ -105236,6 +111715,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type MeetingParticipantUpsertWithWhereUniqueWithoutMeetingInput = {
@@ -105458,6 +111939,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutMeetingsInput = {
@@ -105512,6 +111994,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutMeetingsInput = {
@@ -105641,6 +112124,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMeetingsInput = {
@@ -105695,6 +112179,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type MeetingCreateWithoutRecordingsInput = {
@@ -105973,6 +112458,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutEditedMeetingSummariesInput = {
@@ -106027,6 +112513,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutEditedMeetingSummariesInput = {
@@ -106150,6 +112637,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEditedMeetingSummariesInput = {
@@ -106204,6 +112692,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type MeetingUpsertWithoutSummariesInput = {
@@ -106306,6 +112795,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiConversationsInput = {
@@ -106349,6 +112840,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiConversationsInput = {
@@ -106408,6 +112901,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -106462,6 +112956,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -106547,6 +113042,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiConversationsInput = {
@@ -106590,6 +113087,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutAiConversationsInput = {
@@ -106655,6 +113154,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -106709,6 +113209,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type AIMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -106832,6 +113333,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiUsagesInput = {
@@ -106875,6 +113378,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiUsagesInput = {
@@ -106934,6 +113439,7 @@ export namespace Prisma {
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutAiUsagesInput = {
@@ -106988,6 +113494,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutAiUsagesInput = {
@@ -107047,6 +113554,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiUsagesInput = {
@@ -107090,6 +113599,8 @@ export namespace Prisma {
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutAiUsagesInput = {
@@ -107155,6 +113666,7 @@ export namespace Prisma {
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsagesInput = {
@@ -107209,6 +113721,7 @@ export namespace Prisma {
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationCreateWithoutAiInsightsInput = {
@@ -107252,6 +113765,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiInsightsInput = {
@@ -107295,6 +113810,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiInsightsInput = {
@@ -107354,6 +113871,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiInsightsInput = {
@@ -107397,6 +113916,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserCreateWithoutGeneratedAIReportsInput = {
@@ -107451,6 +113972,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutGeneratedAIReportsInput = {
@@ -107505,6 +114027,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutGeneratedAIReportsInput = {
@@ -107553,6 +114076,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiReportsInput = {
@@ -107596,6 +114121,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiReportsInput = {
@@ -107711,6 +114238,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGeneratedAIReportsInput = {
@@ -107765,6 +114293,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutAiReportsInput = {
@@ -107819,6 +114348,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiReportsInput = {
@@ -107862,6 +114393,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type DailyReportUpsertWithoutAiReportInput = {
@@ -107956,6 +114489,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutNotificationsInput = {
@@ -107999,6 +114534,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutNotificationsInput = {
@@ -108058,6 +114595,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -108112,6 +114650,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -108171,6 +114710,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutNotificationsInput = {
@@ -108214,6 +114755,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutNotificationsInput = {
@@ -108279,6 +114822,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -108333,6 +114877,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -108387,6 +114932,7 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -108441,6 +114987,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -108489,6 +115036,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -108532,6 +115081,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -108602,6 +115153,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -108656,6 +115208,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type OrganizationUpsertWithoutAuditLogsInput = {
@@ -108710,6 +115263,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -108753,6 +115308,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutIntegrationsInput = {
@@ -108796,6 +115353,8 @@ export namespace Prisma {
     dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutIntegrationsInput = {
@@ -108839,6 +115398,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
     aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
     resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutIntegrationsInput = {
@@ -108934,6 +115495,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutIntegrationsInput = {
@@ -108977,6 +115540,8 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
     resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type WebhookDeliveryUpsertWithWhereUniqueWithoutIntegrationInput = {
@@ -109303,6 +115868,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
   }
 
   export type MeetingCreateManyOrganizationInput = {
@@ -109429,6 +116008,45 @@ export namespace Prisma {
     grantedBy: string
     grantedAt?: Date | string
     expiresAt?: Date | string | null
+  }
+
+  export type ProductCreateManyOrganizationInput = {
+    id?: string
+    name: string
+    sku?: string | null
+    category?: string | null
+    grade?: string | null
+    variant?: string | null
+    unit?: string
+    defaultUnitPrice?: Decimal | DecimalJsLike | number | string | null
+    description?: string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionCreateManyOrganizationInput = {
+    id?: string
+    salespersonId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AIConversationUpdateWithoutOrganizationInput = {
@@ -109623,6 +116241,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutOrganizationInput = {
@@ -109650,6 +116269,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateManyWithoutOrganizationInput = {
@@ -110149,6 +116769,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
@@ -110175,6 +116809,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
@@ -110198,6 +116846,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MeetingUpdateWithoutOrganizationInput = {
@@ -110420,6 +117082,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -110474,6 +117137,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -110660,6 +117324,125 @@ export namespace Prisma {
     grantedBy?: StringFieldUpdateOperationsInput | string
     grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ProductUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    salesTransactions?: SalesTransactionUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    grade?: NullableStringFieldUpdateOperationsInput | string | null
+    variant?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    defaultUnitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    attributes?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    salesperson?: UserUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    customer?: CompanyUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    product?: ProductUpdateOneWithoutSalesTransactionsNestedInput
+  }
+
+  export type SalesTransactionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AIConversationCreateManyUserInput = {
@@ -110941,6 +117724,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
   }
 
   export type MeetingCreateManyCreatedByInput = {
@@ -111109,6 +117906,29 @@ export namespace Prisma {
     permission: string
     grantedAt?: Date | string
     expiresAt?: Date | string | null
+  }
+
+  export type SalesTransactionCreateManySalespersonInput = {
+    id?: string
+    organizationId: string
+    customerId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AIConversationUpdateWithoutUserInput = {
@@ -111357,6 +118177,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUpdateManyWithoutCompanyNestedInput
     leads?: LeadUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutOwnerInput = {
@@ -111384,6 +118205,7 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     meetings?: MeetingUncheckedUpdateManyWithoutCompanyNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CompanyUncheckedUpdateManyWithoutOwnerInput = {
@@ -111971,6 +118793,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
@@ -111997,6 +118833,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
@@ -112020,6 +118870,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MeetingUpdateWithoutCreatedByInput = {
@@ -112347,6 +119211,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutManagerInput = {
@@ -112401,6 +119266,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutManagerInput = {
@@ -112610,6 +119476,75 @@ export namespace Prisma {
     permission?: StringFieldUpdateOperationsInput | string
     grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SalesTransactionUpdateWithoutSalespersonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    customer?: CompanyUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    product?: ProductUpdateOneWithoutSalesTransactionsNestedInput
+  }
+
+  export type SalesTransactionUncheckedUpdateWithoutSalespersonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutSalespersonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RolePermissionCreateManyRoleInput = {
@@ -112891,6 +119826,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDepartmentInput = {
@@ -112945,6 +119881,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutDepartmentInput = {
@@ -113081,6 +120018,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeamInput = {
@@ -113135,6 +120073,7 @@ export namespace Prisma {
     dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
     aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTeamInput = {
@@ -113830,6 +120769,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
   }
 
   export type MeetingCreateManyCompanyInput = {
@@ -113850,6 +120803,29 @@ export namespace Prisma {
     updatedAt?: Date | string
     startedAt?: Date | string | null
     endedAt?: Date | string | null
+  }
+
+  export type SalesTransactionCreateManyCustomerInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    productId?: string | null
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ActivityUpdateWithoutCompanyInput = {
@@ -114177,6 +121153,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
@@ -114203,6 +121193,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
@@ -114226,6 +121230,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MeetingUpdateWithoutCompanyInput = {
@@ -114296,6 +121314,75 @@ export namespace Prisma {
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SalesTransactionUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    salesperson?: UserUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    product?: ProductUpdateOneWithoutSalesTransactionsNestedInput
+  }
+
+  export type SalesTransactionUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ActivityCreateManyContactInput = {
     id?: string
     type: string
@@ -114364,6 +121451,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     lastActivityAt?: Date | string | null
+    funnelStage?: $Enums.FunnelStage | null
+    enquiryDate?: Date | string | null
+    region?: string | null
+    location?: string | null
+    purposeOfVisit?: string | null
+    meetingMode?: string | null
+    productsDiscussed?: LeadCreateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: string | null
+    customerRequirement?: string | null
+    cdaStatus?: string | null
+    cdaDate?: Date | string | null
+    samplingStatus?: string | null
+    rndFeedback?: string | null
+    nextAction?: string | null
   }
 
   export type MeetingCreateManyContactInput = {
@@ -114563,6 +121664,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUpdateManyWithoutLeadNestedInput
@@ -114589,6 +121704,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     followUps?: FollowUpUncheckedUpdateManyWithoutLeadNestedInput
@@ -114612,6 +121741,20 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    funnelStage?: NullableEnumFunnelStageFieldUpdateOperationsInput | $Enums.FunnelStage | null
+    enquiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeOfVisit?: NullableStringFieldUpdateOperationsInput | string | null
+    meetingMode?: NullableStringFieldUpdateOperationsInput | string | null
+    productsDiscussed?: LeadUpdateproductsDiscussedInput | string[]
+    keyDiscussionPoints?: NullableStringFieldUpdateOperationsInput | string | null
+    customerRequirement?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    cdaDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    samplingStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    rndFeedback?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAction?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MeetingUpdateWithoutContactInput = {
@@ -114960,6 +122103,98 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SalesTransactionCreateManyProductInput = {
+    id?: string
+    organizationId: string
+    salespersonId: string
+    customerId: string
+    otherProductName?: string | null
+    saleDate: Date | string
+    invoiceNumber: string
+    invoiceKey: string
+    groupId: string
+    lineNumber: number
+    quantity: Decimal | DecimalJsLike | number | string
+    unitPrice: Decimal | DecimalJsLike | number | string
+    totalAmount: Decimal | DecimalJsLike | number | string
+    amountPaid: Decimal | DecimalJsLike | number | string
+    balanceAmount: Decimal | DecimalJsLike | number | string
+    paymentStatus?: $Enums.PaymentStatus
+    paymentDate?: Date | string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SalesTransactionUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    salesperson?: UserUpdateOneRequiredWithoutSalesTransactionsNestedInput
+    customer?: CompanyUpdateOneRequiredWithoutSalesTransactionsNestedInput
+  }
+
+  export type SalesTransactionUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SalesTransactionUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    salespersonId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    invoiceKey?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    lineNumber?: IntFieldUpdateOperationsInput | number
+    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    amountPaid?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CheckInCreateManyVisitInput = {

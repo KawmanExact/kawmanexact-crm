@@ -8,47 +8,49 @@ datasource db {
 }
 
 model Organization {
-  id              String             @id @default(cuid())
-  name            String
-  slug            String             @unique
-  logo            String?
-  website         String?
-  industry        String?
-  address         String?
-  phone           String?
-  email           String?
-  timezone        String             @default("Asia/Kolkata")
-  currency        String             @default("INR")
-  dateFormat      String             @default("DD/MM/YYYY")
-  settings        Json?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  aiConversations AIConversation[]
-  aiInsights      AIInsight[]
-  aiReports       AIReport[]
-  activities      Activity[]
-  auditLogs       AuditLog[]
-  companies       Company[]
-  contacts        Contact[]
-  deals           Deal[]
-  departments     Department[]
-  visits          FieldVisit[]
-  files           File[]
-  fileCategories  FileCategory[]
-  folders         Folder[]
-  followUps       FollowUp[]
-  geoFences       GeoFence[]
-  integrations    Integration[]
-  leads           Lead[]
-  meetings        Meeting[]
-  notifications   Notification[]
-  savedViews      SavedView[]
-  teams           Team[]
-  users           User[]
-  liveLocations   UserLiveLocation[]
-  dailyReports    DailyReport[]
-  aiUsages        AIUsage[]
-  resourceGrants  ResourceGrant[]
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  logo              String?
+  website           String?
+  industry          String?
+  address           String?
+  phone             String?
+  email             String?
+  timezone          String             @default("Asia/Kolkata")
+  currency          String             @default("INR")
+  dateFormat        String             @default("DD/MM/YYYY")
+  settings          Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  aiConversations   AIConversation[]
+  aiInsights        AIInsight[]
+  aiReports         AIReport[]
+  activities        Activity[]
+  auditLogs         AuditLog[]
+  companies         Company[]
+  contacts          Contact[]
+  deals             Deal[]
+  departments       Department[]
+  visits            FieldVisit[]
+  files             File[]
+  fileCategories    FileCategory[]
+  folders           Folder[]
+  followUps         FollowUp[]
+  geoFences         GeoFence[]
+  integrations      Integration[]
+  leads             Lead[]
+  meetings          Meeting[]
+  notifications     Notification[]
+  savedViews        SavedView[]
+  teams             Team[]
+  users             User[]
+  liveLocations     UserLiveLocation[]
+  dailyReports      DailyReport[]
+  aiUsages          AIUsage[]
+  resourceGrants    ResourceGrant[]
+  products          Product[]
+  salesTransactions SalesTransaction[]
 
   @@index([slug])
   @@index([createdAt])
@@ -111,6 +113,7 @@ model User {
   dailyReports           DailyReport[]
   aiUsages               AIUsage[]
   grantsGiven            ResourceGrant[]      @relation("GrantsGiven")
+  salesTransactions      SalesTransaction[]   @relation("SalesSalesperson")
 
   @@index([organizationId])
   @@index([email])
@@ -462,31 +465,51 @@ model FileActivity {
 }
 
 model Lead {
-  id             String       @id @default(cuid())
-  name           String
-  company        String?
-  email          String?
-  phone          String?
-  source         String?
-  status         LeadStatus   @default(NEW)
-  score          Int          @default(0)
-  value          Decimal?     @db.Decimal(15, 2)
-  segment        String?
-  notes          String?
-  organizationId String
-  ownerId        String
-  companyId      String?
-  contactId      String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  lastActivityAt DateTime?
-  activities     Activity[]
-  deals          Deal[]
-  followUps      FollowUp[]
-  companyRef     Company?     @relation(fields: [companyId], references: [id])
-  contact        Contact?     @relation(fields: [contactId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  owner          User         @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  id                  String       @id @default(cuid())
+  name                String
+  company             String?
+  email               String?
+  phone               String?
+  source              String?
+  status              LeadStatus   @default(NEW)
+  score               Int          @default(0)
+  value               Decimal?     @db.Decimal(15, 2)
+  segment             String?
+  notes               String?
+  organizationId      String
+  ownerId             String
+  companyId           String?
+  contactId           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  lastActivityAt      DateTime?
+  // ---- Sales Funnel (SPANCOP) tracking — additive columns only ----
+  // `status` above is the pre-existing LeadStatus lifecycle and is left
+  // completely untouched. `funnelStage` is the separate SPANCOP position:
+  // SUSPECT -> PROSPECT -> APPROACH_ANALYSE -> NEGOTIATE -> CLOSE ->
+  // ORDER -> PAYMENT. LOST leads are represented by `status = LOST` with a
+  // NULL funnelStage and are shown separately by the funnel view.
+  funnelStage         FunnelStage?
+  enquiryDate         DateTime?
+  region              String?
+  location            String?
+  purposeOfVisit      String?
+  meetingMode         String?
+  productsDiscussed   String[]     @default([])
+  keyDiscussionPoints String?
+  customerRequirement String?
+  cdaStatus           String?
+  cdaDate             DateTime?
+  samplingStatus      String?
+  rndFeedback         String?
+  nextAction          String?
+  activities          Activity[]
+  deals               Deal[]
+  followUps           FollowUp[]
+  companyRef          Company?     @relation(fields: [companyId], references: [id])
+  contact             Contact?     @relation(fields: [contactId], references: [id])
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner               User         @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([ownerId])
@@ -495,36 +518,39 @@ model Lead {
   @@index([email])
   @@index([createdAt])
   @@index([lastActivityAt])
+  @@index([funnelStage])
+  @@index([region])
 }
 
 model Company {
-  id             String       @id @default(cuid())
-  name           String
-  industry       String?
-  website        String?
-  phone          String?
-  email          String?
-  address        String?
-  city           String?
-  state          String?
-  country        String?      @default("India")
-  employees      Int?
-  revenue        Decimal?     @db.Decimal(15, 2)
-  status         String       @default("ACTIVE")
-  organizationId String
-  ownerId        String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  activities     Activity[]
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  owner          User         @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  contacts       Contact[]
-  deals          Deal[]
-  visits         FieldVisit[]
-  followUps      FollowUp[]
-  geoFences      GeoFence[]
-  leads          Lead[]
-  meetings       Meeting[]
+  id                String             @id @default(cuid())
+  name              String
+  industry          String?
+  website           String?
+  phone             String?
+  email             String?
+  address           String?
+  city              String?
+  state             String?
+  country           String?            @default("India")
+  employees         Int?
+  revenue           Decimal?           @db.Decimal(15, 2)
+  status            String             @default("ACTIVE")
+  organizationId    String
+  ownerId           String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  activities        Activity[]
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner             User               @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  contacts          Contact[]
+  deals             Deal[]
+  visits            FieldVisit[]
+  followUps         FollowUp[]
+  geoFences         GeoFence[]
+  leads             Lead[]
+  meetings          Meeting[]
+  salesTransactions SalesTransaction[]
 
   @@index([organizationId])
   @@index([ownerId])
@@ -603,6 +629,91 @@ model Deal {
   @@index([stage])
   @@index([expectedClose])
   @@index([createdAt])
+}
+
+/// Product catalog — the organisation's sellable products, reused by the
+/// sales entry form dropdowns and matched by the lead importer's
+/// "Products Discussed" column. Scoped per organization.
+model Product {
+  id                String             @id @default(cuid())
+  organizationId    String
+  name              String
+  sku               String?
+  /// e.g. Nutraceutical, Cosmetic, Food & Beverage
+  category          String?
+  /// e.g. "Food Grade", "Pharma Grade"
+  grade             String?
+  /// e.g. "1% WD", "0.1% WS", "RD"
+  variant           String?
+  /// Unit the product is sold in — "kg" by default (ingredients sell by kg).
+  unit              String             @default("kg")
+  defaultUnitPrice  Decimal?           @db.Decimal(15, 2)
+  description       String?
+  /// Optional extra key/value metadata edited on the catalog form.
+  attributes        Json?
+  /// Products referenced by sales are deactivated rather than deleted, so
+  /// historic sales lines keep their product row.
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  salesTransactions SalesTransaction[]
+
+  @@unique([organizationId, name, variant])
+  @@index([organizationId])
+  @@index([name])
+  @@index([isActive])
+  @@index([category])
+}
+
+/// One row per product line of a sale. All lines belonging to the same sale
+/// share `groupId`, `invoiceNumber` and `invoiceKey`; `lineNumber` is the
+/// 1-based position of the line within its group and is unique per invoice.
+///
+/// No user / customer / product names are denormalised here — read them
+/// through `salesperson`, `customer` and `product` relations.
+///
+/// Exactly one of `productId` / `otherProductName` is set (enforced in zod and
+/// in the service, not by a DB constraint).
+model SalesTransaction {
+  id               String        @id @default(cuid())
+  organizationId   String
+  salespersonId    String
+  customerId       String
+  productId        String?
+  /// Typed by the user when the sale is not for a catalog product.
+  otherProductName String?
+  saleDate         DateTime
+  invoiceNumber    String
+  /// Trimmed + lower-cased copy of `invoiceNumber`, the case-insensitive
+  /// uniqueness key (mirrors Contact.emailKey).
+  invoiceKey       String
+  /// Shared by every line of one sale; groups lines into a single invoice.
+  groupId          String
+  lineNumber       Int
+  quantity         Decimal       @db.Decimal(15, 3)
+  unitPrice        Decimal       @db.Decimal(15, 2)
+  totalAmount      Decimal       @db.Decimal(15, 2)
+  amountPaid       Decimal       @db.Decimal(15, 2)
+  balanceAmount    Decimal       @db.Decimal(15, 2)
+  paymentStatus    PaymentStatus @default(PENDING)
+  paymentDate      DateTime?
+  remarks          String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  salesperson      User          @relation("SalesSalesperson", fields: [salespersonId], references: [id], onDelete: Cascade)
+  customer         Company       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product          Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, invoiceKey, lineNumber])
+  @@index([organizationId])
+  @@index([salespersonId])
+  @@index([customerId])
+  @@index([productId])
+  @@index([saleDate])
+  @@index([paymentStatus])
+  @@index([groupId])
 }
 
 model Activity {
@@ -1116,6 +1227,23 @@ enum DealStage {
   NEGOTIATION
   WON
   LOST
+}
+
+/// SPANCOP sales-funnel position of a lead. Orthogonal to `LeadStatus`.
+enum FunnelStage {
+  SUSPECT
+  PROSPECT
+  APPROACH_ANALYSE
+  NEGOTIATE
+  CLOSE
+  ORDER
+  PAYMENT
+}
+
+enum PaymentStatus {
+  PAID
+  PARTIALLY_PAID
+  PENDING
 }
 
 enum FollowUpStatus {

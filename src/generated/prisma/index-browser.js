@@ -390,7 +390,21 @@ exports.Prisma.LeadScalarFieldEnum = {
   contactId: 'contactId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  lastActivityAt: 'lastActivityAt'
+  lastActivityAt: 'lastActivityAt',
+  funnelStage: 'funnelStage',
+  enquiryDate: 'enquiryDate',
+  region: 'region',
+  location: 'location',
+  purposeOfVisit: 'purposeOfVisit',
+  meetingMode: 'meetingMode',
+  productsDiscussed: 'productsDiscussed',
+  keyDiscussionPoints: 'keyDiscussionPoints',
+  customerRequirement: 'customerRequirement',
+  cdaStatus: 'cdaStatus',
+  cdaDate: 'cdaDate',
+  samplingStatus: 'samplingStatus',
+  rndFeedback: 'rndFeedback',
+  nextAction: 'nextAction'
 };
 
 exports.Prisma.CompanyScalarFieldEnum = {
@@ -450,6 +464,47 @@ exports.Prisma.DealScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   closedAt: 'closedAt'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  sku: 'sku',
+  category: 'category',
+  grade: 'grade',
+  variant: 'variant',
+  unit: 'unit',
+  defaultUnitPrice: 'defaultUnitPrice',
+  description: 'description',
+  attributes: 'attributes',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SalesTransactionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  salespersonId: 'salespersonId',
+  customerId: 'customerId',
+  productId: 'productId',
+  otherProductName: 'otherProductName',
+  saleDate: 'saleDate',
+  invoiceNumber: 'invoiceNumber',
+  invoiceKey: 'invoiceKey',
+  groupId: 'groupId',
+  lineNumber: 'lineNumber',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  totalAmount: 'totalAmount',
+  amountPaid: 'amountPaid',
+  balanceAmount: 'balanceAmount',
+  paymentStatus: 'paymentStatus',
+  paymentDate: 'paymentDate',
+  remarks: 'remarks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ActivityScalarFieldEnum = {
@@ -813,6 +868,16 @@ exports.LeadStatus = exports.$Enums.LeadStatus = {
   LOST: 'LOST'
 };
 
+exports.FunnelStage = exports.$Enums.FunnelStage = {
+  SUSPECT: 'SUSPECT',
+  PROSPECT: 'PROSPECT',
+  APPROACH_ANALYSE: 'APPROACH_ANALYSE',
+  NEGOTIATE: 'NEGOTIATE',
+  CLOSE: 'CLOSE',
+  ORDER: 'ORDER',
+  PAYMENT: 'PAYMENT'
+};
+
 exports.DealStage = exports.$Enums.DealStage = {
   NEW_LEAD: 'NEW_LEAD',
   CONTACTED: 'CONTACTED',
@@ -821,6 +886,12 @@ exports.DealStage = exports.$Enums.DealStage = {
   NEGOTIATION: 'NEGOTIATION',
   WON: 'WON',
   LOST: 'LOST'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PAID: 'PAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  PENDING: 'PENDING'
 };
 
 exports.DailyReportStatus = exports.$Enums.DailyReportStatus = {
@@ -918,6 +989,8 @@ exports.Prisma.ModelName = {
   Company: 'Company',
   Contact: 'Contact',
   Deal: 'Deal',
+  Product: 'Product',
+  SalesTransaction: 'SalesTransaction',
   Activity: 'Activity',
   DailyReport: 'DailyReport',
   FollowUp: 'FollowUp',
