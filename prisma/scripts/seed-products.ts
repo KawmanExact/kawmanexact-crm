@@ -1,0 +1,230 @@
+/**
+ * Seed the product catalog for one organisation with Kawman ExAct's real
+ * products, so the sales dropdowns and the lead importer's "Products
+ * Discussed" matching work out of the box.
+ *
+ * Idempotent: matches on (organizationId, name, variant) case-insensitively and
+ * only fills fields that are still empty. Re-running never duplicates a row and
+ * never overwrites a price somebody has since set.
+ *
+ * NO PRICES ARE INVENTED. `defaultUnitPrice` is deliberately left null for every
+ * seeded product — set them per organisation after a price list is agreed.
+ *
+ * Flags:
+ *   --dry-run            Report what would be created/updated, write nothing.
+ *   --org=<slug>         Target organisation by slug (repeatable).
+ *   --all-orgs           Seed every organisation in the database.
+ *   --with-prices        Also apply DEFAULT_UNIT_PRICES below (opt-in only).
+ *
+ * Usage:
+ *   npx tsx prisma/scripts/seed-products.ts --org=kawman
+ *   npm run db:seed-products -- --org=kawman --dry-run
+ */
+import { createScriptPrismaClient } from './_client'
+
+const prisma = createScriptPrismaClient()
+
+/**
+ * Local copy of product.service.ts's normalizeProductText. The service carries
+ * `import 'server-only'`, which throws outside a Next.js bundle, so a tsx
+ * script cannot import from it — the same reason lib/rbac-seed.ts has no
+ * server-only marker.
+ */
+function normalizeProductText(value: string | null | undefined): string | null {
+  if (!value) return null
+  const trimmed = value.trim()
+  return trimmed === '' ? null : trimmed
+}
+
+/** Optional prices — opt-in via --with-prices, never applied by default. */
+const DEFAULT_UNIT_PRICES: Record<string, string> = {
+  'CarniExAct': '0',
+}
+
+interface SeedProduct {
+  name: string
+  variant: string | null
+  category: string
+  grade: string | null
+  description: string
+}
+
+const CATALOG: SeedProduct[] = [
+  {
+    name: 'CarniExAct™',
+    variant: null,
+    category: 'Nutraceutical',
+    grade: 'RD',
+    description: 'CarniExAct™ nutraceutical ingredient.',
+  },
+  {
+    name: 'BranChExAct™',
+    variant: 'RD',
+    category: 'Nutraceutical',
+    grade: 'RD',
+    description: 'BranChExAct™ branch-chain ingredient, RD grade.',
+  },
+  {
+    name: 'AlphaExAct™',
+    variant: null,
+    category: 'Nutraceutical',
+    grade: null,
+    description: 'AlphaExAct™ nutraceutical ingredient.',
+  },
+  {
+    name: 'CoQExAct™',
+    variant: null,
+    category: 'Nutraceutical',
+    grade: null,
+    description: 'CoQExAct™ nutraceutical ingredient.',
+  },
+  {
+    name: 'ArginExAct™',
+    variant: null,
+    category: 'Nutraceutical',
+    grade: null,
+    description: 'ArginExAct™ nutraceutical ingredient.',
+  },
+  {
+    name: 'VitExAct™ B12',
+    variant: '1% WD',
+    category: 'Nutraceutical',
+    grade: null,
+    description: 'VitExAct™ B12, 1% water dispersion.',
+  },
+  {
+    name: 'VitExAct™ B12',
+    variant: '0.1% WS',
+    category: 'Nutraceutical',
+    grade: null,
+    description: 'VitExAct™ B12, 0.1% water soluble.',
+  },
+  {
+    name: 'CafRelExAct™',
+    variant: null,
+    category: 'Food & Beverage',
+    grade: null,
+    description: 'CafRelExAct™ food & beverage ingredient.',
+  },
+]
+
+function argValues(flag: string): string[] {
+  return process.argv.filter((a) => a.startsWith(`--${flag}=`)).map((a) => a.slice(flag.length + 3))
+}
+
+async function resolveOrganizations(dryRun: boolean) {
+  const slugs = argValues('org')
+  const allOrgs = process.argv.includes('--all-orgs')
+
+  if (slugs.length === 0 && !allOrgs) {
+    const all = await prisma.organization.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { slug: 'asc' },
+    })
+    console.log(`[seed-products] No --org=<slug> or --all-orgs given. Available organisations:`)
+    for (const org of all) console.log(`[seed-products]   ${org.slug}  (${org.name})`)
+    console.log(
+      '[seed-products] Re-run with e.g. --org=kawman, or --all-orgs to seed every organisation.'
+    )
+    if (!dryRun && !allOrgs) {
+      await prisma.$disconnect()
+      return []
+    }
+    return all
+  }
+
+  const where = allOrgs ? {} : { slug: { in: slugs } }
+  const orgs = await prisma.organization.findMany({
+    where,
+    select: { id: true, name: true, slug: true },
+    orderBy: { slug: 'asc' },
+  })
+
+  if (orgs.length === 0 && !allOrgs) {
+    console.error(
+      `[seed-products] No organisation matched ${JSON.stringify(slugs)}. Nothing was written.`
+    )
+  }
+  return orgs
+}
+
+async function main() {
+  const dryRun = process.argv.includes('--dry-run')
+  const withPrices = process.argv.includes('--with-prices')
+
+  const organizations = await resolveOrganizations(dryRun)
+  if (organizations.length === 0) {
+    await prisma.$disconnect()
+    return
+  }
+
+  for (const org of organizations) {
+    console.log(`[seed-products] ${org.name} (${org.slug})${dryRun ? ' — DRY RUN' : ''}`)
+
+    let created = 0
+    let updated = 0
+
+    for (const seed of CATALOG) {
+      const variant = normalizeProductText(seed.variant)
+      const existing = await prisma.product.findFirst({
+        where: {
+          organizationId: org.id,
+          name: { equals: seed.name, mode: 'insensitive' },
+          ...(variant === null ? { variant: null } : { variant: { equals: variant, mode: 'insensitive' } }),
+        },
+      })
+
+      const price = withPrices ? (DEFAULT_UNIT_PRICES[seed.name] ?? null) : null
+
+      if (existing) {
+        // Fill only blanks so a hand-edited catalog is never clobbered.
+        const data = {
+          ...(existing.category ? {} : { category: seed.category }),
+          ...(existing.grade ? {} : { grade: seed.grade }),
+          ...(existing.description ? {} : { description: seed.description }),
+          ...(existing.defaultUnitPrice || !price ? {} : { defaultUnitPrice: price }),
+        }
+        if (Object.keys(data).length > 0) {
+          updated += 1
+          console.log(`[seed-products]   update  ${seed.name}${variant ? ` (${variant})` : ''}`)
+          if (!dryRun) await prisma.product.update({ where: { id: existing.id }, data })
+        } else {
+          console.log(`[seed-products]   present ${seed.name}${variant ? ` (${variant})` : ''}`)
+        }
+        continue
+      }
+
+      created += 1
+      console.log(`[seed-products]   create  ${seed.name}${variant ? ` (${variant})` : ''}`)
+      if (!dryRun) {
+        await prisma.product.create({
+          data: {
+            organizationId: org.id,
+            name: seed.name,
+            variant,
+            category: seed.category,
+            grade: seed.grade,
+            description: seed.description,
+            unit: 'kg',
+            // No invented prices — the owner sets defaultUnitPrice per org.
+            ...(price ? { defaultUnitPrice: price } : {}),
+          },
+        })
+      }
+    }
+
+    console.log(`[seed-products] ${org.slug}: ${created} created, ${updated} updated.`)
+  }
+
+  if (!withPrices) {
+    console.log('[seed-products] defaultUnitPrice left NULL on purpose — no prices were invented.')
+  }
+  console.log(`[seed-products] ${dryRun ? 'DRY RUN — nothing written.' : 'Done.'}`)
+
+  await prisma.$disconnect()
+}
+
+main().catch((err) => {
+  console.error('[seed-products] Error:', err)
+  process.exit(1)
+})
