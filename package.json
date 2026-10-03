@@ -21,6 +21,8 @@
     "db:studio": "prisma studio",
     "db:backfill-email-key": "tsx prisma/scripts/backfill-contact-email-key.ts",
     "db:cleanup-phone-names": "tsx prisma/scripts/cleanup-phone-number-as-name.ts",
+    "db:sync-sales-permissions": "tsx prisma/scripts/sync-sales-permissions.ts",
+    "db:seed-products": "tsx prisma/scripts/seed-products.ts",
     "setup:chrome": "node scripts/setup-chrome.mjs",
     "postinstall": "node scripts/setup-chrome.mjs"
   },
