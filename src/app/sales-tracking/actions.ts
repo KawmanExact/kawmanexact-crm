@@ -407,3 +407,44 @@ export async function saleRowCapabilities(
   const canDelete = perms.includes(PERMISSIONS['sales.delete'].name)
   return { canEdit, canDelete }
 }
+
+/**
+ * Type-ahead for the customer picker. Deliberately org-scoped but NOT
+ * owner-scoped: a customer is a shared entity, and requiring a salesperson to
+ * pick "their own" companies would make recording a sale impossible whenever
+ * the account was created by someone else. Only the id/name pair crosses the
+ * boundary.
+ */
+export async function searchCompaniesAction(
+  term: string
+): Promise<Array<{ id: string; name: string }>> {
+  await validateCsrf()
+  const session = await requireApiSession()
+  const perms = session.user.permissions as string[]
+  if (
+    !perms.includes(PERMISSIONS['sales.view'].name) &&
+    !perms.includes(PERMISSIONS['sales.create'].name)
+  ) {
+    throw new Error('You do not have permission to do this.')
+  }
+
+  const search = term.trim()
+  return prisma.company.findMany({
+    where: {
+      organizationId: session.user.organizationId,
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' as const } },
+              { city: { contains: search, mode: 'insensitive' as const } },
+              { state: { contains: search, mode: 'insensitive' as const } },
+              { industry: { contains: search, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
+    },
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+    take: 20,
+  })
+}

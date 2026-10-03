@@ -76,6 +76,85 @@ export const salesLineSchema = z
 
 export type SalesLineInput = z.infer<typeof salesLineSchema>
 
+/**
+ * Browser twin of salesLineSchema: identical rules, but quantities are still
+ * strings because they come straight out of <input type="number">. Blanks are
+ * treated as 0 so an empty field reports the same message the server would.
+ */
+export const salesClientLineSchema = z
+  .object({
+    productId: z.string().trim(),
+    otherProductName: z.string().trim(),
+    quantity: z.string().trim(),
+    unitPrice: z.string().trim(),
+    amountPaid: z.string().trim(),
+    paymentStatus: paymentStatusSchema,
+  })
+  .superRefine((line, ctx) => {
+    const quantity = numericField(line.quantity)
+    const unitPrice = numericField(line.unitPrice)
+    const amountPaid = numericField(line.amountPaid)
+
+    const usesOther = line.productId === OTHER_PRODUCT_SENTINEL
+    if (line.productId && line.productId !== OTHER_PRODUCT_SENTINEL && line.otherProductName !== '') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['otherProductName'],
+        message: 'Choose a catalog product or type an "Other" name, not both',
+      })
+    }
+    if (!line.productId && line.otherProductName === '') {
+      ctx.addIssue({ code: 'custom', path: ['productId'], message: 'Choose a product or type an "Other" name' })
+    }
+    if (usesOther && line.otherProductName === '') {
+      ctx.addIssue({ code: 'custom', path: ['otherProductName'], message: 'Enter the product name' })
+    }
+
+    if (line.quantity !== '' && quantity === null) {
+      ctx.addIssue({ code: 'custom', path: ['quantity'], message: 'Enter a valid quantity' })
+    }
+    if (quantity !== null && quantity <= 0) {
+      ctx.addIssue({ code: 'custom', path: ['quantity'], message: 'Quantity must be greater than 0' })
+    }
+    if (line.unitPrice !== '' && unitPrice === null) {
+      ctx.addIssue({ code: 'custom', path: ['unitPrice'], message: 'Enter a valid unit price' })
+    }
+    if (unitPrice !== null && unitPrice < 0) {
+      ctx.addIssue({ code: 'custom', path: ['unitPrice'], message: 'Unit price cannot be negative' })
+    }
+    if (line.amountPaid !== '' && amountPaid === null) {
+      ctx.addIssue({ code: 'custom', path: ['amountPaid'], message: 'Enter a valid amount paid' })
+    }
+    if (amountPaid !== null && amountPaid < 0) {
+      ctx.addIssue({ code: 'custom', path: ['amountPaid'], message: 'Amount paid cannot be negative' })
+    }
+
+    const total = computeLineTotal(quantity ?? 0, unitPrice ?? 0)
+    if (amountPaid !== null && new Prisma.Decimal(amountPaid).greaterThan(total)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['amountPaid'],
+        message: 'Amount paid cannot be more than the line total',
+      })
+    }
+
+    const derived = derivePaymentStatus(total, amountPaid ?? 0)
+    if (derived !== line.paymentStatus) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['paymentStatus'],
+        message: `Payment status must be ${derived.replace(/_/g, ' ').toLowerCase()} for this total and amount paid`,
+      })
+    }
+  })
+
+/** Blank / unparseable numeric input becomes null so the rule above can report it. */
+function numericField(value: string): number | null {
+  if (value.trim() === '') return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
 /** The whole form. `lines` is serialised from a JSON hidden input by the client. */
 export const salesFormSchema = z
   .object({
@@ -94,26 +173,80 @@ export const salesFormSchema = z
     lines: z.array(salesLineSchema).min(1, 'Add at least one product line'),
   })
   .superRefine((form, ctx) => {
-    if (form.paymentDate === '') return
-    const paid = form.lines.some((line) => line.amountPaid > 0)
-    if (!paid) {
-      ctx.addIssue({ code: 'custom', path: ['paymentDate'], message: 'No payment recorded — clear the payment date' })
-      return
-    }
-    if (Number.isNaN(Date.parse(form.saleDate)) || Number.isNaN(Date.parse(form.paymentDate))) {
-      ctx.addIssue({ code: 'custom', path: ['paymentDate'], message: 'Enter valid dates' })
-      return
-    }
-    if (new Date(form.paymentDate) < new Date(form.saleDate)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['paymentDate'],
-        message: 'Payment date cannot be before the sale date',
-      })
-    }
+    validateClientPaymentDate(
+      form.paymentDate,
+      form.saleDate,
+      form.lines.some((l) => l.amountPaid > 0),
+      ctx
+    )
   })
 
 export type SalesFormInput = z.infer<typeof salesFormSchema>
+
+/**
+ * Payment date is required once anything has been paid, and may never precede
+ * the sale date. Shared by the server schema above and the browser schema
+ * below so the two can never drift apart.
+ */
+function validateClientPaymentDate(
+  paymentDate: string,
+  saleDate: string,
+  anyPaid: boolean,
+  ctx: z.RefinementCtx
+): void {
+  if (paymentDate === '') return
+  if (!anyPaid) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['paymentDate'],
+      message: 'No payment recorded — clear the payment date',
+    })
+    return
+  }
+  if (Number.isNaN(Date.parse(paymentDate))) {
+    ctx.addIssue({ code: 'custom', path: ['paymentDate'], message: 'Enter a valid payment date' })
+    return
+  }
+  if (Number.isNaN(Date.parse(saleDate))) return
+  if (new Date(paymentDate) < new Date(saleDate)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['paymentDate'],
+      message: 'Payment date cannot be before the sale date',
+    })
+  }
+}
+
+/**
+ * BROWSER schema. Same rules as salesFormSchema, expressed in the shape the
+ * form actually holds (a picked customer object, and numeric fields still as
+ * strings because they live in <input type="number">). Keeping both in this one
+ * file is what makes "validated client and server" true rather than aspirational.
+ */
+export const salesClientFormSchema = z
+  .object({
+    salespersonId: z.string().trim().min(1, 'Salesperson is required'),
+    customer: z.object({ id: z.string(), name: z.string() }).nullable(),
+    saleDate: z.string().trim().min(1, 'Sale date is required'),
+    paymentDate: z.string().trim(),
+    invoiceNumber: z
+      .string()
+      .trim()
+      .min(1, 'Invoice number is required')
+      .max(INVOICE_NUMBER_MAX, `Invoice number must be ${INVOICE_NUMBER_MAX} characters or fewer`),
+    remarks: z.string().trim(),
+    moveLeadStage: z.boolean(),
+    lines: z.array(salesClientLineSchema).min(1, 'Add at least one product line'),
+  })
+  .superRefine((form, ctx) => {
+    if (!form.customer) {
+      ctx.addIssue({ code: 'custom', path: ['customer'], message: 'Customer is required' })
+    }
+    const anyPaid = form.lines.some((line) => Number(line.amountPaid) > 0)
+    validateClientPaymentDate(form.paymentDate, form.saleDate, anyPaid, ctx)
+  })
+
+export type SalesClientFormInput = z.infer<typeof salesClientFormSchema>
 
 /**
  * Per-line "Other" name length is also enforced server-side because the JSON
