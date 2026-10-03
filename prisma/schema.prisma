@@ -1,0 +1,1188 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  logo            String?
+  website         String?
+  industry        String?
+  address         String?
+  phone           String?
+  email           String?
+  timezone        String           @default("Asia/Kolkata")
+  currency        String           @default("INR")
+  dateFormat      String           @default("DD/MM/YYYY")
+  settings        Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  aiConversations AIConversation[]
+  aiInsights      AIInsight[]
+  aiReports       AIReport[]
+  activities      Activity[]
+  auditLogs       AuditLog[]
+  companies       Company[]
+  contacts        Contact[]
+  deals           Deal[]
+  departments     Department[]
+  visits          FieldVisit[]
+  files           File[]
+  fileCategories  FileCategory[]
+  folders         Folder[]
+  followUps       FollowUp[]
+  geoFences       GeoFence[]
+  integrations    Integration[]
+  leads           Lead[]
+  meetings        Meeting[]
+  notifications   Notification[]
+  savedViews      SavedView[]
+  teams           Team[]
+  users           User[]
+  liveLocations   UserLiveLocation[]
+  dailyReports    DailyReport[]
+   aiUsages        AIUsage[]
+   resourceGrants  ResourceGrant[]
+
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model User {
+  id                     String               @id @default(cuid())
+  email                  String               @unique
+  name                   String?
+  passwordHash           String?
+  image                  String?
+  employeeId             String?
+  phone                  String?
+  designation            String?
+  status                 UserStatus           @default(ACTIVE)
+  emailVerified          Boolean              @default(false)
+  lastLoginAt            DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  organizationId         String
+  departmentId           String?
+  teamId                 String?
+  managerId              String?
+  aiConversations        AIConversation[]
+  generatedAIReports     AIReport[]           @relation("AIReportGenerator")
+  accounts               Account[]
+  activities             Activity[]           @relation("ActivityActor")
+  auditLogs              AuditLog[]           @relation("AuditActor")
+  liveLocation           UserLiveLocation?
+  checkIns               CheckIn[]
+  ownedCompanies         Company[]            @relation("CompanyOwner")
+  ownedContacts          Contact[]            @relation("ContactOwner")
+  ownedDeals             Deal[]               @relation("DealOwner")
+  managedDepartments     Department[]         @relation("DepartmentManager")
+  assignedVisits         FieldVisit[]         @relation("VisitAssignee")
+  uploadedFiles          File[]               @relation("FileUploader")
+  fileActivities         FileActivity[]
+  createdFilePermissions FilePermission[]     @relation("FilePermissionCreator")
+  filePermissions        FilePermission[]     @relation("FilePermissionUser")
+  fileSharesBy           FileShare[]          @relation("FileShareBy")
+  fileSharesWith         FileShare[]          @relation("FileShareWith")
+  uploadedFileVersions   FileVersion[]        @relation("FileVersionUploader")
+  createdFolders         Folder[]             @relation("FolderCreator")
+  ownedFollowUps         FollowUp[]           @relation("FollowUpOwner")
+  ownedLeads             Lead[]               @relation("LeadOwner")
+  createdMeetings        Meeting[]            @relation("MeetingCreator")
+  meetings               MeetingParticipant[]
+  editedMeetingSummaries MeetingSummary[]     @relation("MeetingSummaryEditor")
+  notifications          Notification[]
+  savedViews             SavedView[]
+  sessions               Session[]
+  managedTeams           Team[]               @relation("TeamManager")
+  department             Department?          @relation("UserDepartment", fields: [departmentId], references: [id])
+   manager                User?                @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
+  subordinates           User[]               @relation("UserManager")
+  organization           Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  team                   Team?                @relation("TeamMembers", fields: [teamId], references: [id])
+   roles                  UserRole[]
+   visitReports           VisitReport[]        @relation("VisitReportCreator")
+   dailyReports           DailyReport[]
+   aiUsages               AIUsage[]
+   grantsGiven            ResourceGrant[]     @relation("GrantsGiven")
+
+  @@index([organizationId])
+  @@index([email])
+  @@index([departmentId])
+  @@index([teamId])
+  @@index([managerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endedAt   DateTime?
+  lastSeenAt DateTime?
+
+  @@index([userId])
+  @@index([userId, lastSeenAt])
+}
+
+model UserLiveLocation {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  organizationId String
+  latitude       Decimal  @db.Decimal(10, 8)
+  longitude      Decimal  @db.Decimal(11, 8)
+  accuracy       Decimal? @db.Decimal(10, 2)
+  heading        Decimal? @db.Decimal(10, 2)
+  speed          Decimal? @db.Decimal(10, 2)
+  isTracking     Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([updatedAt])
+  @@index([isTracking])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  issuer                String?   // Required by better-auth for credential provider
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        RoleType         @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+   permissions RolePermission[]
+   users       UserRole[]
+   resourceGrants ResourceGrant[]
+
+  @@index([name])
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  category    String
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+
+  @@index([name])
+  @@index([category])
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+   @@index([userId])
+   @@index([roleId])
+ }
+
+ model ResourceGrant {
+   id            String   @id @default(cuid())
+   organizationId String
+   roleId        String
+   resourceType  String   @default("record") // 'record', 'report', 'file', 'team' etc.
+   resourceId    String?  // null = grant applies to all resources of type; set = single resource
+   permission    String   // e.g. 'view', 'edit', 'delete', 'share'
+   grantedBy     String
+   grantedAt     DateTime @default(now())
+   expiresAt     DateTime?
+   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   role            Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+   grantor         User         @relation("GrantsGiven", fields: [grantedBy], references: [id], onDelete: Cascade)
+
+   @@index([organizationId])
+   @@index([roleId])
+   @@index([resourceType, resourceId])
+   @@index([expiresAt])
+ }
+
+model Department {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  organizationId  String
+  managerId       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+   manager         User?            @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  filePermissions FilePermission[]
+  teams           Team[]
+  users           User[]           @relation("UserDepartment")
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Team {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  organizationId  String
+  departmentId    String?
+  managerId       String?
+  status          String           @default("ACTIVE")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  filePermissions FilePermission[]
+  department      Department?      @relation(fields: [departmentId], references: [id])
+   manager         User?            @relation("TeamManager", fields: [managerId], references: [id], onDelete: SetNull)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users           User[]           @relation("TeamMembers")
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([departmentId])
+}
+
+model Folder {
+  id             String           @id @default(cuid())
+  name           String
+  parentId       String?
+  organizationId String
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  files          File[]
+  permissions    FilePermission[]
+   createdBy      User             @relation("FolderCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parent         Folder?          @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children       Folder[]         @relation("FolderHierarchy")
+
+  @@index([organizationId])
+  @@index([parentId])
+  @@index([createdById])
+}
+
+model File {
+  id                     String                  @id @default(cuid())
+  fileName               String
+  originalName           String
+  mimeType               String
+  fileSize               BigInt
+  cloudinaryPublicId     String                  @unique
+  cloudinaryResourceType String
+  secureUrl              String
+  thumbnailUrl           String?
+  version                String
+  visibility             FileVisibility          @default(PRIVATE)
+  folderId               String?
+  organizationId         String
+  uploadedById           String
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  folder                 Folder?                 @relation(fields: [folderId], references: [id])
+  organization           Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   uploadedBy             User                    @relation("FileUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+  activities             FileActivity[]
+  permissions            FilePermission[]
+  shares                 FileShare[]
+  versions               FileVersion[]
+  visitReportAttachments VisitReportAttachment[]
+
+  @@index([organizationId])
+  @@index([folderId])
+  @@index([uploadedById])
+  @@index([cloudinaryPublicId])
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+model FileVersion {
+  id                     String   @id @default(cuid())
+  fileId                 String
+  versionNumber          Int
+  originalName           String
+  mimeType               String
+  fileSize               BigInt
+  cloudinaryPublicId     String
+  cloudinaryResourceType String
+  secureUrl              String
+  thumbnailUrl           String?
+  uploadedById           String
+  createdAt              DateTime @default(now())
+  file                   File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+   uploadedBy             User     @relation("FileVersionUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, versionNumber])
+  @@index([fileId])
+  @@index([uploadedById])
+}
+
+model SavedView {
+  id             String       @id @default(cuid())
+  name           String
+  page           String
+  filters        Json
+  organizationId String
+  userId         String
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([page])
+}
+
+model FilePermission {
+  id           String              @id @default(cuid())
+  fileId       String?
+  userId       String?
+  teamId       String?
+  departmentId String?
+  level        FilePermissionLevel
+  createdAt    DateTime            @default(now())
+  createdById  String
+  folderId     String?
+   createdBy    User                @relation("FilePermissionCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  department   Department?         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  file         File?               @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  folder       Folder?             @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  team         Team?               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user         User?               @relation("FilePermissionUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([fileId])
+  @@index([folderId])
+  @@index([userId])
+  @@index([teamId])
+  @@index([departmentId])
+}
+
+model FileShare {
+  id           String              @id @default(cuid())
+  fileId       String
+  sharedById   String
+  sharedWithId String
+  level        FilePermissionLevel
+  expiresAt    DateTime?
+  createdAt    DateTime            @default(now())
+  file         File                @relation(fields: [fileId], references: [id], onDelete: Cascade)
+   sharedBy     User                @relation("FileShareBy", fields: [sharedById], references: [id], onDelete: Cascade)
+  sharedWith   User                @relation("FileShareWith", fields: [sharedWithId], references: [id], onDelete: Cascade)
+
+  @@index([fileId])
+  @@index([sharedWithId])
+  @@index([sharedById])
+}
+
+model FileCategory {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  color          String?
+  icon           String?
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model FileActivity {
+  id        String   @id @default(cuid())
+  fileId    String
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  file      File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([fileId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Lead {
+  id             String       @id @default(cuid())
+  name           String
+  company        String?
+  email          String?
+  phone          String?
+  source         String?
+  status         LeadStatus   @default(NEW)
+  score          Int          @default(0)
+  value          Decimal?     @db.Decimal(15, 2)
+  segment        String?
+  notes          String?
+  organizationId String
+  ownerId        String
+  companyId      String?
+  contactId      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  lastActivityAt DateTime?
+  activities     Activity[]
+  deals          Deal[]
+  followUps      FollowUp[]
+  companyRef     Company?     @relation(fields: [companyId], references: [id])
+  contact        Contact?     @relation(fields: [contactId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   owner          User         @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([companyId])
+  @@index([email])
+  @@index([createdAt])
+  @@index([lastActivityAt])
+}
+
+model Company {
+  id             String       @id @default(cuid())
+  name           String
+  industry       String?
+  website        String?
+  phone          String?
+  email          String?
+  address        String?
+  city           String?
+  state          String?
+  country        String?      @default("India")
+  employees      Int?
+  revenue        Decimal?     @db.Decimal(15, 2)
+  status         String       @default("ACTIVE")
+  organizationId String
+  ownerId        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  activities     Activity[]
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   owner          User         @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  contacts       Contact[]
+  deals          Deal[]
+  visits         FieldVisit[]
+  followUps      FollowUp[]
+  geoFences      GeoFence[]
+  leads          Lead[]
+  meetings       Meeting[]
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([name])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Contact {
+  id             String       @id @default(cuid())
+  name           String
+  designation    String?
+  email          String?
+   phone          String?
+   mobile         String?
+   address        String?
+   segment        String?
+   status         String       @default("ACTIVE")
+  organizationId String
+  companyId      String?
+  ownerId        String
+  emailKey       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  lastActivityAt DateTime?
+  activities     Activity[]
+  company        Company?     @relation(fields: [companyId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   owner          User         @relation("ContactOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  deals          Deal[]
+  visits         FieldVisit[]
+  leads          Lead[]
+  meetings       Meeting[]
+
+  @@index([organizationId])
+  @@index([companyId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([createdAt])
+  @@unique([organizationId, emailKey])
+}
+
+model Deal {
+  id             String       @id @default(cuid())
+  name           String
+  value          Decimal      @db.Decimal(15, 2)
+  probability    Int          @default(0)
+  stage          DealStage    @default(NEW_LEAD)
+  expectedClose  DateTime?
+  priority       String       @default("MEDIUM")
+  segment        String?
+  notes          String?
+  organizationId String
+  ownerId        String
+  companyId      String?
+  contactId      String?
+  leadId         String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  closedAt       DateTime?
+  activities     Activity[]
+  company        Company?     @relation(fields: [companyId], references: [id])
+  contact        Contact?     @relation(fields: [contactId], references: [id])
+  lead           Lead?        @relation(fields: [leadId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   owner          User         @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  visits         FieldVisit[]
+  followUps      FollowUp[]
+  meetings       Meeting[]
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([companyId])
+  @@index([contactId])
+  @@index([leadId])
+  @@index([stage])
+  @@index([expectedClose])
+  @@index([createdAt])
+}
+
+model Activity {
+  id             String       @id @default(cuid())
+  type           String
+  description    String
+  metadata       Json?
+  organizationId String
+  actorId        String
+  leadId         String?
+  companyId      String?
+  contactId      String?
+  dealId         String?
+  createdAt      DateTime     @default(now())
+   actor          User         @relation("ActivityActor", fields: [actorId], references: [id], onDelete: Cascade)
+  company        Company?     @relation(fields: [companyId], references: [id])
+  contact        Contact?     @relation(fields: [contactId], references: [id])
+  deal           Deal?        @relation(fields: [dealId], references: [id])
+  lead           Lead?        @relation(fields: [leadId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([actorId])
+  @@index([leadId])
+  @@index([companyId])
+  @@index([contactId])
+  @@index([dealId])
+  @@index([createdAt])
+}
+
+model DailyReport {
+  id                       String              @id @default(cuid())
+  userId                   String
+  organizationId           String
+  date                     DateTime            @db.Date
+  workDescription          String?
+  completedWork            String?
+  pendingWork              String?
+  blockers                 String?
+  tomorrowPlan             String?
+  tasksCompletedCount      Int                 @default(0)
+  crmRecordsUpdatedCount   Int                 @default(0)
+  leadsWorkedOnCount       Int                 @default(0)
+  filesUploadedCount       Int                 @default(0)
+  activeWorkingTimeMinutes Int                 @default(0)
+  status                   DailyReportStatus   @default(DRAFT)
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+  user                     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization             Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  aiReport                 AIReport?
+
+  @@unique([userId, date])
+   @@index([organizationId])
+   @@index([userId])
+   @@index([date])
+   @@index([status])
+   @@index([userId, date, status])
+   @@index([organizationId, date, status])
+ }
+
+model FollowUp {
+  id             String         @id @default(cuid())
+  title          String
+  description    String?
+  dueDate        DateTime
+  priority       String         @default("MEDIUM")
+  status         FollowUpStatus @default(PENDING)
+  organizationId String
+  ownerId        String
+  leadId         String?
+  companyId      String?
+  dealId         String?
+  completedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  company        Company?       @relation(fields: [companyId], references: [id])
+  deal           Deal?          @relation(fields: [dealId], references: [id])
+  lead           Lead?          @relation(fields: [leadId], references: [id])
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+   owner          User           @relation("FollowUpOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([leadId])
+  @@index([companyId])
+  @@index([dealId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+model FieldVisit {
+  id             String        @id @default(cuid())
+  title          String
+  purpose        String
+  scheduledAt    DateTime
+  status         VisitStatus   @default(SCHEDULED)
+  latitude       Decimal?      @db.Decimal(10, 8)
+  longitude      Decimal?      @db.Decimal(11, 8)
+  address        String?
+  organizationId String
+  assigneeId     String
+  companyId      String?
+  contactId      String?
+  dealId         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  completedAt    DateTime?
+  checkIns       CheckIn[]
+   assignee       User          @relation("VisitAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+  company        Company?      @relation(fields: [companyId], references: [id])
+  contact        Contact?      @relation(fields: [contactId], references: [id])
+  deal           Deal?         @relation(fields: [dealId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  visitReports   VisitReport[]
+
+  @@index([organizationId])
+   @@index([assigneeId])
+   @@index([companyId])
+   @@index([status])
+   @@index([scheduledAt])
+   @@index([createdAt])
+   @@index([assigneeId, status])
+   @@index([organizationId, scheduledAt])
+ }
+
+model CheckIn {
+  id                   String     @id @default(cuid())
+  visitId              String
+  userId               String
+  latitude             Decimal    @db.Decimal(10, 8)
+  longitude            Decimal    @db.Decimal(11, 8)
+  accuracy             Decimal?   @db.Decimal(10, 2)
+  distanceFromCustomer Decimal?   @db.Decimal(10, 2)
+  verificationStatus   String     @default("PENDING")
+  photoUrl             String?
+  notes                String?
+  createdAt            DateTime   @default(now())
+  user                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visit                FieldVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@index([visitId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([verificationStatus])
+}
+
+model GeoFence {
+  id             String       @id @default(cuid())
+  name           String
+  latitude       Decimal      @db.Decimal(10, 8)
+  longitude      Decimal      @db.Decimal(11, 8)
+  radius         Int
+  organizationId String
+  companyId      String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  company        Company?     @relation(fields: [companyId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([companyId])
+  @@index([isActive])
+}
+
+model VisitReport {
+  id               String                  @id @default(cuid())
+  visitId          String
+  purpose          String
+  discussion       String?
+  requirements     String?
+  competitorInfo   String?
+  customerFeedback String?
+  nextSteps        String?
+  signatureUrl     String?
+  createdById      String
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+   createdBy        User                    @relation("VisitReportCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  visit            FieldVisit              @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  attachments      VisitReportAttachment[]
+
+  @@index([visitId])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+model VisitReportAttachment {
+  id        String      @id @default(cuid())
+  reportId  String
+  fileId    String
+  createdAt DateTime    @default(now())
+  file      File        @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  report    VisitReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([fileId])
+}
+
+model Meeting {
+  id             String               @id @default(cuid())
+  title          String
+  type           MeetingType
+  status         MeetingStatus        @default(PROCESSING)
+  scheduledAt    DateTime?
+  duration       Int?
+  location       String?
+  meetingLink    String?
+  notes          String?
+  organizationId String
+  createdById    String
+  companyId      String?
+  contactId      String?
+  dealId         String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  startedAt      DateTime?
+  endedAt        DateTime?
+  company        Company?             @relation(fields: [companyId], references: [id])
+  contact        Contact?             @relation(fields: [contactId], references: [id])
+  createdBy      User                 @relation("MeetingCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  deal           Deal?                @relation(fields: [dealId], references: [id])
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  participants   MeetingParticipant[]
+  recordings     MeetingRecording[]
+  summaries      MeetingSummary?
+  transcripts    MeetingTranscript[]
+
+  @@index([organizationId])
+  @@index([createdById])
+  @@index([companyId])
+  @@index([contactId])
+  @@index([dealId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+}
+
+model MeetingParticipant {
+  id        String   @id @default(cuid())
+  meetingId String
+  userId    String
+  role      String   @default("PARTICIPANT")
+  createdAt DateTime @default(now())
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@index([meetingId])
+  @@index([userId])
+}
+
+model MeetingRecording {
+  id                 String   @id @default(cuid())
+  meetingId          String
+  cloudinaryPublicId String   @unique
+  secureUrl          String
+  duration           Int?
+  fileSize           BigInt?
+  createdAt          DateTime @default(now())
+  meeting            Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
+model MeetingTranscript {
+  id        String   @id @default(cuid())
+  meetingId String
+  content   String
+  language  String   @default("en")
+  createdAt DateTime @default(now())
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
+model MeetingSummary {
+  id               String   @id @default(cuid())
+  meetingId        String   @unique
+  summary          String
+  discussionPoints Json?
+  requirements     Json?
+  objections       Json?
+  buyingSignals    Json?
+  riskSignals      Json?
+  actionItems      Json?
+  nextSteps        Json?
+  isEdited         Boolean  @default(false)
+  editedById       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+   editedBy         User?    @relation("MeetingSummaryEditor", fields: [editedById], references: [id], onDelete: SetNull)
+  meeting          Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
+model AIConversation {
+  id             String       @id @default(cuid())
+  title          String?
+  organizationId String
+  userId         String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages       AIMessage[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AIMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  metadata       Json?
+  createdAt      DateTime       @default(now())
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model AIUsage {
+  id              String       @id @default(cuid())
+  organizationId  String
+  userId          String
+  model           String
+  provider        String
+  inputTokens     Int
+  outputTokens    Int
+  estimatedCost   Float
+  feature         String  // 'chat', 'report', 'summary', 'data-analysis'
+  createdAt       DateTime @default(now())
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model AIInsight {
+  id             String       @id @default(cuid())
+  type           String
+  title          String
+  description    String
+  priority       String       @default("MEDIUM")
+  metadata       Json?
+  organizationId String
+  createdAt      DateTime     @default(now())
+  expiresAt      DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model AIReport {
+  id             String       @id @default(cuid())
+  type           String
+  title          String
+  content        String
+  filters        Json?
+  organizationId String
+  generatedById  String
+  dailyReportId  String?      @unique
+  createdAt      DateTime     @default(now())
+   generatedBy    User         @relation("AIReportGenerator", fields: [generatedById], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dailyReport    DailyReport? @relation(fields: [dailyReportId], references: [id])
+
+  @@index([organizationId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([dailyReportId])
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  type           NotificationType
+  title          String
+  message        String
+  data           Json?
+  isRead         Boolean          @default(false)
+  organizationId String
+  userId         String
+  createdAt      DateTime         @default(now())
+  readAt         DateTime?
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id             String       @id @default(cuid())
+  action         AuditAction
+  resource       String
+  resourceId     String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  organizationId String
+  actorId        String
+  createdAt      DateTime     @default(now())
+   actor          User         @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([actorId])
+  @@index([action])
+  @@index([resource])
+  @@index([resourceId])
+  @@index([createdAt])
+}
+
+model Integration {
+  id             String       @id @default(cuid())
+  name           String
+  type           String
+  config         Json
+  isActive       Boolean      @default(true)
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  webhookDeliveries WebhookDelivery[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([type])
+}
+
+model WebhookDelivery {
+  id             String       @id @default(cuid())
+  integrationId  String
+  event          String
+  url            String
+  payload        Json
+  responseStatus Int?
+  responseBody   String?
+  error          String?
+  success        Boolean
+  attempt        Int          @default(1)
+  deliveredAt    DateTime     @default(now())
+  integration    Integration  @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@index([integrationId])
+  @@index([event])
+  @@index([success])
+  @@index([deliveredAt])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  INVITED
+}
+
+enum RoleType {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  SALES_MANAGER
+  SALES_EXECUTIVE
+  MARKETING
+  HR
+  FINANCE
+  VIEWER
+}
+
+enum FileVisibility {
+  PRIVATE
+  TEAM
+  DEPARTMENT
+  ORGANIZATION
+  SHARED
+}
+
+enum FilePermissionLevel {
+  VIEWER
+  EDITOR
+  MANAGER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum DealStage {
+  NEW_LEAD
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum VisitStatus {
+  SCHEDULED
+  ON_THE_WAY
+  CHECKED_IN
+  IN_MEETING
+  COMPLETED
+  CANCELLED
+}
+
+enum MeetingType {
+  IN_PERSON
+  VIDEO_CALL
+  PHONE
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  PROCESSING
+  FAILED
+}
+
+enum NotificationType {
+  FOLLOW_UP_DUE
+  NEW_LEAD
+  DEAL_UPDATED
+  MEETING_REMINDER
+  FILE_SHARED
+  FILE_UPLOADED
+  AI_REPORT_READY
+  CHECK_IN_COMPLETED
+  SECURITY_EVENT
+  DAILY_REPORT_SUBMITTED
+  VISIT_ASSIGNED
+}
+
+enum DailyReportStatus {
+  SUBMITTED
+  MISSED
+  DRAFT
+}
+
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  FAILED_LOGIN
+  PASSWORD_CHANGE
+  ROLE_CHANGE
+  PERMISSION_CHANGE
+  USER_DELETION
+  FILE_DELETION
+  FILE_SHARING
+  DATA_EXPORT
+  ADMIN_CHANGES
+  SECURITY_CHANGES
+  CREATE
+  UPDATE
+  DELETE
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "prisma generate && next build",
+  "functions": {
+    "src/app/api/voice/**/*.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/ai/**/*.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/meetings/**/*.ts": {
+      "maxDuration": 60
+    }
+  }
+}

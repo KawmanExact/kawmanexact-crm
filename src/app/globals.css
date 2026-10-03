@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-background: #030712;
+  --color-foreground: #fafafa;
+  --color-card: #0a0f1a;
+  --color-card-foreground: #fafafa;
+  --color-popover: #0a0f1a;
+  --color-popover-foreground: #fafafa;
+  --color-primary: #7c3aed;
+  --color-primary-foreground: #fafafa;
+  --color-secondary: #1a1f2e;
+  --color-secondary-foreground: #fafafa;
+  --color-muted: #1a1f2e;
+  --color-muted-foreground: #9ca3af;
+  --color-accent: #7c3aed;
+  --color-accent-foreground: #fafafa;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fafafa;
+  --color-border: #1f2937;
+  --color-input: #1f2937;
+  --color-ring: #7c3aed;
+  --radius: 0.5rem;
+}
+
+/* Light theme: next-themes adds class="light" to <html> */
+html.light {
+  --color-background: #f1f5f9;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-primary: #7c3aed;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #7c3aed;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #7c3aed;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+  /* Native <select> dropdown list — browsers that respect it */
+  select option {
+    background-color: #0A111C;
+    color: #ffffff;
+  }
+  /* Prevent iOS zoom on focus: ensure 16px minimum */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input, select, textarea {
+      font-size: 14px;
+    }
+  }
+  /* Focus ring consistent */
+  :focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: animate-in 0.3s ease-out;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer components {
+  .glass {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-dark {
+    background-color: rgba(7, 16, 27, 0.8);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #a855f7, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(#07101B, #07101B) padding-box,
+      linear-gradient(135deg, #7c3aed, #ec4899) border-box;
+    border: 1px solid transparent;
+  }
+
+  /* react-day-picker — dark theme to match app */
+  .rdp {
+    --rdp-accent-color: #7c3aed;
+    --rdp-background-color: rgba(124, 58, 237, 0.15);
+    color: #ffffff;
+  }
+  .rdp-caption_label, .rdp-head_cell, .rdp-day {
+    color: rgba(255,255,255,0.8);
+  }
+  .rdp-day_selected, .rdp-day_range_start, .rdp-day_range_end {
+    background-color: #7c3aed !important;
+    color: #fff !important;
+  }
+  .rdp-day:hover:not(.rdp-day_selected) {
+    background-color: rgba(255,255,255,0.06) !important;
+  }
+  .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+    background-color: rgba(255,255,255,0.06);
+  }
+
+  /* Ensure dropdowns never overflow viewport on mobile */
+  [data-radix-popper-content-wrapper] {
+    max-width: calc(100vw - 16px);
+  }
+
+  /* Touch targets: minimum 44px on coarse pointers */
+  @media (pointer: coarse) {
+    button, [role="button"], a {
+      min-height: 44px;
+    }
+    /* but not for tiny inline controls */
+    .rdp-day, .rdp-head_cell {
+      min-height: auto;
+    }
+  }
+}
+
+/* ── Light theme — make the toggle visibly work ──
+   App is dark-first with hardcoded dark utilities (bg-[#07101B] etc.).
+   Without these overrides flipping html.light only changes CSS variables
+   and appears broken. Attribute selectors avoid brittle escaping of
+   Tailwind arbitrary values. Keep after layers so they win in cascade. */
+html.light {
+  color-scheme: light;
+}
+html.light body {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+html.light select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+/* Hardcoded dark canvases — catch every hex, case-insensitive (i) */
+html.light [class*="bg-[#050A12]" i],
+html.light [class*="bg-[#050a12]" i] {
+  background-color: #f1f5f9 !important;
+}
+html.light [class*="bg-[#07101B]" i] {
+  background-color: #ffffff !important;
+}
+html.light [class*="bg-[#0a111c]" i],
+html.light [class*="bg-[#0A111C]" i],
+html.light [class*="bg-[#0a0f1a]" i],
+html.light [class*="bg-[#0A0F1A]" i],
+html.light [class*="bg-[#0a1623]" i],
+html.light [class*="bg-[#0d1622]" i] {
+  background-color: #ffffff !important;
+}
+html.light aside,
+html.light header,
+html.light main {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+/* Main canvas behind cards — override the lg/ml wrapper */
+html.light div[class*="bg-[#050A12]"] {
+  background-color: #f1f5f9 !important;
+}
+html.light [class*="border-white"] {
+  border-color: #e2e8f0 !important;
+}
+/* Translucent white surfaces become light slate/white */
+html.light [class*="bg-white/5"],
+html.light [class*="bg-white/[0.03]"],
+html.light [class*="bg-white/[0.04]"],
+html.light [class*="bg-white/[0.06]"],
+html.light [class*="bg-white/[0.02]"],
+html.light [class*="bg-white/[0.03]"] {
+  background-color: #f8fafc !important;
+}
+html.light [class*="bg-white/[0.08]"],
+html.light [class*="bg-white/10"] {
+  background-color: #e2e8f0 !important;
+}
+html.light [class*="bg-black/60"] {
+  background-color: rgba(15, 23, 42, 0.35) !important;
+}
+/* Keep purple primaries readable */
+html.light .bg-purple-600,
+html.light .bg-purple-700,
+html.light [class*="from-purple"] {
+  color: #ffffff !important;
+}
+html.light .bg-purple-600 [class*="text-white"],
+html.light .bg-purple-700 [class*="text-white"] {
+  color: #ffffff !important;
+}
+/* Muted text on dark becomes slate on light */
+html.light [class*="text-white/60"],
+html.light [class*="text-white/50"],
+html.light [class*="text-white/40"],
+html.light [class*="text-white/35"],
+html.light [class*="text-white/30"] {
+  color: #64748b !important;
+}
+html.light [class*="text-white/65"] {
+  color: #475569 !important;
+}
+html.light [class*="text-white"]:not(.bg-purple-600):not(.bg-purple-700):not(.bg-gradient-to-br):not([class*="from-purple"]) {
+  color: #0f172a !important;
+}
+html.light .text-white {
+  color: #0f172a;
+}
+/* Inputs / selects readable on light */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+/* Dropdowns / popovers / dialogs */
+html.light [role="menu"],
+html.light [role="dialog"],
+html.light [role="listbox"],
+html.light [data-radix-popper-content-wrapper] > * {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
