@@ -28,7 +28,7 @@ import {
 } from '@/lib/sales-money'
 import { funnelStageForPaymentState } from '@/lib/funnel'
 import { prisma } from '@/lib/db'
-import { deriveLineMoney } from '@/services/sales.service'
+import { deriveLineMoney, salesWriteWhere } from '@/services/sales.service'
 
 export interface SalesFormState {
   error?: string
@@ -131,7 +131,6 @@ interface PreparedLine {
 }
 
 function prepareLines(data: SalesFormInput): PreparedLine[] {
-  const saleDate = new Date(data.saleDate)
   const paymentDate = data.paymentDate ? new Date(data.paymentDate) : null
 
   return data.lines.map((line) => {
@@ -302,6 +301,18 @@ async function runSave(
   const saleDate = new Date(data.saleDate)
   const targetGroupId = isUpdate && groupId ? groupId : newGroupId()
 
+  // An update REWRITES the invoice by deleting its old lines first, so the
+  // target must be proven visible inside this transaction. Without this check a
+  // user with sales.update but not sales.view_all could overwrite a colleague's
+  // invoice by guessing its groupId.
+  if (isUpdate && groupId) {
+    const visible = await prisma.salesTransaction.findFirst({
+      where: await salesWriteWhere(groupId),
+      select: { id: true },
+    })
+    if (!visible) return { error: 'Sale not found, or it is outside your records.' }
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
       if (isUpdate && groupId) {
@@ -373,9 +384,11 @@ export async function deleteSaleAction(
   const session = await assertPermission(PERMISSIONS['sales.delete'].name)
 
   try {
-    const result = await prisma.salesTransaction.deleteMany({
-      where: { organizationId: session.user.organizationId, groupId },
-    })
+    // Scoped by record visibility, not just organisation: a user holding
+    // sales.delete must not be able to delete somebody else's invoice by
+    // passing a groupId they guessed.
+    const where = await salesWriteWhere(groupId)
+    const result = await prisma.salesTransaction.deleteMany({ where })
     if (result.count === 0) return { error: 'Sale not found.' }
     await logAudit({
       organizationId: session.user.organizationId,
@@ -396,10 +409,9 @@ export async function deleteSaleAction(
 export async function saleRowCapabilities(
   groupId: string
 ): Promise<{ canEdit: boolean; canDelete: boolean }> {
-  const session = await requireApiSession()
-  const perms = session.user.permissions as string[]
+  const perms = (await requireApiSession()).user.permissions as string[]
   const row = await prisma.salesTransaction.findFirst({
-    where: { organizationId: session.user.organizationId, groupId },
+    where: await salesWriteWhere(groupId),
     select: { salespersonId: true },
   })
   if (!row) return { canEdit: false, canDelete: false }
