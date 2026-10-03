@@ -7,14 +7,14 @@
  * only fills fields that are still empty. Re-running never duplicates a row and
  * never overwrites a price somebody has since set.
  *
- * NO PRICES ARE INVENTED. `defaultUnitPrice` is deliberately left null for every
- * seeded product — set them per organisation after a price list is agreed.
+ * NO PRICES ARE INVENTED, AND THERE IS NO WAY TO SEED ONE. `defaultUnitPrice` is
+ * always left null — a price list is a commercial decision and must be entered
+ * per organisation in the Product Catalog after it is agreed.
  *
  * Flags:
  *   --dry-run            Report what would be created/updated, write nothing.
  *   --org=<slug>         Target organisation by slug (repeatable).
  *   --all-orgs           Seed every organisation in the database.
- *   --with-prices        Also apply DEFAULT_UNIT_PRICES below (opt-in only).
  *
  * Usage:
  *   npx tsx prisma/scripts/seed-products.ts --org=kawman
@@ -34,11 +34,6 @@ function normalizeProductText(value: string | null | undefined): string | null {
   if (!value) return null
   const trimmed = value.trim()
   return trimmed === '' ? null : trimmed
-}
-
-/** Optional prices — opt-in via --with-prices, never applied by default. */
-const DEFAULT_UNIT_PRICES: Record<string, string> = {
-  'CarniExAct': '0',
 }
 
 interface SeedProduct {
@@ -150,7 +145,6 @@ async function resolveOrganizations(dryRun: boolean) {
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run')
-  const withPrices = process.argv.includes('--with-prices')
 
   const organizations = await resolveOrganizations(dryRun)
   if (organizations.length === 0) {
@@ -174,15 +168,14 @@ async function main() {
         },
       })
 
-      const price = withPrices ? (DEFAULT_UNIT_PRICES[seed.name] ?? null) : null
-
       if (existing) {
         // Fill only blanks so a hand-edited catalog is never clobbered.
+        // defaultUnitPrice is intentionally absent from this list: the script
+        // has no price data and must never write a price column at all.
         const data = {
           ...(existing.category ? {} : { category: seed.category }),
           ...(existing.grade ? {} : { grade: seed.grade }),
           ...(existing.description ? {} : { description: seed.description }),
-          ...(existing.defaultUnitPrice || !price ? {} : { defaultUnitPrice: price }),
         }
         if (Object.keys(data).length > 0) {
           updated += 1
@@ -206,8 +199,7 @@ async function main() {
             grade: seed.grade,
             description: seed.description,
             unit: 'kg',
-            // No invented prices — the owner sets defaultUnitPrice per org.
-            ...(price ? { defaultUnitPrice: price } : {}),
+            // defaultUnitPrice is omitted on purpose — no prices are invented.
           },
         })
       }
@@ -216,9 +208,7 @@ async function main() {
     console.log(`[seed-products] ${org.slug}: ${created} created, ${updated} updated.`)
   }
 
-  if (!withPrices) {
-    console.log('[seed-products] defaultUnitPrice left NULL on purpose — no prices were invented.')
-  }
+  console.log('[seed-products] defaultUnitPrice left NULL on purpose — set prices in the Product Catalog.')
   console.log(`[seed-products] ${dryRun ? 'DRY RUN — nothing written.' : 'Done.'}`)
 
   await prisma.$disconnect()

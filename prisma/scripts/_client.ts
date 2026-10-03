@@ -14,6 +14,7 @@
  * server-only import chain, so maintenance scripts are actually runnable.
  * Nothing in the Next.js app imports this file.
  */
+import 'dotenv/config'
 import { PrismaClient } from '../../src/generated/prisma'
 import { PrismaPg } from '@prisma/adapter-pg'
 import pg from 'pg'

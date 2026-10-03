@@ -26,9 +26,11 @@
  *   npx tsx prisma/scripts/sync-sales-permissions.ts --dry-run
  *   npm run db:sync-sales-permissions
  */
-import { prisma } from '../../src/lib/db'
+import { createScriptPrismaClient } from './_client'
 import { ensureRolesAndPermissionsSeeded } from '../../src/lib/rbac-seed'
 import { PERMISSIONS, ROLE_PERMISSIONS, type PermissionKey } from '../../src/lib/permissions-data'
+
+const prisma = createScriptPrismaClient()
 
 const SALES_PREFIXES = ['sales.', 'products.']
 
@@ -58,7 +60,7 @@ async function main() {
     return
   }
 
-  await ensureRolesAndPermissionsSeeded()
+  await ensureRolesAndPermissionsSeeded(prisma)
 
   // Report the resulting state so the operator can eyeball it without a query.
   const permissions = await prisma.permission.findMany({
