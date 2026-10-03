@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,6 +33,9 @@ const STATUS_VARIANT: Record<PaymentStatus, BadgeVariant> = {
   PARTIALLY_PAID: 'warning',
   PENDING: 'danger',
 }
+
+/** Scroll target for a form-level validation error. */
+const SALES_ERROR_ANCHOR_ID = 'sales-error-anchor'
 
 export interface SalesFormLine {
   productId: string
@@ -173,8 +176,6 @@ export function SalesForm({
     }
   }
 
-  const headerErrorRef = useRef<HTMLDivElement>(null)
-
   const onSubmit = handleSubmit(async (values) => {
     const formData = new FormData()
     if (sale) formData.set('groupId', sale.groupId)
@@ -202,7 +203,12 @@ export function SalesForm({
     const result = sale ? await updateSaleAction({}, formData) : await saveSaleAction({}, formData)
     if (result.error) toast.error(result.error)
     if (result.fieldErrors && Object.keys(result.fieldErrors).length > 0) {
-      headerErrorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Scrolled to from a submit handler by id rather than by ref, so no ref
+      // value is captured in the handleSubmit closure created during render.
+      document.getElementById(SALES_ERROR_ANCHOR_ID)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
       toast.error(Object.values(result.fieldErrors)[0])
       return
     }
@@ -226,7 +232,7 @@ export function SalesForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6 max-w-5xl" noValidate>
       <Card className="bg-[#0a111c]/80 border-white/[0.08] p-5 space-y-4">
-        <div ref={headerErrorRef} />
+        <div id={SALES_ERROR_ANCHOR_ID} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label htmlFor="salespersonId" className="text-sm text-white/70">

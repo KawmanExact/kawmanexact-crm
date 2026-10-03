@@ -110,13 +110,25 @@ export const salesClientLineSchema = z
       ctx.addIssue({ code: 'custom', path: ['otherProductName'], message: 'Enter the product name' })
     }
 
-    if (line.quantity !== '' && quantity === null) {
+    // A blank quantity coerces to 0 on the server and is rejected there, but the
+    // browser must say so immediately instead of letting the round-trip fail.
+    if (line.quantity === '') {
+      ctx.addIssue({ code: 'custom', path: ['quantity'], message: 'Quantity must be greater than 0' })
+    } else if (quantity === null) {
       ctx.addIssue({ code: 'custom', path: ['quantity'], message: 'Enter a valid quantity' })
     }
     if (quantity !== null && quantity <= 0) {
       ctx.addIssue({ code: 'custom', path: ['quantity'], message: 'Quantity must be greater than 0' })
     }
-    if (line.unitPrice !== '' && unitPrice === null) {
+    // Unit price must be typed explicitly. Coercing "" to 0 would silently make
+    // a forgotten price look like a free item.
+    if (line.unitPrice === '') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['unitPrice'],
+        message: 'Enter a unit price (use 0 for a free item)',
+      })
+    } else if (unitPrice === null) {
       ctx.addIssue({ code: 'custom', path: ['unitPrice'], message: 'Enter a valid unit price' })
     }
     if (unitPrice !== null && unitPrice < 0) {
@@ -169,7 +181,9 @@ export const salesFormSchema = z
       .max(INVOICE_NUMBER_MAX, `Invoice number must be ${INVOICE_NUMBER_MAX} characters or fewer`),
     remarks: z.string().trim().optional().default(''),
     /** When true, move the customer's single open lead to Order/Payment. */
-    moveLeadStage: z.coerce.boolean().default(false),
+    moveLeadStage: z
+      .union([z.boolean(), z.enum(['true', 'false'])])
+      .transform((value) => value === true || value === 'true'),
     lines: z.array(salesLineSchema).min(1, 'Add at least one product line'),
   })
   .superRefine((form, ctx) => {
@@ -194,7 +208,18 @@ function validateClientPaymentDate(
   anyPaid: boolean,
   ctx: z.RefinementCtx
 ): void {
-  if (paymentDate === '') return
+  if (paymentDate === '') {
+    // Without this the browser silently accepted a paid invoice with no payment
+    // date, while the field is marked required in the UI.
+    if (anyPaid) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['paymentDate'],
+        message: 'Payment date is required once a payment is recorded',
+      })
+    }
+    return
+  }
   if (!anyPaid) {
     ctx.addIssue({
       code: 'custom',

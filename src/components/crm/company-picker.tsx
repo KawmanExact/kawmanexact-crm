@@ -17,6 +17,9 @@ import { searchCompaniesAction } from '@/app/sales-tracking/actions'
  * Keyboard accessible: the trigger is a real button, the list is a listbox of
  * buttons with roving focus via arrow keys, Enter selects and Escape closes.
  */
+/** id of the listbox, so the combobox trigger can point aria-controls at it. */
+const LISTBOX_ID = 'company-picker-listbox'
+
 export function CompanyPicker({
   value,
   onChange,
@@ -96,6 +99,7 @@ export function CompanyPicker({
             role="combobox"
             aria-expanded={open}
             aria-haspopup="listbox"
+            aria-controls={LISTBOX_ID}
             aria-invalid={Boolean(error)}
             className={cn(
               'flex h-9 w-full items-center justify-between gap-2 rounded-lg border bg-white/[0.04] px-3 text-left text-sm text-white transition-colors',
@@ -149,7 +153,13 @@ export function CompanyPicker({
               className="pl-8"
             />
           </div>
-          <ul ref={listRef} role="listbox" aria-label="Customers" className="max-h-60 overflow-y-auto py-1">
+          <ul
+            ref={listRef}
+            id={LISTBOX_ID}
+            role="listbox"
+            aria-label="Customers"
+            className="max-h-60 overflow-y-auto py-1"
+          >
             {pending && options.length === 0 && (
               <li className="px-3 py-2 text-xs text-white/35">Searching…</li>
             )}
