@@ -27,10 +27,13 @@ import {
 import {
   computeBalance,
   computeLineTotal,
+  computeOutstandingAfterPdc,
+  deriveLineMoneyDetail,
   derivePaymentStatus,
   toDecimalOrZero,
   toMoney,
   toQuantity,
+  type LineMoney,
   type PaymentStatus,
 } from '@/lib/sales-money'
 import type {
@@ -41,6 +44,7 @@ import type {
   SalespersonBreakdownRow,
 } from '@/types/sales'
 import { productOptionLabel } from '@/types/sales'
+import { STANDARD_PRODUCTS } from '@/lib/products'
 
 type SaleWithRelations = Prisma.SalesTransactionGetPayload<{
   include: {
@@ -62,10 +66,14 @@ function displayName(
 }
 
 export function mapSaleRow(row: SaleWithRelations): SalesTransactionRow {
-  const isOther = !row.productId
+  const isStandardized = typeof row.productId === 'string' && row.productId.startsWith('std-')
+  const otherName = row.otherProductName?.trim()
+  const isOther = !row.productId && !isStandardized && !(otherName && STANDARD_PRODUCTS.includes(otherName as any))
   const productName = row.product
     ? productOptionLabel({ name: row.product.name, variant: row.product.variant })
-    : (row.otherProductName ?? 'Other')
+    : isStandardized
+      ? STANDARD_PRODUCTS[Number((row.productId as string).replace('std-', ''))] ?? (row.productId as string)
+      : (otherName ?? 'Other')
 
   return {
     id: row.id,
@@ -86,10 +94,27 @@ export function mapSaleRow(row: SaleWithRelations): SalesTransactionRow {
     quantity: toQuantity(row.quantity).toNumber(),
     unitPrice: toMoney(row.unitPrice).toNumber(),
     totalAmount: toMoney(row.totalAmount).toNumber(),
+    hsnCode: row.hsnCode,
+    gstRate: toMoney(row.gstRate).toNumber(),
+    gstAmount: toMoney(row.gstAmount).toNumber(),
+    freightAmount: toMoney(row.freightAmount).toNumber(),
+    invoiceAmount: toMoney(row.invoiceAmount).toNumber(),
+    advanceAmount: toMoney(row.advanceAmount).toNumber(),
+    pdcAmount: toMoney(row.pdcAmount).toNumber(),
     amountPaid: toMoney(row.amountPaid).toNumber(),
     balanceAmount: toMoney(row.balanceAmount).toNumber(),
+    // Derived on read rather than stored: the uncovered figure is only ever
+    // reported, never a column anyone filters on, so it would just be another
+    // value that can go stale against balanceAmount.
+    uncoveredAmount: computeOutstandingAfterPdc({
+      balance: row.balanceAmount,
+      pdcAmount: row.pdcAmount,
+    }).toNumber(),
     paymentStatus: row.paymentStatus as PaymentStatus,
     paymentDate: row.paymentDate ? row.paymentDate.toISOString() : null,
+    paymentMode: row.paymentMode,
+    purchaseOrderNo: row.purchaseOrderNo,
+    leadTimeDays: row.leadTimeDays,
     remarks: row.remarks,
   }
 }
@@ -143,14 +168,24 @@ function groupUnit(rows: SalesTransactionRow[]): {
 export function computeSalesKpis(rows: SalesTransactionRow[]): SalesKpis {
   const invoices = new Set<string>()
   const products = new Set<string>()
-  let totalSalesValue = new PrismaNS.Decimal(0)
+  let taxableValue = new PrismaNS.Decimal(0)
+  let gstValue = new PrismaNS.Decimal(0)
+  let freightValue = new PrismaNS.Decimal(0)
+  let invoiceValue = new PrismaNS.Decimal(0)
   let totalAmountPaid = new PrismaNS.Decimal(0)
+  let advanceValue = new PrismaNS.Decimal(0)
+  let pdcValue = new PrismaNS.Decimal(0)
 
   for (const row of rows) {
     invoices.add(row.groupId)
     products.add(row.productId ?? `other:${(row.otherProductName ?? '').toLowerCase()}`)
-    totalSalesValue = totalSalesValue.plus(toDecimalOrZero(row.totalAmount))
+    taxableValue = taxableValue.plus(toDecimalOrZero(row.totalAmount))
+    gstValue = gstValue.plus(toDecimalOrZero(row.gstAmount))
+    freightValue = freightValue.plus(toDecimalOrZero(row.freightAmount))
+    invoiceValue = invoiceValue.plus(toDecimalOrZero(row.invoiceAmount))
     totalAmountPaid = totalAmountPaid.plus(toDecimalOrZero(row.amountPaid))
+    advanceValue = advanceValue.plus(toDecimalOrZero(row.advanceAmount))
+    pdcValue = pdcValue.plus(toDecimalOrZero(row.pdcAmount))
   }
 
   const { single, byUnit } = groupUnit(rows)
@@ -160,10 +195,19 @@ export function computeSalesKpis(rows: SalesTransactionRow[]): SalesKpis {
     transactionCount: rows.length,
     totalQuantity: single,
     quantityByUnit: byUnit,
-    totalSalesValue: toMoney(totalSalesValue).toNumber(),
+    // Headline sales value is the INVOICE figure (taxable + GST + freight), so
+    // it ties to the balance and pending figures. The pre-GST subtotal is kept
+    // alongside it because the GST return is filed against taxable value, not
+    // against the invoice total.
+    totalSalesValue: toMoney(invoiceValue).toNumber(),
     totalAmountPaid: toMoney(totalAmountPaid).toNumber(),
-    totalPendingAmount: toMoney(totalSalesValue.minus(totalAmountPaid)).toNumber(),
+    totalPendingAmount: toMoney(invoiceValue.minus(totalAmountPaid)).toNumber(),
     totalProductsSold: products.size,
+    totalTaxableValue: toMoney(taxableValue).toNumber(),
+    totalGstAmount: toMoney(gstValue).toNumber(),
+    totalFreightAmount: toMoney(freightValue).toNumber(),
+    totalAdvanceAmount: toMoney(advanceValue).toNumber(),
+    totalPdcAmount: toMoney(pdcValue).toNumber(),
   }
 }
 
@@ -181,6 +225,8 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
       unit: string
       quantity: PrismaNS.Decimal
       totalValue: PrismaNS.Decimal
+      taxableValue: PrismaNS.Decimal
+      gstAmount: PrismaNS.Decimal
       amountPaid: PrismaNS.Decimal
       transactionCount: number
     }
@@ -189,7 +235,10 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
   let grandTotal = new PrismaNS.Decimal(0)
 
   for (const row of rows) {
-    const key = row.productId ?? `other:${(row.otherProductName ?? row.productName).trim().toLowerCase()}`
+    const otherName = (row.otherProductName ?? row.productName).trim()
+    const key = row.isOtherProduct
+      ? `other:${otherName.toLowerCase()}`
+      : (row.productId ?? otherName.toLowerCase())
     let group = groups.get(key)
     if (!group) {
       group = {
@@ -199,16 +248,23 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
         unit: row.unit,
         quantity: new PrismaNS.Decimal(0),
         totalValue: new PrismaNS.Decimal(0),
+        taxableValue: new PrismaNS.Decimal(0),
+        gstAmount: new PrismaNS.Decimal(0),
         amountPaid: new PrismaNS.Decimal(0),
         transactionCount: 0,
       }
       groups.set(key, group)
     }
     group.quantity = group.quantity.plus(toDecimalOrZero(row.quantity))
-    group.totalValue = group.totalValue.plus(toDecimalOrZero(row.totalAmount))
+    // Value and share are computed on the INVOICE amount so a product's pending
+    // figure includes its GST and freight — otherwise the breakdown's pending
+    // column would disagree with the KPI pending total.
+    group.totalValue = group.totalValue.plus(toDecimalOrZero(row.invoiceAmount))
+    group.taxableValue = group.taxableValue.plus(toDecimalOrZero(row.totalAmount))
+    group.gstAmount = group.gstAmount.plus(toDecimalOrZero(row.gstAmount))
     group.amountPaid = group.amountPaid.plus(toDecimalOrZero(row.amountPaid))
     group.transactionCount += 1
-    grandTotal = grandTotal.plus(toDecimalOrZero(row.totalAmount))
+    grandTotal = grandTotal.plus(toDecimalOrZero(row.invoiceAmount))
   }
 
   const total = toMoney(grandTotal)
@@ -223,6 +279,8 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
         unit: group.unit,
         quantity: toQuantity(group.quantity).toNumber(),
         totalValue: value.toNumber(),
+        taxableValue: toMoney(group.taxableValue).toNumber(),
+        gstAmount: toMoney(group.gstAmount).toNumber(),
         amountPaid: toMoney(group.amountPaid).toNumber(),
         pendingAmount: toMoney(value.minus(group.amountPaid)).toNumber(),
         transactionCount: group.transactionCount,
@@ -254,7 +312,7 @@ export function computeSalespersonBreakdown(
       let totalSalesValue = new PrismaNS.Decimal(0)
       let amountPaid = new PrismaNS.Decimal(0)
       for (const row of sellerRows) {
-        totalSalesValue = totalSalesValue.plus(toDecimalOrZero(row.totalAmount))
+        totalSalesValue = totalSalesValue.plus(toDecimalOrZero(row.invoiceAmount))
         amountPaid = amountPaid.plus(toDecimalOrZero(row.amountPaid))
       }
       const value = toMoney(totalSalesValue)
@@ -556,32 +614,23 @@ export async function resolveSalesFilterLabels(
 }
 
 /**
- * Recompute the money columns for a validated line. Called server-side on
- * save; the client sends only quantity / unitPrice / amountPaid / status.
+ * Recompute every money column for a validated line. Called server-side on
+ * save; the client sends only the raw inputs and never a total, balance or
+ * payment status it worked out itself.
+ *
+ * Delegates to deriveLineMoneyDetail in lib/sales-money.ts — the same function
+ * the browser form calls for its live totals — so the figure shown while typing,
+ * the figure stored in Postgres, and the figure in every export are produced by
+ * one piece of arithmetic and cannot drift apart.
  */
 export function deriveLineMoney(input: {
   quantity: string | number
   unitPrice: string | number
+  gstRate?: string | number
+  freightAmount?: string | number
+  advanceAmount?: string | number
+  pdcAmount?: string | number
   amountPaid: string | number
-}): {
-  quantity: PrismaNS.Decimal
-  unitPrice: PrismaNS.Decimal
-  totalAmount: PrismaNS.Decimal
-  amountPaid: PrismaNS.Decimal
-  balanceAmount: PrismaNS.Decimal
-  paymentStatus: PaymentStatus
-} {
-  const quantity = toQuantity(input.quantity)
-  const unitPrice = toMoney(input.unitPrice)
-  const amountPaid = toMoney(input.amountPaid)
-  const totalAmount = computeLineTotal(quantity, unitPrice)
-  const balanceAmount = computeBalance(totalAmount, amountPaid)
-  return {
-    quantity,
-    unitPrice,
-    totalAmount,
-    amountPaid,
-    balanceAmount,
-    paymentStatus: derivePaymentStatus(totalAmount, amountPaid),
-  }
+}): LineMoney {
+  return deriveLineMoneyDetail(input)
 }

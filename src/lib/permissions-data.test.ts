@@ -43,10 +43,6 @@ describe('PERMISSIONS', () => {
     expect(permissionKeys).toContain('deals.update')
     expect(permissionKeys).toContain('deals.delete')
     expect(permissionKeys).toContain('deals.export')
-    expect(permissionKeys).toContain('meetings.view')
-    expect(permissionKeys).toContain('meetings.create')
-    expect(permissionKeys).toContain('meetings.update')
-    expect(permissionKeys).toContain('meetings.delete')
     expect(permissionKeys).toContain('field_visits.view')
     expect(permissionKeys).toContain('field_visits.create')
     expect(permissionKeys).toContain('field_visits.update')
@@ -135,7 +131,6 @@ describe('ROLE_PERMISSIONS', () => {
     expect(viewerPerms).toContain('companies.view')
     expect(viewerPerms).toContain('contacts.view')
     expect(viewerPerms).toContain('deals.view')
-    expect(viewerPerms).toContain('meetings.view')
     expect(viewerPerms).toContain('field_visits.view')
     
     // VIEWER should NOT have write permissions

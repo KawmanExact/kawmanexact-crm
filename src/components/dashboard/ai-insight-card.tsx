@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Sparkles, Flame, Clock, TrendingUp, Users } from 'lucide-react'
+import { Sparkles, Flame, Clock, TrendingUp, Users, Target, Calendar, Activity, MapPin, CheckCircle, Zap } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { AIInsight } from '@/types/dashboard'
 
@@ -10,6 +10,16 @@ const ICONS = {
   clock: Clock,
   trend: TrendingUp,
   meeting: Users,
+  leads: Target,
+  deals: TrendingUp,
+  visits: Calendar,
+  followups: Activity,
+  won: Sparkles,
+  deal: Target,
+  checkin: CheckCircle,
+  geo: MapPin,
+  mom: Zap,
+  lead: Target,
 } as const
 
 export function AIInsightCard({
@@ -42,7 +52,7 @@ export function AIInsightCard({
 
         <div className="space-y-1">
           {insights.map((insight) => {
-            const Icon = ICONS[insight.icon]
+            const Icon = ICONS[insight.icon as keyof typeof ICONS] || Target
             return (
               <div key={insight.id} className="flex items-start gap-3 rounded-lg p-2 hover:bg-white/[0.04] transition-colors">
                 <div className="h-8 w-8 shrink-0 rounded-lg bg-white/[0.06] flex items-center justify-center">

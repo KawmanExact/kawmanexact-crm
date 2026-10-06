@@ -137,7 +137,7 @@ export function SalesTrackingView({
     <>
       <Card className="bg-[#0a111c]/80 border-white/[0.08] p-4 print:hidden">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 overflow-visible">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35" />
               <Input
@@ -208,7 +208,7 @@ export function SalesTrackingView({
             </select>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 overflow-visible">
             <select
               value={datePreset}
               onChange={(event) => updateParams({ date: event.target.value, from: null, to: null })}

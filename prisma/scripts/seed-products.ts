@@ -44,64 +44,74 @@ interface SeedProduct {
   description: string
 }
 
-const CATALOG: SeedProduct[] = [
-  {
-    name: 'CarniExAct™',
-    variant: null,
-    category: 'Nutraceutical',
-    grade: 'RD',
-    description: 'CarniExAct™ nutraceutical ingredient.',
-  },
-  {
-    name: 'BranChExAct™',
-    variant: 'RD',
-    category: 'Nutraceutical',
-    grade: 'RD',
-    description: 'BranChExAct™ branch-chain ingredient, RD grade.',
-  },
-  {
-    name: 'AlphaExAct™',
-    variant: null,
-    category: 'Nutraceutical',
-    grade: null,
-    description: 'AlphaExAct™ nutraceutical ingredient.',
-  },
-  {
-    name: 'CoQExAct™',
-    variant: null,
-    category: 'Nutraceutical',
-    grade: null,
-    description: 'CoQExAct™ nutraceutical ingredient.',
-  },
-  {
-    name: 'ArginExAct™',
-    variant: null,
-    category: 'Nutraceutical',
-    grade: null,
-    description: 'ArginExAct™ nutraceutical ingredient.',
-  },
-  {
-    name: 'VitExAct™ B12',
-    variant: '1% WD',
-    category: 'Nutraceutical',
-    grade: null,
-    description: 'VitExAct™ B12, 1% water dispersion.',
-  },
-  {
-    name: 'VitExAct™ B12',
-    variant: '0.1% WS',
-    category: 'Nutraceutical',
-    grade: null,
-    description: 'VitExAct™ B12, 0.1% water soluble.',
-  },
-  {
-    name: 'CafRelExAct™',
-    variant: null,
-    category: 'Food & Beverage',
-    grade: null,
-    description: 'CafRelExAct™ food & beverage ingredient.',
-  },
-]
+// Parse products from the standardized list (name + variant if present)
+function parseProductName(fullName: string): { name: string; variant: string | null } {
+  const knownVariants = ['75%', '15%', 'RD', 'WD', 'WS', 'CWD', 'CWS', '0.1%', '1%', '10% / 20% Emulsion']
+  
+  for (const variant of knownVariants) {
+    if (fullName.endsWith(` ${variant}`)) {
+      return { name: fullName.slice(0, -variant.length - 1).trim(), variant }
+    }
+  }
+  
+  // Handle special cases
+  if (fullName.includes(' - ')) {
+    const parts = fullName.split(' - ')
+    if (parts.length === 2) {
+      return { name: parts[0].trim(), variant: parts[1].trim() }
+    }
+  }
+  
+  return { name: fullName, variant: null }
+}
+
+const STANDARD_PRODUCTS = [
+  'CafRelExAct™',
+  'AsparExAct™',
+  'NacExAct™',
+  'AlphaExAct™ 75%',
+  'AlphaExAct™ 15%',
+  'CarniExAct™',
+  'ArginExAct™',
+  'MetExAct™',
+  'α KetoExAct™',
+  'BranChExAct RD™',
+  'TelmiExAct™',
+  'VitExAct™ B12 0.1%',
+  'VitExAct™ B12 1%',
+  'CoQExAct™',
+  'CoQExAct™ 10% / 20% Emulsion',
+  'DHA ExAct™ - CWD',
+  'SoluExAct™ MCT - CWS',
+] as const
+
+const CATALOG: SeedProduct[] = STANDARD_PRODUCTS.map((fullName) => {
+  const { name, variant } = parseProductName(fullName)
+  let category: string
+  let grade: string | null = null
+  
+  // Assign categories based on product type
+  if (['VitExAct™ B12 0.1%', 'VitExAct™ B12 1%', 'CoQExAct™', 'CoQExAct™ 10% / 20% Emulsion'].includes(fullName)) {
+    category = 'Nutraceutical'
+  } else if (['CafRelExAct™', 'DHA ExAct™ - CWD', 'SoluExAct™ MCT - CWS'].includes(fullName)) {
+    category = 'Food & Beverage'
+  } else {
+    category = 'Nutraceutical'
+  }
+  
+  // Assign grades
+  if (['BranChExAct RD™', 'CarniExAct™'].includes(fullName)) {
+    grade = 'RD'
+  }
+  
+  return {
+    name,
+    variant,
+    category,
+    grade,
+    description: `${fullName} ingredient.`,
+  }
+})
 
 function argValues(flag: string): string[] {
   return process.argv.filter((a) => a.startsWith(`--${flag}=`)).map((a) => a.slice(flag.length + 3))

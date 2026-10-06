@@ -4,10 +4,9 @@
 // See src/services/sales.service.ts for the mapping.
 
 import type { PaymentStatus } from '@/lib/sales-money'
-import type { FunnelStage } from '@/lib/funnel'
 import type { SalesFilters } from '@/lib/sales-filters'
 
-export type { PaymentStatus, FunnelStage }
+export type { PaymentStatus }
 
 export const PRODUCT_CATEGORIES = [
   'Nutraceutical',
@@ -31,6 +30,8 @@ export interface ProductRow {
   variant: string | null
   unit: string
   defaultUnitPrice: number | null
+  unitCost: number | null
+  unitPrice: number | null
   description: string | null
   attributes: ProductAttributes | null
   isActive: boolean
@@ -58,11 +59,25 @@ export interface SalesTransactionRow {
   unit: string
   quantity: number
   unitPrice: number
+  /** Taxable value = quantity x unitPrice. GST is charged on top of this. */
   totalAmount: number
+  hsnCode: string | null
+  gstRate: number
+  gstAmount: number
+  freightAmount: number
+  /** What the customer owes = totalAmount + gstAmount + freightAmount. */
+  invoiceAmount: number
+  advanceAmount: number
+  pdcAmount: number
   amountPaid: number
   balanceAmount: number
+  /** balanceAmount - pdcAmount: the part with no payment or promise against it. */
+  uncoveredAmount: number
   paymentStatus: PaymentStatus
   paymentDate: string | null
+  paymentMode: string | null
+  purchaseOrderNo: string | null
+  leadTimeDays: number | null
   remarks: string | null
 }
 
@@ -78,6 +93,12 @@ export interface SalesKpis {
   totalAmountPaid: number
   totalPendingAmount: number
   totalProductsSold: number
+  /** Pre-GST subtotal = sum of quantity x unitPrice. */
+  totalTaxableValue: number
+  totalGstAmount: number
+  totalFreightAmount: number
+  totalAdvanceAmount: number
+  totalPdcAmount: number
 }
 
 export interface ProductBreakdownRow {
@@ -88,7 +109,11 @@ export interface ProductBreakdownRow {
   isOther: boolean
   unit: string
   quantity: number
+  /** Invoice value = taxable + GST + freight. Shares are computed on this. */
   totalValue: number
+  /** Pre-GST subtotal = quantity x unitPrice. */
+  taxableValue: number
+  gstAmount: number
   amountPaid: number
   pendingAmount: number
   transactionCount: number
@@ -145,6 +170,8 @@ export interface ProductOption {
   category: string | null
   unit: string
   defaultUnitPrice: number | null
+  unitCost: number | null
+  unitPrice: number | null
 }
 
 /** "Name - variant" when a variant exists, otherwise just the name. */

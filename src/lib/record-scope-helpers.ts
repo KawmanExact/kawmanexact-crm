@@ -5,9 +5,7 @@ import { getRecordScope } from '@/lib/record-scope'
 // Owner-scoped helpers
 // ---------------------------------------------------------------------------
 // scopeWhere() was copy-pasted verbatim across 4 CRM service files
-// (lead/company/contact/deal). Meeting has a genuinely different shape
-// (participants OR) and keeps its own function — see meeting.service.ts.
-// This keeps Prisma type safety: callers get back the exact
+// (lead/company/contact/deal). This keeps Prisma type safety: callers get back the exact
 // `Prisma.<Model>WhereInput` for their model, not `any`.
 // ---------------------------------------------------------------------------
 

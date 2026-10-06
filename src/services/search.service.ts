@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 import { getLatestActionMap } from './file.service'
 
-export type SearchResultType = 'lead' | 'company' | 'contact' | 'deal' | 'meeting' | 'file'
+export type SearchResultType = 'company' | 'contact' | 'deal' | 'file'
 
 export interface SearchResult {
   type: SearchResultType
@@ -30,12 +30,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   const organizationId = session.user.organizationId
   const contains = { contains: q, mode: 'insensitive' as const }
 
-  const [leads, companies, contacts, deals, meetings, files] = await Promise.all([
-    prisma.lead.findMany({
-      where: { organizationId, OR: [{ name: contains }, { company: contains }, { email: contains }] },
-      select: { id: true, name: true, company: true, status: true },
-      take: RESULTS_PER_TYPE,
-    }),
+  const [companies, contacts, deals, files] = await Promise.all([
     prisma.company.findMany({
       where: { organizationId, OR: [{ name: contains }, { industry: contains }] },
       select: { id: true, name: true, industry: true },
@@ -46,14 +41,20 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
       select: { id: true, name: true, designation: true, company: { select: { name: true } } },
       take: RESULTS_PER_TYPE,
     }),
+    // A deal IS the lead now, so this is also the enquiry search — it reaches the
+    // merged capture columns, not just the pipeline name.
     prisma.deal.findMany({
-      where: { organizationId, name: contains },
+      where: {
+        organizationId,
+        OR: [
+          { name: contains },
+          { email: contains },
+          { phone: contains },
+          { contactPerson: contains },
+          { company: { name: contains } },
+        ],
+      },
       select: { id: true, name: true, stage: true, value: true },
-      take: RESULTS_PER_TYPE,
-    }),
-    prisma.meeting.findMany({
-      where: { organizationId, title: contains },
-      select: { id: true, title: true, scheduledAt: true },
       take: RESULTS_PER_TYPE,
     }),
     prisma.file.findMany({
@@ -74,13 +75,6 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   const activeFiles = files.filter((f) => trashMap.get(f.id) !== 'TRASHED').slice(0, RESULTS_PER_TYPE)
 
   const results: SearchResult[] = [
-    ...leads.map((l) => ({
-      type: 'lead' as const,
-      id: l.id,
-      title: l.name,
-      subtitle: `Lead · ${l.company ?? l.status}`,
-      href: `/leads/${l.id}`,
-    })),
     ...companies.map((c) => ({
       type: 'company' as const,
       id: c.id,
@@ -101,13 +95,6 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
       title: d.name,
       subtitle: `Deal · ${d.stage.replace('_', ' ')} · ₹${Number(d.value).toLocaleString('en-IN')}`,
       href: `/deals/${d.id}`,
-    })),
-    ...meetings.map((m) => ({
-      type: 'meeting' as const,
-      id: m.id,
-      title: m.title,
-      subtitle: `Meeting · ${m.scheduledAt ? m.scheduledAt.toLocaleDateString('en-IN') : 'No date'}`,
-      href: `/meetings/${m.id}`,
     })),
     ...activeFiles.map((f) => ({
       type: 'file' as const,

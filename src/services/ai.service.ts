@@ -14,16 +14,15 @@ import { ok, err, Result } from '@/lib/result'
 // non-admin never sees org-wide aggregates via the AI.
 // ============================================================
 
-function scopeFilterForAI(user: Session['user']): { ownerFilter: Prisma.LeadWhereInput; dealOwnerFilter: Prisma.DealWhereInput; followUpOwnerFilter: Prisma.FollowUpWhereInput; visitAssigneeFilter: Prisma.FieldVisitWhereInput; meetingOwnerFilter: Prisma.MeetingWhereInput; userWhere: Prisma.UserWhereInput } {
+function scopeFilterForAI(user: Session['user']): { ownerFilter: Prisma.LeadWhereInput; dealOwnerFilter: Prisma.DealWhereInput; followUpOwnerFilter: Prisma.FollowUpWhereInput; visitAssigneeFilter: Prisma.FieldVisitWhereInput; userWhere: Prisma.UserWhereInput } {
   const scope = getRecordScope(user)
-  if (scope === 'ALL') return { ownerFilter: {}, dealOwnerFilter: {}, followUpOwnerFilter: {}, visitAssigneeFilter: {}, meetingOwnerFilter: {}, userWhere: {} }
+  if (scope === 'ALL') return { ownerFilter: {}, dealOwnerFilter: {}, followUpOwnerFilter: {}, visitAssigneeFilter: {}, userWhere: {} }
   if (scope === 'DEPARTMENT' && user.department?.id) {
     const deptLead = { owner: { departmentId: user.department.id } } as unknown as Prisma.LeadWhereInput
     const deptAssignee = { assignee: { departmentId: user.department.id } } as unknown as Prisma.FieldVisitWhereInput
-    const deptMeeting = { createdBy: { departmentId: user.department.id } } as unknown as Prisma.MeetingWhereInput
-    return { ownerFilter: deptLead, dealOwnerFilter: deptLead as unknown as Prisma.DealWhereInput, followUpOwnerFilter: { owner: { departmentId: user.department.id } } as unknown as Prisma.FollowUpWhereInput, visitAssigneeFilter: deptAssignee, meetingOwnerFilter: deptMeeting, userWhere: { OR: [{ departmentId: user.department.id }, { id: user.id }] } as Prisma.UserWhereInput }
+    return { ownerFilter: deptLead, dealOwnerFilter: deptLead as unknown as Prisma.DealWhereInput, followUpOwnerFilter: { owner: { departmentId: user.department.id } } as unknown as Prisma.FollowUpWhereInput, visitAssigneeFilter: deptAssignee, userWhere: { OR: [{ departmentId: user.department.id }, { id: user.id }] } as Prisma.UserWhereInput }
   }
-  return { ownerFilter: { ownerId: user.id } as Prisma.LeadWhereInput, dealOwnerFilter: { ownerId: user.id } as Prisma.DealWhereInput, followUpOwnerFilter: { ownerId: user.id } as Prisma.FollowUpWhereInput, visitAssigneeFilter: { assigneeId: user.id } as Prisma.FieldVisitWhereInput, meetingOwnerFilter: { createdById: user.id } as Prisma.MeetingWhereInput, userWhere: { id: user.id } as Prisma.UserWhereInput }
+  return { ownerFilter: { ownerId: user.id } as Prisma.LeadWhereInput, dealOwnerFilter: { ownerId: user.id } as Prisma.DealWhereInput, followUpOwnerFilter: { ownerId: user.id } as Prisma.FollowUpWhereInput, visitAssigneeFilter: { assigneeId: user.id } as Prisma.FieldVisitWhereInput, userWhere: { id: user.id } as Prisma.UserWhereInput }
 }
 
 async function buildOrgContext(organizationId: string, user?: Session['user']): Promise<string> {
@@ -42,7 +41,6 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
   const dealWhere: Prisma.DealWhereInput = { organizationId, ...(s?.dealOwnerFilter ?? {}) }
   const followUpWhere: Prisma.FollowUpWhereInput = { organizationId, ...(s?.followUpOwnerFilter ?? {}) }
   const visitWhere: Prisma.FieldVisitWhereInput = { organizationId, ...(s?.visitAssigneeFilter ?? {}) }
-  const meetingWhere: Prisma.MeetingWhereInput = { organizationId, ...(s?.meetingOwnerFilter ?? {}) }
 
   // Employee-level data (daily reports, activities, users) is scoped the same way:
   // admins see everything, managers see their department, others see only themselves.
@@ -72,17 +70,15 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
     visitsThisWeek,
     todaysCheckIns,
     todaysVisitReports,
-    todaysMeetings,
-    upcomingMeetings,
     teamMembers,
     todaysDailyReports,
     todaysActivities,
   ] = await Promise.all([
     prisma.lead.groupBy({ by: ['status'], where: leadWhere, _count: { _all: true } }),
     prisma.deal.groupBy({ by: ['stage'], where: dealWhere, _count: { _all: true }, _sum: { value: true } }),
-    prisma.deal.aggregate({ where: { ...dealWhere, stage: 'WON', closedAt: { gte: monthStart } }, _sum: { value: true }, _count: { _all: true } }),
+    prisma.deal.aggregate({ where: { ...dealWhere, stage: 'PAYMENT', closedAt: { gte: monthStart } }, _sum: { value: true }, _count: { _all: true } }),
     prisma.followUp.count({ where: { ...followUpWhere, status: { in: ['PENDING', 'OVERDUE'] }, dueDate: { lt: tomorrow } } }),
-    prisma.deal.findMany({ where: { ...dealWhere, stage: { notIn: ['WON', 'LOST'] } }, orderBy: { value: 'desc' }, take: 8, select: { name: true, value: true, stage: true, probability: true, expectedClose: true } }),
+    prisma.deal.findMany({ where: { ...dealWhere, stage: { notIn: ['PAYMENT', 'LOST'] } }, orderBy: { value: 'desc' }, take: 8, select: { name: true, value: true, stage: true, probability: true, expectedClose: true } }),
     prisma.lead.findMany({ where: leadWhere, orderBy: { createdAt: 'desc' }, take: 5, select: { name: true, company: true, status: true, source: true, createdAt: true } }),
     prisma.fieldVisit.findMany({ where: { ...visitWhere, scheduledAt: { gte: today, lt: tomorrow } }, include: { assignee: { select: { id: true, name: true, email: true } }, company: { select: { name: true } }, contact: { select: { name: true } }, deal: { select: { name: true, value: true } } }, orderBy: { scheduledAt: 'asc' } }),
     prisma.fieldVisit.findMany({ where: { ...visitWhere, scheduledAt: { gte: tomorrow, lt: weekEnd }, status: { in: ['SCHEDULED', 'ON_THE_WAY'] } }, include: { assignee: { select: { id: true, name: true } }, company: { select: { name: true } } }, orderBy: { scheduledAt: 'asc' }, take: 10 }),
@@ -90,8 +86,6 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
     prisma.fieldVisit.groupBy({ by: ['status'], where: { ...visitWhere, scheduledAt: { gte: weekStart, lt: weekEnd } }, _count: { _all: true } }),
     prisma.checkIn.findMany({ where: { createdAt: { gte: today, lt: tomorrow } }, include: { user: { select: { id: true, name: true } }, visit: { select: { id: true, title: true, company: { select: { name: true } }, assignee: { select: { name: true } } } } }, orderBy: { createdAt: 'desc' } }),
     prisma.visitReport.findMany({ where: { createdAt: { gte: today, lt: tomorrow } }, include: { visit: { select: { id: true, title: true, assignee: { select: { name: true } }, company: { select: { name: true } } } }, createdBy: { select: { name: true } } } }),
-    prisma.meeting.findMany({ where: { ...meetingWhere, scheduledAt: { gte: today, lt: tomorrow } }, include: { createdBy: { select: { name: true } }, company: { select: { name: true } }, participants: { include: { user: { select: { name: true } } } } }, orderBy: { scheduledAt: 'asc' } }),
-    prisma.meeting.findMany({ where: { ...meetingWhere, scheduledAt: { gte: tomorrow, lt: weekEnd }, status: { in: ['PROCESSING', 'SCHEDULED'] } }, include: { createdBy: { select: { name: true } }, company: { select: { name: true } } }, orderBy: { scheduledAt: 'asc' }, take: 10 }),
     prisma.user.findMany({ where: { organizationId, status: 'ACTIVE', ...(s?.userWhere ?? {}) }, select: { id: true, name: true, email: true, designation: true, department: { select: { name: true } }, team: { select: { name: true } }, status: true, roles: { select: { role: { select: { name: true } } } } }, orderBy: { name: 'asc' } }),
     prisma.dailyReport.findMany({ where: { organizationId, date: { gte: today, lt: tomorrow }, ...drUserFilter }, include: { user: { select: { name: true, email: true, designation: true, department: { select: { name: true } } } } }, orderBy: { createdAt: 'desc' } }),
     prisma.activity.findMany({ where: { organizationId, createdAt: { gte: today, lt: tomorrow }, ...activityActorFilter }, include: { actor: { select: { name: true, email: true, designation: true } }, lead: { select: { name: true } }, company: { select: { name: true } }, contact: { select: { name: true } }, deal: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 30 }),
@@ -186,32 +180,6 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
       if (r.discussion) lines.push(`    Discussion: ${r.discussion.slice(0, 200)}`)
       if (r.requirements) lines.push(`    Requirements: ${r.requirements.slice(0, 200)}`)
       if (r.nextSteps) lines.push(`    Next steps: ${r.nextSteps.slice(0, 200)}`)
-    }
-    lines.push('')
-  }
-
-  // Meetings Today
-  if (todaysMeetings.length > 0) {
-    lines.push(`Meetings today: ${todaysMeetings.length}`)
-    for (const m of todaysMeetings) {
-      const time = m.scheduledAt ? m.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'TBD'
-      const participants = m.participants?.map((p) => p.user?.name).filter(Boolean).join(', ') ?? 'None'
-      const company = m.company?.name ?? 'No company'
-      lines.push(`  - ${time} — ${m.title} (${m.type}) [${m.status}] — ${company}`)
-      lines.push(`    Organizer: ${m.createdBy?.name ?? 'Unknown'} | Participants: ${participants}`)
-      if (m.notes) lines.push(`    Notes: ${m.notes.slice(0, 200)}`)
-    }
-    lines.push('')
-  }
-
-  // Upcoming Meetings This Week
-  if (upcomingMeetings.length > 0) {
-    lines.push(`Upcoming meetings this week: ${upcomingMeetings.length}`)
-    for (const m of upcomingMeetings) {
-      const day = m.scheduledAt ? m.scheduledAt.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD'
-      const time = m.scheduledAt ? m.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''
-      const company = m.company?.name ?? 'No company'
-      lines.push(`  - ${day} ${time} — ${m.title} (${m.type}) [${m.status}] — ${company}`)
     }
     lines.push('')
   }
@@ -773,7 +741,7 @@ export async function generateFieldSalesDailySummary(opts?: { date?: Date }): Pr
       }),
       prisma.fieldVisit.count({ where: { organizationId, assigneeId: session.user.id, scheduledAt: { gte: start, lt: end } } }),
       prisma.deal.findMany({
-        where: { organizationId, ownerId: session.user.id, stage: { notIn: ['WON', 'LOST'] } },
+        where: { organizationId, ownerId: session.user.id, stage: { notIn: ['PAYMENT', 'LOST'] } },
         orderBy: { value: 'desc' },
         take: 5,
         select: { name: true, stage: true, value: true },

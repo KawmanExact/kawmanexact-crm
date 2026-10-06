@@ -380,9 +380,6 @@ exports.Prisma.LeadScalarFieldEnum = {
   phone: 'phone',
   source: 'source',
   status: 'status',
-  score: 'score',
-  value: 'value',
-  segment: 'segment',
   notes: 'notes',
   organizationId: 'organizationId',
   ownerId: 'ownerId',
@@ -391,20 +388,29 @@ exports.Prisma.LeadScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   lastActivityAt: 'lastActivityAt',
-  funnelStage: 'funnelStage',
-  enquiryDate: 'enquiryDate',
-  region: 'region',
-  location: 'location',
-  purposeOfVisit: 'purposeOfVisit',
-  meetingMode: 'meetingMode',
-  productsDiscussed: 'productsDiscussed',
-  keyDiscussionPoints: 'keyDiscussionPoints',
-  customerRequirement: 'customerRequirement',
-  cdaStatus: 'cdaStatus',
+  segment: 'segment',
   cdaDate: 'cdaDate',
-  samplingStatus: 'samplingStatus',
+  cdaStatus: 'cdaStatus',
+  customerRequirement: 'customerRequirement',
+  enquiryDate: 'enquiryDate',
+  keyDiscussionPoints: 'keyDiscussionPoints',
+  location: 'location',
+  meetingMode: 'meetingMode',
+  nextAction: 'nextAction',
+  productsDiscussed: 'productsDiscussed',
+  purposeOfVisit: 'purposeOfVisit',
+  region: 'region',
   rndFeedback: 'rndFeedback',
-  nextAction: 'nextAction'
+  samplingStatus: 'samplingStatus',
+  contactPerson: 'contactPerson',
+  designation: 'designation',
+  grade: 'grade',
+  loaStatus: 'loaStatus',
+  meetingAt: 'meetingAt',
+  meetingDate: 'meetingDate',
+  nextFollowUp: 'nextFollowUp',
+  remark: 'remark',
+  customProductNames: 'customProductNames'
 };
 
 exports.Prisma.CompanyScalarFieldEnum = {
@@ -434,8 +440,6 @@ exports.Prisma.ContactScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   mobile: 'mobile',
-  address: 'address',
-  segment: 'segment',
   status: 'status',
   organizationId: 'organizationId',
   companyId: 'companyId',
@@ -443,7 +447,9 @@ exports.Prisma.ContactScalarFieldEnum = {
   emailKey: 'emailKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  lastActivityAt: 'lastActivityAt'
+  lastActivityAt: 'lastActivityAt',
+  address: 'address',
+  segment: 'segment'
 };
 
 exports.Prisma.DealScalarFieldEnum = {
@@ -454,7 +460,6 @@ exports.Prisma.DealScalarFieldEnum = {
   stage: 'stage',
   expectedClose: 'expectedClose',
   priority: 'priority',
-  segment: 'segment',
   notes: 'notes',
   organizationId: 'organizationId',
   ownerId: 'ownerId',
@@ -463,7 +468,63 @@ exports.Prisma.DealScalarFieldEnum = {
   leadId: 'leadId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  closedAt: 'closedAt'
+  closedAt: 'closedAt',
+  segment: 'segment',
+  paymentStatus: 'paymentStatus',
+  lostReason: 'lostReason',
+  lostAt: 'lostAt',
+  lastActivityAt: 'lastActivityAt',
+  email: 'email',
+  phone: 'phone',
+  source: 'source',
+  contactPerson: 'contactPerson',
+  designation: 'designation',
+  meetingDate: 'meetingDate',
+  meetingAt: 'meetingAt',
+  meetingMode: 'meetingMode',
+  city: 'city',
+  country: 'country',
+  pinCode: 'pinCode',
+  purposeOfVisit: 'purposeOfVisit',
+  productsDiscussed: 'productsDiscussed',
+  customProductNames: 'customProductNames',
+  keyDiscussionPoints: 'keyDiscussionPoints',
+  customerRequirement: 'customerRequirement',
+  grade: 'grade',
+  application: 'application',
+  applicationOther: 'applicationOther',
+  cdaStatus: 'cdaStatus',
+  samplingStatus: 'samplingStatus',
+  rndFeedback: 'rndFeedback',
+  remark: 'remark',
+  nextFollowUp: 'nextFollowUp',
+  loaStatus: 'loaStatus',
+  score: 'score'
+};
+
+exports.Prisma.DealStageHistoryScalarFieldEnum = {
+  id: 'id',
+  dealId: 'dealId',
+  stage: 'stage',
+  previousStage: 'previousStage',
+  probability: 'probability',
+  movedById: 'movedById',
+  movedByName: 'movedByName',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  organizationId: 'organizationId'
+};
+
+exports.Prisma.DealItemScalarFieldEnum = {
+  id: 'id',
+  dealId: 'dealId',
+  productId: 'productId',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  unitCost: 'unitCost',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -480,7 +541,9 @@ exports.Prisma.ProductScalarFieldEnum = {
   attributes: 'attributes',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  unitCost: 'unitCost',
+  unitPrice: 'unitPrice'
 };
 
 exports.Prisma.SalesTransactionScalarFieldEnum = {
@@ -498,11 +561,21 @@ exports.Prisma.SalesTransactionScalarFieldEnum = {
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   totalAmount: 'totalAmount',
+  gstAmount: 'gstAmount',
+  hsnCode: 'hsnCode',
+  gstRate: 'gstRate',
+  freightAmount: 'freightAmount',
+  invoiceAmount: 'invoiceAmount',
   amountPaid: 'amountPaid',
   balanceAmount: 'balanceAmount',
   paymentStatus: 'paymentStatus',
   paymentDate: 'paymentDate',
   remarks: 'remarks',
+  leadTimeDays: 'leadTimeDays',
+  advanceAmount: 'advanceAmount',
+  pdcAmount: 'pdcAmount',
+  paymentMode: 'paymentMode',
+  purchaseOrderNo: 'purchaseOrderNo',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -624,70 +697,6 @@ exports.Prisma.VisitReportAttachmentScalarFieldEnum = {
   reportId: 'reportId',
   fileId: 'fileId',
   createdAt: 'createdAt'
-};
-
-exports.Prisma.MeetingScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  type: 'type',
-  status: 'status',
-  scheduledAt: 'scheduledAt',
-  duration: 'duration',
-  location: 'location',
-  meetingLink: 'meetingLink',
-  notes: 'notes',
-  organizationId: 'organizationId',
-  createdById: 'createdById',
-  companyId: 'companyId',
-  contactId: 'contactId',
-  dealId: 'dealId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  startedAt: 'startedAt',
-  endedAt: 'endedAt'
-};
-
-exports.Prisma.MeetingParticipantScalarFieldEnum = {
-  id: 'id',
-  meetingId: 'meetingId',
-  userId: 'userId',
-  role: 'role',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.MeetingRecordingScalarFieldEnum = {
-  id: 'id',
-  meetingId: 'meetingId',
-  cloudinaryPublicId: 'cloudinaryPublicId',
-  secureUrl: 'secureUrl',
-  duration: 'duration',
-  fileSize: 'fileSize',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.MeetingTranscriptScalarFieldEnum = {
-  id: 'id',
-  meetingId: 'meetingId',
-  content: 'content',
-  language: 'language',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.MeetingSummaryScalarFieldEnum = {
-  id: 'id',
-  meetingId: 'meetingId',
-  summary: 'summary',
-  discussionPoints: 'discussionPoints',
-  requirements: 'requirements',
-  objections: 'objections',
-  buyingSignals: 'buyingSignals',
-  riskSignals: 'riskSignals',
-  actionItems: 'actionItems',
-  nextSteps: 'nextSteps',
-  isEdited: 'isEdited',
-  editedById: 'editedById',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.AIConversationScalarFieldEnum = {
@@ -868,23 +877,14 @@ exports.LeadStatus = exports.$Enums.LeadStatus = {
   LOST: 'LOST'
 };
 
-exports.FunnelStage = exports.$Enums.FunnelStage = {
+exports.DealStage = exports.$Enums.DealStage = {
   SUSPECT: 'SUSPECT',
   PROSPECT: 'PROSPECT',
   APPROACH_ANALYSE: 'APPROACH_ANALYSE',
   NEGOTIATE: 'NEGOTIATE',
   CLOSE: 'CLOSE',
   ORDER: 'ORDER',
-  PAYMENT: 'PAYMENT'
-};
-
-exports.DealStage = exports.$Enums.DealStage = {
-  NEW_LEAD: 'NEW_LEAD',
-  CONTACTED: 'CONTACTED',
-  QUALIFIED: 'QUALIFIED',
-  PROPOSAL: 'PROPOSAL',
-  NEGOTIATION: 'NEGOTIATION',
-  WON: 'WON',
+  PAYMENT: 'PAYMENT',
   LOST: 'LOST'
 };
 
@@ -916,26 +916,10 @@ exports.VisitStatus = exports.$Enums.VisitStatus = {
   CANCELLED: 'CANCELLED'
 };
 
-exports.MeetingType = exports.$Enums.MeetingType = {
-  IN_PERSON: 'IN_PERSON',
-  VIDEO_CALL: 'VIDEO_CALL',
-  PHONE: 'PHONE'
-};
-
-exports.MeetingStatus = exports.$Enums.MeetingStatus = {
-  SCHEDULED: 'SCHEDULED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-  PROCESSING: 'PROCESSING',
-  FAILED: 'FAILED'
-};
-
 exports.NotificationType = exports.$Enums.NotificationType = {
   FOLLOW_UP_DUE: 'FOLLOW_UP_DUE',
   NEW_LEAD: 'NEW_LEAD',
   DEAL_UPDATED: 'DEAL_UPDATED',
-  MEETING_REMINDER: 'MEETING_REMINDER',
   FILE_SHARED: 'FILE_SHARED',
   FILE_UPLOADED: 'FILE_UPLOADED',
   AI_REPORT_READY: 'AI_REPORT_READY',
@@ -989,6 +973,8 @@ exports.Prisma.ModelName = {
   Company: 'Company',
   Contact: 'Contact',
   Deal: 'Deal',
+  DealStageHistory: 'DealStageHistory',
+  DealItem: 'DealItem',
   Product: 'Product',
   SalesTransaction: 'SalesTransaction',
   Activity: 'Activity',
@@ -999,11 +985,6 @@ exports.Prisma.ModelName = {
   GeoFence: 'GeoFence',
   VisitReport: 'VisitReport',
   VisitReportAttachment: 'VisitReportAttachment',
-  Meeting: 'Meeting',
-  MeetingParticipant: 'MeetingParticipant',
-  MeetingRecording: 'MeetingRecording',
-  MeetingTranscript: 'MeetingTranscript',
-  MeetingSummary: 'MeetingSummary',
   AIConversation: 'AIConversation',
   AIMessage: 'AIMessage',
   AIUsage: 'AIUsage',

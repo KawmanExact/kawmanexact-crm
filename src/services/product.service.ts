@@ -14,6 +14,7 @@ import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 import { toMoney } from '@/lib/sales-money'
 import type { ProductAttributes, ProductOption, ProductRow } from '@/types/sales'
+import { STANDARD_PRODUCTS, PRODUCT_OTHER_OPTION } from '@/lib/products'
 
 /**
  * Postgres treats NULLs as distinct in a unique index, so
@@ -50,6 +51,8 @@ function mapProduct(row: ProductWithCount): ProductRow {
     variant: row.variant,
     unit: row.unit,
     defaultUnitPrice: row.defaultUnitPrice ? toMoney(row.defaultUnitPrice).toNumber() : null,
+    unitCost: row.unitCost ? toMoney(row.unitCost).toNumber() : null,
+    unitPrice: row.unitPrice ? toMoney(row.unitPrice).toNumber() : null,
     description: row.description,
     attributes: mapAttributes(row.attributes),
     isActive: row.isActive,
@@ -90,20 +93,67 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 
 /** Active products only, for dropdowns. */
 export async function getActiveProductOptions(): Promise<ProductOption[]> {
-  const session = await requireApiSession()
-  const rows = await prisma.product.findMany({
-    where: { organizationId: session.user.organizationId, isActive: true },
-    select: { id: true, name: true, variant: true, category: true, unit: true, defaultUnitPrice: true },
-    orderBy: [{ name: 'asc' }, { variant: 'asc' }],
+  await requireApiSession()
+  
+  // Map standardized products to ProductOption format
+  const standardProducts: ProductOption[] = (STANDARD_PRODUCTS as readonly string[]).map((fullName: string, index: number) => {
+    // Extract variant from product name if present
+    const knownVariants = ['75%', '15%', 'RD', 'WD', 'WS', 'CWD', 'CWS', '0.1%', '1%', '10% / 20% Emulsion']
+    let name = fullName
+    let variant: string | null = null
+    
+    for (const v of knownVariants) {
+      if (fullName.endsWith(` ${v}`)) {
+        name = fullName.slice(0, -v.length - 1).trim()
+        variant = v
+        break
+      }
+    }
+    
+    // Handle special cases with " - "
+    if (!variant && fullName.includes(' - ')) {
+      const parts = fullName.split(' - ')
+      if (parts.length === 2) {
+        name = parts[0].trim()
+        variant = parts[1].trim()
+      }
+    }
+    
+    // Assign category based on product
+    let category: string
+    if (['VitExAct™ B12 0.1%', 'VitExAct™ B12 1%', 'CoQExAct™', 'CoQExAct™ 10% / 20% Emulsion'].includes(fullName)) {
+      category = 'Nutraceutical'
+    } else if (['CafRelExAct™', 'DHA ExAct™ - CWD', 'SoluExAct™ MCT - CWS'].includes(fullName)) {
+      category = 'Food & Beverage'
+    } else {
+      category = 'Nutraceutical'
+    }
+    
+    return {
+      id: `std-${index}`, // Stable ID for standardized products
+      name,
+      variant,
+      category,
+      unit: 'kg',
+      defaultUnitPrice: null,
+      unitCost: null,
+      unitPrice: null,
+    }
   })
-  return rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    variant: r.variant,
-    category: r.category,
-    unit: r.unit,
-    defaultUnitPrice: r.defaultUnitPrice ? toMoney(r.defaultUnitPrice).toNumber() : null,
-  }))
+  
+  // Add the "Other" option
+  standardProducts.push({
+    id: PRODUCT_OTHER_OPTION,
+    name: PRODUCT_OTHER_OPTION,
+    variant: null,
+    category: null,
+    unit: 'kg',
+    defaultUnitPrice: null,
+    unitCost: null,
+    unitPrice: null,
+  })
+  
+  return standardProducts
 }
 
 export async function getProductById(id: string): Promise<ProductRow | null> {
@@ -138,6 +188,8 @@ export async function createProduct(input: {
   variant?: string | null
   unit?: string | null
   defaultUnitPrice?: string | number | null
+  unitCost?: string | number | null
+  unitPrice?: string | number | null
   description?: string | null
   attributes?: ProductAttributes | null
 }): Promise<ProductRow> {
@@ -157,6 +209,8 @@ export async function createProduct(input: {
       variant,
       unit: normalizeProductText(input.unit) ?? 'kg',
       defaultUnitPrice: input.defaultUnitPrice ? toMoney(input.defaultUnitPrice) : null,
+      unitCost: input.unitCost ? toMoney(input.unitCost) : null,
+      unitPrice: input.unitPrice ? toMoney(input.unitPrice) : null,
       description: normalizeProductText(input.description),
       attributes: (input.attributes ?? null) as Prisma.InputJsonValue | undefined,
     },
@@ -175,6 +229,8 @@ export async function updateProduct(
     variant?: string | null
     unit?: string | null
     defaultUnitPrice?: string | number | null
+    unitCost?: string | number | null
+    unitPrice?: string | number | null
     description?: string | null
     attributes?: ProductAttributes | null
     isActive?: boolean
@@ -196,6 +252,8 @@ export async function updateProduct(
       variant,
       unit: normalizeProductText(input.unit) ?? 'kg',
       defaultUnitPrice: input.defaultUnitPrice ? toMoney(input.defaultUnitPrice) : null,
+      unitCost: input.unitCost ? toMoney(input.unitCost) : null,
+      unitPrice: input.unitPrice ? toMoney(input.unitPrice) : null,
       description: normalizeProductText(input.description),
       attributes: (input.attributes ?? null) as Prisma.InputJsonValue | undefined,
       ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),

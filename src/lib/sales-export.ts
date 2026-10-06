@@ -48,7 +48,13 @@ type ColumnKey =
   | 'unit'
   | 'unitPrice'
   | 'totalAmount'
+  | 'gstRate'
+  | 'gstAmount'
+  | 'freightAmount'
+  | 'invoiceAmount'
+  | 'advanceAmount'
   | 'amountPaid'
+  | 'pdcAmount'
   | 'balanceAmount'
   | 'paymentStatus'
   | 'paymentDate'
@@ -73,8 +79,14 @@ export const SALES_EXPORT_COLUMNS: readonly SalesExportColumn[] = [
   { header: 'Quantity', key: 'quantity', width: 12, format: QTY_FMT, align: 'right' },
   { header: 'Unit', key: 'unit', width: 8 },
   { header: 'Unit Price', key: 'unitPrice', width: 14, format: MONEY_FMT, align: 'right' },
-  { header: 'Total Amount', key: 'totalAmount', width: 15, format: MONEY_FMT, align: 'right' },
+  { header: 'Taxable Value', key: 'totalAmount', width: 15, format: MONEY_FMT, align: 'right' },
+  { header: 'GST Rate (%)', key: 'gstRate', width: 12, format: '0.00', align: 'right' },
+  { header: 'GST Amount', key: 'gstAmount', width: 14, format: MONEY_FMT, align: 'right' },
+  { header: 'Freight', key: 'freightAmount', width: 12, format: MONEY_FMT, align: 'right' },
+  { header: 'Invoice Amount', key: 'invoiceAmount', width: 16, format: MONEY_FMT, align: 'right' },
+  { header: 'Advance', key: 'advanceAmount', width: 14, format: MONEY_FMT, align: 'right' },
   { header: 'Amount Paid', key: 'amountPaid', width: 15, format: MONEY_FMT, align: 'right' },
+  { header: 'PDC', key: 'pdcAmount', width: 12, format: MONEY_FMT, align: 'right' },
   { header: 'Balance', key: 'balanceAmount', width: 14, format: MONEY_FMT, align: 'right' },
   { header: 'Payment Status', key: 'paymentStatus', width: 16 },
   { header: 'Payment Date', key: 'paymentDate', width: 14 },
@@ -88,6 +100,7 @@ function cellValue(row: SalesTransactionRow, key: ColumnKey): string | number | 
   if (key === 'saleDate') return row.saleDate.slice(0, 10)
   if (key === 'paymentDate') return row.paymentDate ? row.paymentDate.slice(0, 10) : null
   if (key === 'paymentStatus') return PAYMENT_STATUS_LABEL[row.paymentStatus]
+  if (key === 'gstRate') return typeof value === 'number' ? Number(value.toFixed(2)) : Number(Number(value).toFixed(2))
   return value as string | number
 }
 
@@ -121,6 +134,11 @@ export async function buildSalesWorkbook(input: {
     totalSalesValue: number
     totalAmountPaid: number
     totalPendingAmount: number
+    totalTaxableValue: number
+    totalGstAmount: number
+    totalFreightAmount: number
+    totalAdvanceAmount: number
+    totalPdcAmount: number
   }
   meta: SalesExportMeta
 }): Promise<Buffer> {
@@ -197,8 +215,13 @@ export async function buildSalesWorkbook(input: {
       value: input.kpis.quantityByUnit.map((q) => `${q.quantity} ${q.unit}`).join(', ') || '0',
       money: false,
     },
-    { label: 'Total Sales Value', value: input.kpis.totalSalesValue, money: true },
+    { label: 'Total Taxable Value', value: input.kpis.totalTaxableValue, money: true },
+    { label: 'Total GST Amount', value: input.kpis.totalGstAmount, money: true },
+    { label: 'Total Freight Amount', value: input.kpis.totalFreightAmount, money: true },
+    { label: 'Total Sales Value (Invoice)', value: input.kpis.totalSalesValue, money: true },
+    { label: 'Total Advance Received', value: input.kpis.totalAdvanceAmount, money: true },
     { label: 'Total Amount Paid', value: input.kpis.totalAmountPaid, money: true },
+    { label: 'Total PDC Promised', value: input.kpis.totalPdcAmount, money: true },
     { label: 'Total Pending Amount', value: input.kpis.totalPendingAmount, money: true },
   ]
   for (const pair of summaryPairs) {
@@ -247,8 +270,8 @@ export async function buildSalesWorkbook(input: {
     ws.getCell(excelRowNumber, 1).numFmt = DATE_FMT
     ws.getCell(excelRowNumber, 1).alignment = { horizontal: 'left' }
     if (record.paymentDate) {
-      ws.getCell(excelRowNumber, 13).value = new Date(record.paymentDate)
-      ws.getCell(excelRowNumber, 13).numFmt = DATE_FMT
+      ws.getCell(excelRowNumber, 19).value = new Date(record.paymentDate)
+      ws.getCell(excelRowNumber, 19).numFmt = DATE_FMT
     }
 
     const statusCell = excelRow.getCell('paymentStatus')
@@ -272,8 +295,13 @@ export async function buildSalesWorkbook(input: {
     const sums: Array<[ColumnKey, string]> = [
       ['quantity', 'F'],
       ['totalAmount', 'I'],
-      ['amountPaid', 'J'],
-      ['balanceAmount', 'K'],
+      ['gstAmount', 'K'],
+      ['freightAmount', 'L'],
+      ['invoiceAmount', 'M'],
+      ['advanceAmount', 'N'],
+      ['amountPaid', 'O'],
+      ['pdcAmount', 'P'],
+      ['balanceAmount', 'Q'],
     ]
     for (const [key, colLetter] of sums) {
       const colIndex = SALES_EXPORT_COLUMNS.findIndex((c) => c.key === key) + 1
@@ -386,6 +414,69 @@ export async function buildSalesWorkbook(input: {
     fitToWidth: 1,
     fitToHeight: 0,
     printTitlesRow: `${matrixHeaderRow}:${matrixHeaderRow}`,
+  }
+
+  // ---- GST Summary sheet ----
+  const gstWs = wb.addWorksheet('GST Summary')
+  const gstRates = new Map<number, { taxable: number; gst: number; invoice: number; count: number }>()
+  for (const record of input.rows) {
+    const rate = Number(record.gstRate ?? 0)
+    const existing = gstRates.get(rate) ?? { taxable: 0, gst: 0, invoice: 0, count: 0 }
+    existing.taxable += Number(record.totalAmount ?? 0)
+    existing.gst += Number(record.gstAmount ?? 0)
+    existing.invoice += Number(record.invoiceAmount ?? 0)
+    existing.count += 1
+    gstRates.set(rate, existing)
+  }
+  gstWs.columns = [
+    { header: 'GST Rate (%)', key: 'rate', width: 14, style: { numFmt: '0.00' } },
+    { header: 'Taxable Value', key: 'taxable', width: 18, style: { numFmt: MONEY_FMT } },
+    { header: 'GST Amount', key: 'gst', width: 16, style: { numFmt: MONEY_FMT } },
+    { header: 'Invoice Amount', key: 'invoice', width: 18, style: { numFmt: MONEY_FMT } },
+    { header: 'Line Count', key: 'count', width: 12 },
+  ]
+  const gstHeaderRow = prepareExtraSheet(gstWs, 'GST Summary', input.meta, headerFill, headerFont, thinBorder)
+  let grandTaxable = 0
+  let grandGst = 0
+  let grandInvoice = 0
+  for (const [rate, data] of [...gstRates.entries()].sort((a, b) => a[0] - b[0])) {
+    const added = gstWs.addRow({
+      rate,
+      taxable: data.taxable,
+      gst: data.gst,
+      invoice: data.invoice,
+      count: data.count,
+    })
+    added.eachCell((cell) => {
+      cell.border = thinBorder
+    })
+    grandTaxable += data.taxable
+    grandGst += data.gst
+    grandInvoice += data.invoice
+  }
+  // Grand total row
+  const totalRow = gstWs.addRow({
+    rate: null,
+    taxable: grandTaxable,
+    gst: grandGst,
+    invoice: grandInvoice,
+    count: input.rows.length,
+  })
+  totalRow.eachCell((cell, colNumber) => {
+    cell.border = thinBorder
+    cell.font = { bold: true }
+    if (colNumber >= 2) cell.numFmt = MONEY_FMT
+  })
+  totalRow.getCell(1).value = 'TOTAL'
+  gstWs.views = [{ state: 'frozen', ySplit: gstHeaderRow }]
+  gstWs.autoFilter = { from: { row: gstHeaderRow, column: 1 }, to: { row: gstWs.rowCount, column: gstWs.columnCount } }
+  gstWs.pageSetup = {
+    paperSize: 9,
+    orientation: 'landscape',
+    fitToPage: true,
+    fitToWidth: 1,
+    fitToHeight: 0,
+    printTitlesRow: `${gstHeaderRow}:${gstHeaderRow}`,
   }
 
   const buffer = await wb.xlsx.writeBuffer()

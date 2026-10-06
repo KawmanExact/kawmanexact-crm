@@ -11,14 +11,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge, type BadgeVariant } from '@/components/ui/badge'
 import { CompanyPicker } from '@/components/crm/company-picker'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, cn } from '@/lib/utils'
 import {
-  computeBalance,
-  computeLineTotal,
-  derivePaymentStatus,
+  deriveLineMoneyDetail,
+  toDecimalOrZero,
   OTHER_PRODUCT_SENTINEL,
   type PaymentStatus,
 } from '@/lib/sales-money'
+import { Prisma as PrismaNS } from '@/generated/prisma'
 import {
   salesClientFormSchema,
   type SalesClientFormInput,
@@ -27,6 +27,7 @@ import {
 import { saveSaleAction, updateSaleAction } from '@/app/sales-tracking/actions'
 import type { ProductOption, SalesTransactionRow } from '@/types/sales'
 import { productOptionLabel } from '@/types/sales'
+import { STANDARD_PRODUCTS } from '@/lib/products'
 
 const STATUS_VARIANT: Record<PaymentStatus, BadgeVariant> = {
   PAID: 'success',
@@ -44,6 +45,14 @@ export interface SalesFormLine {
   unitPrice: string
   amountPaid: string
   paymentStatus: PaymentStatus
+  hsnCode: string
+  gstRate: string
+  freightAmount: string
+  leadTimeDays: string
+  advanceAmount: string
+  pdcAmount: string
+  paymentMode: string
+  purchaseOrderNo: string
 }
 
 const emptyLine = (): SalesFormLine => ({
@@ -53,6 +62,14 @@ const emptyLine = (): SalesFormLine => ({
   unitPrice: '',
   amountPaid: '',
   paymentStatus: 'PENDING',
+  hsnCode: '',
+  gstRate: '',
+  freightAmount: '',
+  leadTimeDays: '',
+  advanceAmount: '',
+  pdcAmount: '',
+  paymentMode: '',
+  purchaseOrderNo: '',
 })
 
 function todayInputValue(): string {
@@ -107,14 +124,26 @@ export function SalesForm({
       remarks: sale?.rows[0].remarks ?? '',
       moveLeadStage: false,
       lines: sale
-        ? sale.rows.map((row) => ({
-            productId: row.isOtherProduct ? OTHER_PRODUCT_SENTINEL : (row.productId ?? ''),
-            otherProductName: row.otherProductName ?? '',
-            quantity: String(row.quantity),
-            unitPrice: String(row.unitPrice),
-            amountPaid: String(row.amountPaid),
-            paymentStatus: row.paymentStatus,
-          }))
+        ? sale.rows.map((row) => {
+            const isStandard = !row.isOtherProduct && !row.productId && row.otherProductName && STANDARD_PRODUCTS.includes(row.otherProductName as any)
+            const stdIndex = isStandard ? STANDARD_PRODUCTS.indexOf(row.otherProductName as any) : -1
+            return {
+              productId: row.isOtherProduct ? OTHER_PRODUCT_SENTINEL : (isStandard ? `std-${stdIndex}` : (row.productId ?? '')),
+              otherProductName: row.otherProductName ?? '',
+              quantity: String(row.quantity),
+              unitPrice: String(row.unitPrice),
+              amountPaid: String(row.amountPaid),
+              paymentStatus: row.paymentStatus,
+              hsnCode: row.hsnCode ?? '',
+              gstRate: row.gstRate ? String(row.gstRate) : '',
+              freightAmount: row.freightAmount ? String(row.freightAmount) : '',
+              leadTimeDays: row.leadTimeDays !== null ? String(row.leadTimeDays) : '',
+              advanceAmount: row.advanceAmount ? String(row.advanceAmount) : '',
+              pdcAmount: row.pdcAmount ? String(row.pdcAmount) : '',
+              paymentMode: row.paymentMode ?? '',
+              purchaseOrderNo: row.purchaseOrderNo ?? '',
+            }
+          })
         : [emptyLine()],
     },
   })
@@ -136,21 +165,25 @@ export function SalesForm({
     [products]
   )
 
-  /** Live recomputation of one line, using the server's Decimal helpers. */
+  /**
+   * Live recomputation of one line, using the server's Decimal helpers — the
+   * same deriveLineMoneyDetail the save action runs, so the invoice amount shown
+   * here is byte-for-byte what gets stored.
+   */
   function lineTotals(line: SalesFormLine | undefined) {
-    const quantity = Number(line?.quantity)
-    const unitPrice = Number(line?.unitPrice)
-    const amountPaid = Number(line?.amountPaid)
-    const total = computeLineTotal(
-      Number.isFinite(quantity) ? quantity : 0,
-      Number.isFinite(unitPrice) ? unitPrice : 0
-    )
-    const paid = Number.isFinite(amountPaid) ? amountPaid : 0
-    return {
-      total,
-      balance: computeBalance(total, paid),
-      derived: derivePaymentStatus(total, paid),
+    const n = (value: string | undefined) => {
+      const parsed = Number(value)
+      return Number.isFinite(parsed) ? parsed : 0
     }
+    return deriveLineMoneyDetail({
+      quantity: n(line?.quantity),
+      unitPrice: n(line?.unitPrice),
+      gstRate: n(line?.gstRate),
+      freightAmount: n(line?.freightAmount),
+      advanceAmount: n(line?.advanceAmount),
+      pdcAmount: n(line?.pdcAmount),
+      amountPaid: n(line?.amountPaid),
+    })
   }
 
   function onProductChange(index: number, value: string) {
@@ -165,12 +198,16 @@ export function SalesForm({
     }
   }
 
-  /** Keep status, paid and date consistent when the status select is used. */
+  /**
+   * Keep status, paid and date consistent when the status select is used. PAID
+   * fills in the INVOICE amount (taxable + GST + freight), not the pre-GST line
+   * total — otherwise picking PAID would leave GST and freight unpaid.
+   */
   function onStatusChange(index: number, status: PaymentStatus) {
-    const { total } = lineTotals(getValues(`lines.${index}`))
+    const { invoiceAmount } = lineTotals(getValues(`lines.${index}`))
     setValue(`lines.${index}.paymentStatus`, status, { shouldValidate: true })
     if (status === 'PAID') {
-      setValue(`lines.${index}.amountPaid`, total.toFixed(2), { shouldValidate: true })
+      setValue(`lines.${index}.amountPaid`, invoiceAmount.toFixed(2), { shouldValidate: true })
     } else if (status === 'PENDING') {
       setValue(`lines.${index}.amountPaid`, '0', { shouldValidate: true })
     }
@@ -189,13 +226,21 @@ export function SalesForm({
     formData.set(
       'lines',
       JSON.stringify(
-        values.lines.map((line) => ({
+        values.lines.map((line: SalesFormLine) => ({
           productId: line.productId,
           otherProductName: line.otherProductName,
           quantity: line.quantity === '' ? 0 : Number(line.quantity),
           unitPrice: line.unitPrice === '' ? 0 : Number(line.unitPrice),
           amountPaid: line.amountPaid === '' ? 0 : Number(line.amountPaid),
           paymentStatus: line.paymentStatus,
+          hsnCode: line.hsnCode,
+          gstRate: line.gstRate === '' ? 0 : Number(line.gstRate),
+          freightAmount: line.freightAmount === '' ? 0 : Number(line.freightAmount),
+          leadTimeDays: line.leadTimeDays === '' ? 0 : Number(line.leadTimeDays),
+          advanceAmount: line.advanceAmount === '' ? 0 : Number(line.advanceAmount),
+          pdcAmount: line.pdcAmount === '' ? 0 : Number(line.pdcAmount),
+          paymentMode: line.paymentMode,
+          purchaseOrderNo: line.purchaseOrderNo,
         }))
       )
     )
@@ -220,13 +265,37 @@ export function SalesForm({
     }
   })
 
-  const grandTotal = (lineValues ?? []).reduce(
-    (sum, line) => sum + lineTotals(line).total.toNumber(),
-    0
-  )
-  const grandPaid = (lineValues ?? []).reduce(
-    (sum, line) => sum + (Number.isFinite(Number(line?.amountPaid)) ? Number(line.amountPaid) : 0),
-    0
+  /**
+   * Invoice-level totals, accumulated from the same per-line derivation the save
+   * action uses. Summed from Decimals rather than by adding the displayed
+   * strings, so the figure here matches the stored `total` to the paisa.
+   */
+  const invoiceTotals = (lineValues ?? []).reduce(
+    (acc, line) => {
+      const t = lineTotals(line)
+      return {
+        taxable: acc.taxable.plus(t.taxableAmount),
+        gst: acc.gst.plus(t.gstAmount),
+        freight: acc.freight.plus(t.freightAmount),
+        invoice: acc.invoice.plus(t.invoiceAmount),
+        paid: acc.paid.plus(t.amountPaid),
+        balance: acc.balance.plus(t.balanceAmount),
+        advance: acc.advance.plus(t.advanceAmount),
+        pdc: acc.pdc.plus(t.pdcAmount),
+        uncovered: acc.uncovered.plus(t.uncoveredAmount),
+      }
+    },
+    {
+      taxable: toDecimalOrZero(0),
+      gst: toDecimalOrZero(0),
+      freight: toDecimalOrZero(0),
+      invoice: toDecimalOrZero(0),
+      paid: toDecimalOrZero(0),
+      balance: toDecimalOrZero(0),
+      advance: toDecimalOrZero(0),
+      pdc: toDecimalOrZero(0),
+      uncovered: toDecimalOrZero(0),
+    }
   )
 
   return (
@@ -329,16 +398,16 @@ export function SalesForm({
             className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-purple-600"
           />
           <span>
-            Also move the customer&rsquo;s open lead to Order/Payment stage
+            Also move the customer&rsquo;s open deal to Order/Payment stage
             <span className="block text-xs text-white/40">
               Order while anything is outstanding, Payment when fully paid. Only applies when the
-              customer has exactly one open lead.
+              customer has exactly one open deal.
             </span>
           </span>
         </label>
         {moveLeadStage && (
           <p className="text-xs text-amber-300/80">
-            The lead stage will only change if this customer has exactly one open lead.
+            The deal stage will only change if this customer has exactly one open deal.
           </p>
         )}
       </Card>
@@ -435,6 +504,9 @@ export function SalesForm({
                 )}
               </div>
 
+              {/* Row 1 — the goods. Read-only cells show the running result of
+                  the row above so the arithmetic reads top-to-bottom in the
+                  same order an invoice is laid out. */}
               <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <Field
                   label="Quantity"
@@ -451,7 +523,7 @@ export function SalesForm({
                     aria-invalid={Boolean(lineErrors.quantity)}
                   />
                 </Field>
-                <Field label="Unit price" required error={lineErrors.unitPrice?.message}>
+                <Field label="Unit price (excl. GST)" required error={lineErrors.unitPrice?.message}>
                   <Input
                     type="number"
                     step="0.01"
@@ -461,16 +533,72 @@ export function SalesForm({
                     aria-invalid={Boolean(lineErrors.unitPrice)}
                   />
                 </Field>
-                <Field label="Total" hint="Quantity × unit price">
-                  <Input
-                    readOnly
-                    tabIndex={-1}
-                    value={totals.total.toFixed(2)}
-                    aria-label={`Line ${index + 1} total`}
-                    className="bg-white/[0.02] text-white/70"
+                <Field label="Taxable value" hint="Quantity × unit price">
+                  <ReadOnlyMoney
+                    label={`Line ${index + 1} taxable value`}
+                    value={totals.taxableAmount}
                   />
                 </Field>
-                <Field label="Amount paid" required error={lineErrors.amountPaid?.message}>
+                <Field label="GST Rate (%)" error={lineErrors.gstRate?.message}>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    inputMode="decimal"
+                    {...register(`lines.${index}.gstRate` as const, { valueAsNumber: false })}
+                    placeholder="0"
+                    aria-invalid={Boolean(lineErrors.gstRate)}
+                  />
+                </Field>
+                <Field label="GST amount" hint="Taxable × GST rate">
+                  <ReadOnlyMoney
+                    label={`Line ${index + 1} GST amount`}
+                    value={totals.gstAmount}
+                  />
+                </Field>
+              </div>
+
+              {/* Row 2 — what the customer owes, and how much has been settled. */}
+              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                <Field label="HSN Code" error={lineErrors.hsnCode?.message}>
+                  <Input
+                    {...register(`lines.${index}.hsnCode` as const)}
+                    placeholder="e.g. 2106"
+                    maxLength={8}
+                    aria-invalid={Boolean(lineErrors.hsnCode)}
+                  />
+                </Field>
+                <Field label="Freight" error={lineErrors.freightAmount?.message} hint="Added after GST">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    inputMode="decimal"
+                    {...register(`lines.${index}.freightAmount` as const, { valueAsNumber: false })}
+                    placeholder="0"
+                    aria-invalid={Boolean(lineErrors.freightAmount)}
+                  />
+                </Field>
+                <Field label="Invoice amount" hint="Taxable + GST + freight">
+                  <ReadOnlyMoney
+                    label={`Line ${index + 1} invoice amount`}
+                    value={totals.invoiceAmount}
+                    emphasis
+                  />
+                </Field>
+                <Field label="Advance received" error={lineErrors.advanceAmount?.message} hint="Already paid">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    inputMode="decimal"
+                    {...register(`lines.${index}.advanceAmount` as const, { valueAsNumber: false })}
+                    placeholder="0"
+                    aria-invalid={Boolean(lineErrors.advanceAmount)}
+                  />
+                </Field>
+                <Field label="Amount paid" required error={lineErrors.amountPaid?.message} hint="Incl. advance">
                   <Input
                     type="number"
                     step="0.01"
@@ -480,13 +608,69 @@ export function SalesForm({
                     aria-invalid={Boolean(lineErrors.amountPaid)}
                   />
                 </Field>
-                <Field label="Balance" hint="Total − paid">
+              </div>
+
+              {/* Row 3 — settlement: outstanding, and how much of it is only
+                  promised. Uncovered is the part with nothing behind it. */}
+              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                <Field label="Balance due" hint="Invoice amount − paid">
+                  <ReadOnlyMoney
+                    label={`Line ${index + 1} balance due`}
+                    value={totals.balanceAmount}
+                  />
+                </Field>
+                <Field label="PDC (post-dated cheque)" error={lineErrors.pdcAmount?.message} hint="Promised, not paid">
                   <Input
-                    readOnly
-                    tabIndex={-1}
-                    value={totals.balance.toFixed(2)}
-                    aria-label={`Line ${index + 1} balance`}
-                    className="bg-white/[0.02] text-white/70"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    inputMode="decimal"
+                    {...register(`lines.${index}.pdcAmount` as const, { valueAsNumber: false })}
+                    placeholder="0"
+                    aria-invalid={Boolean(lineErrors.pdcAmount)}
+                  />
+                </Field>
+                <Field label="Uncovered" hint="Balance − PDC">
+                  <ReadOnlyMoney
+                    label={`Line ${index + 1} uncovered amount`}
+                    value={totals.uncoveredAmount}
+                    tone={totals.uncoveredAmount.greaterThan(0) ? 'warn' : 'muted'}
+                  />
+                </Field>
+                <Field label="Payment Mode" error={lineErrors.paymentMode?.message}>
+                  <select
+                    {...register(`lines.${index}.paymentMode` as const)}
+                    aria-invalid={Boolean(lineErrors.paymentMode)}
+                    className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  >
+                    <option value="">Select mode…</option>
+                    <option value="CASH">Cash</option>
+                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                    <option value="PDC">PDC</option>
+                    <option value="ON_DELIVERY">On Delivery</option>
+                    <option value="CREDIT">Credit</option>
+                  </select>
+                </Field>
+                <Field label="Lead time (days)" error={lineErrors.leadTimeDays?.message}>
+                  <Input
+                    type="number"
+                    step="1"
+                    min="0"
+                    inputMode="numeric"
+                    {...register(`lines.${index}.leadTimeDays` as const, { valueAsNumber: false })}
+                    placeholder="0"
+                    aria-invalid={Boolean(lineErrors.leadTimeDays)}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Field label="Purchase Order No." error={lineErrors.purchaseOrderNo?.message}>
+                  <Input
+                    {...register(`lines.${index}.purchaseOrderNo` as const)}
+                    placeholder="PO-12345"
+                    maxLength={50}
+                    aria-invalid={Boolean(lineErrors.purchaseOrderNo)}
                   />
                 </Field>
               </div>
@@ -511,9 +695,10 @@ export function SalesForm({
                 {lineErrors.paymentStatus && (
                   <span className="text-xs text-red-400">{lineErrors.paymentStatus.message}</span>
                 )}
-                {totals.derived !== line?.paymentStatus && (
+                {totals.paymentStatus !== line?.paymentStatus && (
                   <span className="text-xs text-amber-300/80">
-                    Total and amount paid imply &ldquo;{PAYMENT_STATUS_LABEL[totals.derived]}&rdquo;.
+                    Invoice amount and amount paid imply &ldquo;
+                    {PAYMENT_STATUS_LABEL[totals.paymentStatus]}&rdquo;.
                   </span>
                 )}
                 <span className="sm:ml-auto">
@@ -530,13 +715,28 @@ export function SalesForm({
           <p className="text-xs text-red-400">{errors.lines.message}</p>
         )}
 
-        <div className="flex flex-wrap items-center justify-end gap-4 border-t border-white/[0.06] pt-3 text-sm">
-          <span className="text-white/50">Invoice total</span>
-          <span className="font-semibold text-white">{formatCurrency(grandTotal)}</span>
-          <span className="text-white/50">Paid</span>
-          <span className="font-semibold text-emerald-300">{formatCurrency(grandPaid)}</span>
-          <span className="text-white/50">Pending</span>
-          <span className="font-semibold text-amber-300">{formatCurrency(grandTotal - grandPaid)}</span>
+        {/* Invoice summary, in the order an invoice is totalled: taxable -> GST ->
+              freight -> invoice amount -> paid -> balance -> PDC -> uncovered. */}
+        <div className="space-y-2 border-t border-white/[0.06] pt-3">
+          <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
+            <SummaryLine label="Taxable value" value={invoiceTotals.taxable} muted />
+            <SummaryLine label="GST" value={invoiceTotals.gst} muted />
+            <SummaryLine label="Freight" value={invoiceTotals.freight} muted />
+            <SummaryLine label="Invoice total" value={invoiceTotals.invoice} />
+            <SummaryLine label="Advance received" value={invoiceTotals.advance} tone="emerald" />
+            <SummaryLine label="Paid" value={invoiceTotals.paid} tone="emerald" />
+            <SummaryLine label="Balance due" value={invoiceTotals.balance} tone="amber" />
+            <SummaryLine label="PDC promised" value={invoiceTotals.pdc} muted />
+            <SummaryLine
+              label="Uncovered"
+              value={invoiceTotals.uncovered}
+              tone={invoiceTotals.uncovered.greaterThan(0) ? 'amber' : undefined}
+            />
+          </div>
+          <p className="text-right text-xs text-white/35">
+            Balance due is invoice total minus paid. Uncovered is what is still
+            owed with no cheque promised against it.
+          </p>
         </div>
       </Card>
 
@@ -549,6 +749,63 @@ export function SalesForm({
         </Button>
       </div>
     </form>
+  )
+}
+
+/**
+ * Read-only money cell. Used for every derived figure on the form so the
+ * computed values all look identical and never sit in a tab order.
+ */
+function ReadOnlyMoney({
+  label,
+  value,
+  emphasis = false,
+  tone = 'muted',
+}: {
+  label: string
+  value: PrismaNS.Decimal
+  emphasis?: boolean
+  tone?: 'muted' | 'warn'
+}) {
+  return (
+    <Input
+      readOnly
+      tabIndex={-1}
+      value={value.toFixed(2)}
+      aria-label={label}
+      className={cn(
+        'tabular-nums',
+        emphasis ? 'font-semibold text-white' : 'text-white/70',
+        tone === 'warn' ? 'text-amber-300' : null
+      )}
+    />
+  )
+}
+
+/** One `Label  value` pair in the invoice summary strip. */
+function SummaryLine({
+  label,
+  value,
+  muted = false,
+  tone,
+}: {
+  label: string
+  value: PrismaNS.Decimal
+  muted?: boolean
+  tone?: 'emerald' | 'amber'
+}) {
+  return (
+    <span className="inline-flex items-baseline gap-1.5">
+      <span className="text-white/50">{label}</span>
+      <span
+        className={cn(
+          'font-semibold tabular-nums',
+          muted ? 'text-white/70' : tone === 'emerald' ? 'text-emerald-300' : tone === 'amber' ? 'text-amber-300' : 'text-white'
+        )}
+      >
+        {formatCurrency(value.toNumber())}
+      </span>
+    </span>
   )
 }
 

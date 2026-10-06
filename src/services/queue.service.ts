@@ -1,6 +1,6 @@
 import 'server-only'
 import { addJob, QUEUE_NAMES } from '@/lib/queue'
-import type { EmailJobData, NotificationJobData, WebhookJobData, AIReportJobData, FileProcessingJobData, TranscriptionJobData } from '@/workers/types'
+import type { EmailJobData, NotificationJobData, WebhookJobData, AIReportJobData, FileProcessingJobData } from '@/workers/types'
 
 /**
  * Queue Service
@@ -96,21 +96,6 @@ export async function queueThumbnail(fileId: string, organizationId: string): Pr
     fileId,
     organizationId,
     operation: 'thumbnail',
-  })
-}
-
-// ============================================================
-// Transcription Queue
-// ============================================================
-
-export async function queueTranscription(data: TranscriptionJobData): Promise<string | null> {
-  return addJob(QUEUE_NAMES.TRANSCRIPTION, 'transcribe-meeting', data, {
-    priority: 2,
-    attempts: 3,
-    backoff: {
-      type: 'exponential',
-      delay: 5000,
-    },
   })
 }
 

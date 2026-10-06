@@ -26,11 +26,15 @@ model Organization {
   aiConversations   AIConversation[]
   aiInsights        AIInsight[]
   aiReports         AIReport[]
+  aiUsages          AIUsage[]
   activities        Activity[]
   auditLogs         AuditLog[]
   companies         Company[]
   contacts          Contact[]
+  dailyReports      DailyReport[]
   deals             Deal[]
+  dealItems         DealItem[]
+  dealStageHistory  DealStageHistory[]
   departments       Department[]
   visits            FieldVisit[]
   files             File[]
@@ -40,80 +44,75 @@ model Organization {
   geoFences         GeoFence[]
   integrations      Integration[]
   leads             Lead[]
-  meetings          Meeting[]
   notifications     Notification[]
+  products          Product[]
+  resourceGrants    ResourceGrant[]
+  salesTransactions SalesTransaction[]
   savedViews        SavedView[]
   teams             Team[]
   users             User[]
   liveLocations     UserLiveLocation[]
-  dailyReports      DailyReport[]
-  aiUsages          AIUsage[]
-  resourceGrants    ResourceGrant[]
-  products          Product[]
-  salesTransactions SalesTransaction[]
 
   @@index([slug])
   @@index([createdAt])
 }
 
 model User {
-  id                     String               @id @default(cuid())
-  email                  String               @unique
+  id                     String             @id @default(cuid())
+  email                  String             @unique
   name                   String?
   passwordHash           String?
   image                  String?
   employeeId             String?
   phone                  String?
   designation            String?
-  status                 UserStatus           @default(ACTIVE)
-  emailVerified          Boolean              @default(false)
+  status                 UserStatus         @default(ACTIVE)
+  emailVerified          Boolean            @default(false)
   lastLoginAt            DateTime?
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
   organizationId         String
   departmentId           String?
   teamId                 String?
   managerId              String?
   aiConversations        AIConversation[]
-  generatedAIReports     AIReport[]           @relation("AIReportGenerator")
+  generatedAIReports     AIReport[]         @relation("AIReportGenerator")
+  aiUsages               AIUsage[]
   accounts               Account[]
-  activities             Activity[]           @relation("ActivityActor")
-  auditLogs              AuditLog[]           @relation("AuditActor")
-  liveLocation           UserLiveLocation?
+  activities             Activity[]         @relation("ActivityActor")
+  auditLogs              AuditLog[]         @relation("AuditActor")
   checkIns               CheckIn[]
-  ownedCompanies         Company[]            @relation("CompanyOwner")
-  ownedContacts          Contact[]            @relation("ContactOwner")
-  ownedDeals             Deal[]               @relation("DealOwner")
-  managedDepartments     Department[]         @relation("DepartmentManager")
-  assignedVisits         FieldVisit[]         @relation("VisitAssignee")
-  uploadedFiles          File[]               @relation("FileUploader")
+  ownedCompanies         Company[]          @relation("CompanyOwner")
+  ownedContacts          Contact[]          @relation("ContactOwner")
+  dailyReports           DailyReport[]
+  ownedDeals             Deal[]             @relation("DealOwner")
+  movedDealHistory       DealStageHistory[]
+  managedDepartments     Department[]       @relation("DepartmentManager")
+  assignedVisits         FieldVisit[]       @relation("VisitAssignee")
+  uploadedFiles          File[]             @relation("FileUploader")
   fileActivities         FileActivity[]
-  createdFilePermissions FilePermission[]     @relation("FilePermissionCreator")
-  filePermissions        FilePermission[]     @relation("FilePermissionUser")
-  fileSharesBy           FileShare[]          @relation("FileShareBy")
-  fileSharesWith         FileShare[]          @relation("FileShareWith")
-  uploadedFileVersions   FileVersion[]        @relation("FileVersionUploader")
-  createdFolders         Folder[]             @relation("FolderCreator")
-  ownedFollowUps         FollowUp[]           @relation("FollowUpOwner")
-  ownedLeads             Lead[]               @relation("LeadOwner")
-  createdMeetings        Meeting[]            @relation("MeetingCreator")
-  meetings               MeetingParticipant[]
-  editedMeetingSummaries MeetingSummary[]     @relation("MeetingSummaryEditor")
+  createdFilePermissions FilePermission[]   @relation("FilePermissionCreator")
+  filePermissions        FilePermission[]   @relation("FilePermissionUser")
+  fileSharesBy           FileShare[]        @relation("FileShareBy")
+  fileSharesWith         FileShare[]        @relation("FileShareWith")
+  uploadedFileVersions   FileVersion[]      @relation("FileVersionUploader")
+  createdFolders         Folder[]           @relation("FolderCreator")
+  ownedFollowUps         FollowUp[]         @relation("FollowUpOwner")
+  ownedLeads             Lead[]             @relation("LeadOwner")
   notifications          Notification[]
+  grantsGiven            ResourceGrant[]    @relation("GrantsGiven")
+  salesTransactions      SalesTransaction[] @relation("SalesSalesperson")
   savedViews             SavedView[]
   sessions               Session[]
-  managedTeams           Team[]               @relation("TeamManager")
-  department             Department?          @relation("UserDepartment", fields: [departmentId], references: [id])
-  manager                User?                @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
-  subordinates           User[]               @relation("UserManager")
-  organization           Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  team                   Team?                @relation("TeamMembers", fields: [teamId], references: [id])
+  managedTeams           Team[]             @relation("TeamManager")
+  department             Department?        @relation("UserDepartment", fields: [departmentId], references: [id])
+  manager                User?              @relation("UserManager", fields: [managerId], references: [id])
+  subordinates           User[]             @relation("UserManager")
+  organization           Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  team                   Team?              @relation("TeamMembers", fields: [teamId], references: [id])
+  liveLocation           UserLiveLocation?
   roles                  UserRole[]
-  visitReports           VisitReport[]        @relation("VisitReportCreator")
-  dailyReports           DailyReport[]
-  aiUsages               AIUsage[]
-  grantsGiven            ResourceGrant[]      @relation("GrantsGiven")
-  salesTransactions      SalesTransaction[]   @relation("SalesSalesperson")
+  visitReports           VisitReport[]      @relation("VisitReportCreator")
 
   @@index([organizationId])
   @@index([email])
@@ -133,9 +132,9 @@ model Session {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   endedAt    DateTime?
   lastSeenAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([userId, lastSeenAt])
@@ -173,7 +172,7 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  issuer                String? // Required by better-auth for credential provider
+  issuer                String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -200,9 +199,9 @@ model Role {
   isSystem       Boolean          @default(false)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  resourceGrants ResourceGrant[]
   permissions    RolePermission[]
   users          UserRole[]
-  resourceGrants ResourceGrant[]
 
   @@index([name])
 }
@@ -247,15 +246,15 @@ model ResourceGrant {
   id             String       @id @default(cuid())
   organizationId String
   roleId         String
-  resourceType   String       @default("record") // 'record', 'report', 'file', 'team' etc.
-  resourceId     String? // null = grant applies to all resources of type; set = single resource
-  permission     String // e.g. 'view', 'edit', 'delete', 'share'
+  resourceType   String       @default("record")
+  resourceId     String?
+  permission     String
   grantedBy      String
   grantedAt      DateTime     @default(now())
   expiresAt      DateTime?
+  grantor        User         @relation("GrantsGiven", fields: [grantedBy], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   role           Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  grantor        User         @relation("GrantsGiven", fields: [grantedBy], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([roleId])
@@ -271,7 +270,7 @@ model Department {
   managerId       String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  manager         User?            @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+  manager         User?            @relation("DepartmentManager", fields: [managerId], references: [id])
   organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   filePermissions FilePermission[]
   teams           Team[]
@@ -293,7 +292,7 @@ model Team {
   updatedAt       DateTime         @updatedAt
   filePermissions FilePermission[]
   department      Department?      @relation(fields: [departmentId], references: [id])
-  manager         User?            @relation("TeamManager", fields: [managerId], references: [id], onDelete: SetNull)
+  manager         User?            @relation("TeamManager", fields: [managerId], references: [id])
   organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   users           User[]           @relation("TeamMembers")
 
@@ -472,9 +471,6 @@ model Lead {
   phone               String?
   source              String?
   status              LeadStatus   @default(NEW)
-  score               Int          @default(0)
-  value               Decimal?     @db.Decimal(15, 2)
-  segment             String?
   notes               String?
   organizationId      String
   ownerId             String
@@ -483,26 +479,29 @@ model Lead {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
   lastActivityAt      DateTime?
-  // ---- Sales Funnel (SPANCOP) tracking — additive columns only ----
-  // `status` above is the pre-existing LeadStatus lifecycle and is left
-  // completely untouched. `funnelStage` is the separate SPANCOP position:
-  // SUSPECT -> PROSPECT -> APPROACH_ANALYSE -> NEGOTIATE -> CLOSE ->
-  // ORDER -> PAYMENT. LOST leads are represented by `status = LOST` with a
-  // NULL funnelStage and are shown separately by the funnel view.
-  funnelStage         FunnelStage?
-  enquiryDate         DateTime?
-  region              String?
-  location            String?
-  purposeOfVisit      String?
-  meetingMode         String?
-  productsDiscussed   String[]     @default([])
-  keyDiscussionPoints String?
-  customerRequirement String?
-  cdaStatus           String?
+  segment             String?
   cdaDate             DateTime?
-  samplingStatus      String?
-  rndFeedback         String?
+  cdaStatus           String?
+  customerRequirement String?
+  enquiryDate         DateTime?
+  keyDiscussionPoints String?
+  location            String?
+  meetingMode         String?
   nextAction          String?
+  productsDiscussed   String[]     @default([])
+  purposeOfVisit      String?
+  region              String?
+  rndFeedback         String?
+  samplingStatus      String?
+  contactPerson       String?
+  designation         String?
+  grade               String?
+  loaStatus           String?
+  meetingAt           String?
+  meetingDate         DateTime?
+  nextFollowUp        DateTime?
+  remark              String?
+  customProductNames  String[]     @default([])
   activities          Activity[]
   deals               Deal[]
   followUps           FollowUp[]
@@ -518,8 +517,9 @@ model Lead {
   @@index([email])
   @@index([createdAt])
   @@index([lastActivityAt])
-  @@index([funnelStage])
   @@index([region])
+  @@index([contactPerson])
+  @@index([meetingDate])
 }
 
 model Company {
@@ -549,7 +549,6 @@ model Company {
   followUps         FollowUp[]
   geoFences         GeoFence[]
   leads             Lead[]
-  meetings          Meeting[]
   salesTransactions SalesTransaction[]
 
   @@index([organizationId])
@@ -566,8 +565,6 @@ model Contact {
   email          String?
   phone          String?
   mobile         String?
-  address        String?
-  segment        String?
   status         String       @default("ACTIVE")
   organizationId String
   companyId      String?
@@ -576,6 +573,8 @@ model Contact {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   lastActivityAt DateTime?
+  address        String?
+  segment        String?
   activities     Activity[]
   company        Company?     @relation(fields: [companyId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -583,7 +582,6 @@ model Contact {
   deals          Deal[]
   visits         FieldVisit[]
   leads          Lead[]
-  meetings       Meeting[]
 
   @@unique([organizationId, emailKey])
   @@index([organizationId])
@@ -594,32 +592,71 @@ model Contact {
 }
 
 model Deal {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   name           String
-  value          Decimal      @db.Decimal(15, 2)
-  probability    Int          @default(0)
-  stage          DealStage    @default(NEW_LEAD)
+  value          Decimal       @db.Decimal(15, 2)
+  probability    Int           @default(0)
+  stage          DealStage     @default(SUSPECT)
   expectedClose  DateTime?
-  priority       String       @default("MEDIUM")
-  segment        String?
+  priority       String        @default("MEDIUM")
   notes          String?
   organizationId String
   ownerId        String
   companyId      String?
   contactId      String?
   leadId         String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   closedAt       DateTime?
-  activities     Activity[]
-  company        Company?     @relation(fields: [companyId], references: [id])
-  contact        Contact?     @relation(fields: [contactId], references: [id])
-  lead           Lead?        @relation(fields: [leadId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  owner          User         @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  visits         FieldVisit[]
-  followUps      FollowUp[]
-  meetings       Meeting[]
+  segment        String?
+  paymentStatus  PaymentStatus @default(PENDING)
+  lostReason     String?
+  lostAt         DateTime?     @db.Timestamptz(3)
+  lastActivityAt DateTime?
+
+  // ---- Lead capture fields, merged in on 2026-10-05 ----
+  // A deal IS the lead. These used to live only on `Lead`, which meant every
+  // enquiry had to be entered twice — once as a lead, once as a deal — and the
+  // two drifted apart. The Deal row is now the single record, and the Deal
+  // form is the old lead form plus the pipeline columns. `Lead` is retained
+  // only as the pre-merge history behind Deal.leadId; nothing writes to it.
+  email               String?
+  phone               String?
+  source              String?
+  contactPerson       String?
+  designation         String?
+  meetingDate         DateTime?
+  meetingAt           String?
+  meetingMode         String?
+  city                String?
+  country             String?
+  pinCode             String?
+  purposeOfVisit      String?
+  productsDiscussed   String[]  @default([])
+  customProductNames  String[]  @default([])
+  keyDiscussionPoints String?
+  customerRequirement String?
+  grade               String?
+  application         String?
+  applicationOther    String?
+  cdaStatus           String?
+  samplingStatus      String?
+  rndFeedback         String?
+  remark              String?
+  nextFollowUp        DateTime?
+  loaStatus           String?
+  score               Int       @default(0)
+
+  activities   Activity[]
+  company      Company?           @relation(fields: [companyId], references: [id])
+  contact      Contact?           @relation(fields: [contactId], references: [id])
+  lead         Lead?              @relation(fields: [leadId], references: [id])
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner        User               @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  items        DealItem[]
+  stageHistory DealStageHistory[]
+  visits       FieldVisit[]
+  followUps    FollowUp[]
 
   @@index([organizationId])
   @@index([ownerId])
@@ -629,6 +666,52 @@ model Deal {
   @@index([stage])
   @@index([expectedClose])
   @@index([createdAt])
+  @@index([paymentStatus])
+  @@index([lastActivityAt])
+  @@index([city])
+  @@index([country])
+  @@index([nextFollowUp])
+}
+
+model DealStageHistory {
+  id             String       @id @default(cuid())
+  dealId         String
+  stage          DealStage
+  previousStage  DealStage?
+  probability    Int          @default(0)
+  movedById      String?
+  movedByName    String?
+  notes          String?
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  organizationId String
+  deal           Deal         @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  movedBy        User?        @relation(fields: [movedById], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@index([organizationId])
+  @@index([createdAt])
+}
+
+/// One line item on a deal. Snapshot price/cost at creation time so later
+/// catalogue edits never rewrite historic profit.
+model DealItem {
+  id             String       @id @default(cuid())
+  dealId         String
+  productId      String?
+  quantity       Decimal      @db.Decimal(15, 3)
+  unitPrice      Decimal      @db.Decimal(15, 2)
+  unitCost       Decimal      @db.Decimal(15, 2)
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deal           Deal         @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product        Product?     @relation(fields: [productId], references: [id])
+
+  @@index([dealId])
+  @@index([productId])
+  @@index([organizationId])
 }
 
 /// Product catalog — the organisation's sellable products, reused by the
@@ -656,6 +739,9 @@ model Product {
   isActive          Boolean            @default(true)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+  unitCost          Decimal?           @db.Decimal(15, 2)
+  unitPrice         Decimal?           @db.Decimal(15, 2)
+  dealItems         DealItem[]
   organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   salesTransactions SalesTransaction[]
 
@@ -693,18 +779,40 @@ model SalesTransaction {
   lineNumber       Int
   quantity         Decimal       @db.Decimal(15, 3)
   unitPrice        Decimal       @db.Decimal(15, 2)
+  /// quantity x unitPrice — the TAXABLE value. Prices are GST-exclusive, so GST
+  /// is added on top of this figure rather than extracted from it.
   totalAmount      Decimal       @db.Decimal(15, 2)
+  /// Taxable value x gstRate%. Derived, never typed by the user.
+  gstAmount        Decimal       @default(0) @db.Decimal(15, 2)
+  /// GST / HSN fields
+  hsnCode          String?
+  gstRate          Decimal?      @db.Decimal(5, 2)
+  /// Freight / logistics. Added after GST — it is a separate supply, not part
+  /// of the taxable base, so it is deliberately not taxed again.
+  freightAmount    Decimal?      @db.Decimal(15, 2)
+  /// totalAmount + gstAmount + freightAmount. What the customer owes; balance
+  /// and PAID/PARTIALLY_PAID/PENDING are all decided against this figure.
+  invoiceAmount    Decimal       @default(0) @db.Decimal(15, 2)
   amountPaid       Decimal       @db.Decimal(15, 2)
   balanceAmount    Decimal       @db.Decimal(15, 2)
   paymentStatus    PaymentStatus @default(PENDING)
   paymentDate      DateTime?
   remarks          String?
+  /// Lead time
+  leadTimeDays     Int?
+  /// Payment terms / modes
+  /// Money already received. Counts toward amountPaid.
+  advanceAmount    Decimal?      @db.Decimal(15, 2)
+  /// Post-dated cheque PROMISED, not paid. Never counts toward amountPaid.
+  pdcAmount        Decimal?      @db.Decimal(15, 2)
+  paymentMode      String? // e.g. "CASH", "BANK_TRANSFER", "PDC", "ON_DELIVERY"
+  purchaseOrderNo  String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  salesperson      User          @relation("SalesSalesperson", fields: [salespersonId], references: [id], onDelete: Cascade)
   customer         Company       @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  product          Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product          Product?      @relation(fields: [productId], references: [id])
+  salesperson      User          @relation("SalesSalesperson", fields: [salespersonId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, invoiceKey, lineNumber])
   @@index([organizationId])
@@ -762,9 +870,9 @@ model DailyReport {
   status                   DailyReportStatus @default(DRAFT)
   createdAt                DateTime          @default(now())
   updatedAt                DateTime          @updatedAt
-  user                     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization             Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   aiReport                 AIReport?
+  organization             Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user                     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([organizationId])
@@ -915,104 +1023,6 @@ model VisitReportAttachment {
   @@index([fileId])
 }
 
-model Meeting {
-  id             String               @id @default(cuid())
-  title          String
-  type           MeetingType
-  status         MeetingStatus        @default(PROCESSING)
-  scheduledAt    DateTime?
-  duration       Int?
-  location       String?
-  meetingLink    String?
-  notes          String?
-  organizationId String
-  createdById    String
-  companyId      String?
-  contactId      String?
-  dealId         String?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  startedAt      DateTime?
-  endedAt        DateTime?
-  company        Company?             @relation(fields: [companyId], references: [id])
-  contact        Contact?             @relation(fields: [contactId], references: [id])
-  createdBy      User                 @relation("MeetingCreator", fields: [createdById], references: [id], onDelete: Cascade)
-  deal           Deal?                @relation(fields: [dealId], references: [id])
-  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  participants   MeetingParticipant[]
-  recordings     MeetingRecording[]
-  summaries      MeetingSummary?
-  transcripts    MeetingTranscript[]
-
-  @@index([organizationId])
-  @@index([createdById])
-  @@index([companyId])
-  @@index([contactId])
-  @@index([dealId])
-  @@index([status])
-  @@index([scheduledAt])
-  @@index([createdAt])
-}
-
-model MeetingParticipant {
-  id        String   @id @default(cuid())
-  meetingId String
-  userId    String
-  role      String   @default("PARTICIPANT")
-  createdAt DateTime @default(now())
-  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([meetingId, userId])
-  @@index([meetingId])
-  @@index([userId])
-}
-
-model MeetingRecording {
-  id                 String   @id @default(cuid())
-  meetingId          String
-  cloudinaryPublicId String   @unique
-  secureUrl          String
-  duration           Int?
-  fileSize           BigInt?
-  createdAt          DateTime @default(now())
-  meeting            Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-
-  @@index([meetingId])
-}
-
-model MeetingTranscript {
-  id        String   @id @default(cuid())
-  meetingId String
-  content   String
-  language  String   @default("en")
-  createdAt DateTime @default(now())
-  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-
-  @@index([meetingId])
-}
-
-model MeetingSummary {
-  id               String   @id @default(cuid())
-  meetingId        String   @unique
-  summary          String
-  discussionPoints Json?
-  requirements     Json?
-  objections       Json?
-  buyingSignals    Json?
-  riskSignals      Json?
-  actionItems      Json?
-  nextSteps        Json?
-  isEdited         Boolean  @default(false)
-  editedById       String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  editedBy         User?    @relation("MeetingSummaryEditor", fields: [editedById], references: [id], onDelete: SetNull)
-  meeting          Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-
-  @@index([meetingId])
-}
-
 model AIConversation {
   id             String       @id @default(cuid())
   title          String?
@@ -1051,7 +1061,7 @@ model AIUsage {
   inputTokens    Int
   outputTokens   Int
   estimatedCost  Float
-  feature        String // 'chat', 'report', 'summary', 'data-analysis'
+  feature        String
   createdAt      DateTime     @default(now())
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1087,9 +1097,9 @@ model AIReport {
   generatedById  String
   dailyReportId  String?      @unique
   createdAt      DateTime     @default(now())
+  dailyReport    DailyReport? @relation(fields: [dailyReportId], references: [id])
   generatedBy    User         @relation("AIReportGenerator", fields: [generatedById], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  dailyReport    DailyReport? @relation(fields: [dailyReportId], references: [id])
 
   @@index([organizationId])
   @@index([type])
@@ -1220,17 +1230,6 @@ enum LeadStatus {
 }
 
 enum DealStage {
-  NEW_LEAD
-  CONTACTED
-  QUALIFIED
-  PROPOSAL
-  NEGOTIATION
-  WON
-  LOST
-}
-
-/// SPANCOP sales-funnel position of a lead. Orthogonal to `LeadStatus`.
-enum FunnelStage {
   SUSPECT
   PROSPECT
   APPROACH_ANALYSE
@@ -1238,6 +1237,7 @@ enum FunnelStage {
   CLOSE
   ORDER
   PAYMENT
+  LOST
 }
 
 enum PaymentStatus {
@@ -1262,26 +1262,10 @@ enum VisitStatus {
   CANCELLED
 }
 
-enum MeetingType {
-  IN_PERSON
-  VIDEO_CALL
-  PHONE
-}
-
-enum MeetingStatus {
-  SCHEDULED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-  PROCESSING
-  FAILED
-}
-
 enum NotificationType {
   FOLLOW_UP_DUE
   NEW_LEAD
   DEAL_UPDATED
-  MEETING_REMINDER
   FILE_SHARED
   FILE_UPLOADED
   AI_REPORT_READY

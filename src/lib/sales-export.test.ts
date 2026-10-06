@@ -126,7 +126,7 @@ describe('buildSalesCsv', () => {
   it('writes a header row and one line per transaction', () => {
     const lines = buildSalesCsv([row(), row({ id: 'st_2', invoiceNumber: 'INV-101' })]).split('\r\n')
     expect(lines[0]).toContain('Invoice Number')
-    expect(lines[0]).toContain('Total Amount')
+    expect(lines[0]).toContain('Taxable Value')
     expect(lines[1]).toContain('INV-100')
     expect(lines[2]).toContain('INV-101')
   })
@@ -213,10 +213,10 @@ describe('buildSalesWorkbook', () => {
     const wb = await load(
       await buildSalesWorkbook({ rows: [row()], products, salespeople, kpis, meta })
     )
-    expect(wb.worksheets.length).toBe(3)
+    expect(wb.worksheets.length).toBe(4)
   })
 
-  it('includes the detail, product-wise and salesperson x product sheets', async () => {
+  it('includes the detail, product-wise, salesperson x product and GST summary sheets', async () => {
     const wb = await load(
       await buildSalesWorkbook({ rows: [row()], products, salespeople, kpis, meta })
     )
@@ -224,6 +224,7 @@ describe('buildSalesWorkbook', () => {
       'Sales Transactions',
       'Product-wise',
       'Salesperson x Product',
+      'GST Summary',
     ])
   })
 
@@ -283,7 +284,7 @@ describe('buildSalesWorkbook', () => {
 
   it('renders an empty row set without throwing', async () => {
     const wb = await load(await buildSalesWorkbook({ rows: [], products: [], salespeople: [], kpis, meta }))
-    expect(wb.worksheets.length).toBe(3)
+    expect(wb.worksheets.length).toBe(4)
   })
 
   it('survives a row whose text needs escaping', async () => {
@@ -296,7 +297,7 @@ describe('buildSalesWorkbook', () => {
         meta,
       })
     )
-    expect(wb.worksheets.length).toBe(3)
+    expect(wb.worksheets.length).toBe(4)
   })
 })
 

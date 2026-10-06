@@ -4,8 +4,10 @@ import {
   computeSalesKpis,
   computeSalespersonBreakdown,
   deriveLineMoney,
+  mapSaleRow,
 } from './sales.service'
 import type { SalesTransactionRow } from '@/types/sales'
+import { STANDARD_PRODUCTS } from '@/lib/products'
 
 function row(overrides: Partial<SalesTransactionRow> = {}): SalesTransactionRow {
   return {
@@ -24,8 +26,13 @@ function row(overrides: Partial<SalesTransactionRow> = {}): SalesTransactionRow 
     quantity: 2,
     unitPrice: 100,
     totalAmount: 200,
+    gstAmount: 0,
+    invoiceAmount: 200,
+    freightAmount: 0,
     amountPaid: 200,
     balanceAmount: 0,
+    advanceAmount: 0,
+    pdcAmount: 0,
     paymentStatus: 'PAID',
     paymentDate: '2026-03-05',
     saleDate: '2026-03-01T00:00:00.000Z',
@@ -49,8 +56,8 @@ describe('computeSalesKpis', () => {
 
   it('sums value, paid and the derived pending balance', () => {
     const kpis = computeSalesKpis([
-      row({ totalAmount: 200, amountPaid: 200 }),
-      row({ id: 'b', groupId: 'grp_2', invoiceNumber: 'INV-2', totalAmount: 300, amountPaid: 100 }),
+      row({ invoiceAmount: 200, amountPaid: 200 }),
+      row({ id: 'b', groupId: 'grp_2', invoiceNumber: 'INV-2', invoiceAmount: 300, amountPaid: 100 }),
     ])
     expect(kpis.totalSalesValue).toBe(500)
     expect(kpis.totalAmountPaid).toBe(300)
@@ -100,8 +107,8 @@ describe('computeSalesKpis', () => {
 
   it('accumulates money in Decimal, not as floats', () => {
     const kpis = computeSalesKpis([
-      row({ totalAmount: 0.1, amountPaid: 0.1 }),
-      row({ id: 'b', groupId: 'g2', invoiceNumber: 'I2', totalAmount: 0.2, amountPaid: 0.2 }),
+      row({ invoiceAmount: 0.1, amountPaid: 0.1 }),
+      row({ id: 'b', groupId: 'g2', invoiceNumber: 'I2', invoiceAmount: 0.2, amountPaid: 0.2 }),
     ])
     expect(kpis.totalSalesValue).toBe(0.3)
   })
@@ -110,8 +117,8 @@ describe('computeSalesKpis', () => {
 describe('computeProductBreakdown', () => {
   it('groups by product and totals value, paid and pending', () => {
     const rows = computeProductBreakdown([
-      row({ quantity: 2, totalAmount: 200, amountPaid: 200 }),
-      row({ id: 'b', quantity: 1, totalAmount: 100, amountPaid: 50 }),
+      row({ quantity: 2, invoiceAmount: 200, amountPaid: 200 }),
+      row({ id: 'b', quantity: 1, invoiceAmount: 100, amountPaid: 50 }),
     ])
     expect(rows).toHaveLength(1)
     expect(rows[0].productName).toBe('CarniExAct')
@@ -124,8 +131,8 @@ describe('computeProductBreakdown', () => {
 
   it('gives each product its share of the filtered sales value', () => {
     const rows = computeProductBreakdown([
-      row({ productId: 'p1', productName: 'A', totalAmount: 750, amountPaid: 750 }),
-      row({ id: 'b', productId: 'p2', productName: 'B', totalAmount: 250, amountPaid: 250 }),
+      row({ productId: 'p1', productName: 'A', invoiceAmount: 750, amountPaid: 750 }),
+      row({ id: 'b', productId: 'p2', productName: 'B', invoiceAmount: 250, amountPaid: 250 }),
     ])
     const byName = Object.fromEntries(rows.map((r) => [r.productName, r.share]))
     expect(byName.A).toBe(75)
@@ -134,9 +141,9 @@ describe('computeProductBreakdown', () => {
 
   it('shares sum to 100 across products', () => {
     const rows = computeProductBreakdown([
-      row({ productId: 'p1', productName: 'A', totalAmount: 333.33, amountPaid: 333.33 }),
-      row({ id: 'b', productId: 'p2', productName: 'B', totalAmount: 333.33, amountPaid: 333.33 }),
-      row({ id: 'c', productId: 'p3', productName: 'C', totalAmount: 333.34, amountPaid: 333.34 }),
+      row({ productId: 'p1', productName: 'A', invoiceAmount: 333.33, amountPaid: 333.33 }),
+      row({ id: 'b', productId: 'p2', productName: 'B', invoiceAmount: 333.33, amountPaid: 333.33 }),
+      row({ id: 'c', productId: 'p3', productName: 'C', invoiceAmount: 333.34, amountPaid: 333.34 }),
     ])
     const total = rows.reduce((sum, r) => sum + r.share, 0)
     expect(total).toBeCloseTo(100, 1)
@@ -157,7 +164,7 @@ describe('computeProductBreakdown', () => {
   })
 
   it('is an empty list, not a divide-by-zero NaN, when the total value is zero', () => {
-    const rows = computeProductBreakdown([row({ totalAmount: 0, amountPaid: 0 })])
+    const rows = computeProductBreakdown([row({ invoiceAmount: 0, amountPaid: 0 })])
     expect(rows).toHaveLength(1)
     expect(Number.isNaN(rows[0].share)).toBe(false)
   })
@@ -166,8 +173,8 @@ describe('computeProductBreakdown', () => {
 describe('computeSalespersonBreakdown', () => {
   it('groups by salesperson and keeps their product breakdown', () => {
     const rows = computeSalespersonBreakdown([
-      row({ salespersonId: 'u1', salespersonName: 'Priya', productId: 'p1', productName: 'A', totalAmount: 100, amountPaid: 100 }),
-      row({ id: 'b', salespersonId: 'u2', salespersonName: 'Ravi', productId: 'p2', productName: 'B', totalAmount: 300, amountPaid: 100 }),
+      row({ salespersonId: 'u1', salespersonName: 'Priya', productId: 'p1', productName: 'A', invoiceAmount: 100, amountPaid: 100 }),
+      row({ id: 'b', salespersonId: 'u2', salespersonName: 'Ravi', productId: 'p2', productName: 'B', invoiceAmount: 300, amountPaid: 100 }),
     ])
     expect(rows.map((r) => r.salespersonName)).toEqual(['Ravi', 'Priya'])
     const ravi = rows.find((r) => r.salespersonId === 'u2')!
@@ -203,16 +210,16 @@ describe('computeSalespersonBreakdown', () => {
 })
 
 describe('deriveLineMoney', () => {
-  it('recomputes total, balance and status from quantity x unitPrice', () => {
+  it('recomputes taxable, balance and status from quantity x unitPrice', () => {
     const money = deriveLineMoney({ quantity: '2', unitPrice: '150.50', amountPaid: '0' })
-    expect(money.totalAmount.toFixed()).toBe('301')
+    expect(money.taxableAmount.toFixed()).toBe('301')
     expect(money.balanceAmount.toFixed()).toBe('301')
     expect(money.paymentStatus).toBe('PENDING')
   })
 
   it('never trusts a client-sent total: it is derived every time', () => {
     const money = deriveLineMoney({ quantity: 3, unitPrice: 10, amountPaid: 30 })
-    expect(money.totalAmount.toFixed()).toBe('30')
+    expect(money.taxableAmount.toFixed()).toBe('30')
     expect(money.balanceAmount.toFixed()).toBe('0')
     expect(money.paymentStatus).toBe('PAID')
   })
@@ -231,7 +238,86 @@ describe('deriveLineMoney', () => {
 
   it('keeps quantity at three decimals and money at two', () => {
     const money = deriveLineMoney({ quantity: '1.23456', unitPrice: '10.129', amountPaid: '0' })
-    expect(money.quantity.toFixed()).toBe('1.235')
-    expect(money.unitPrice.toFixed()).toBe('10.13')
+    expect(money.quantity.toFixed(3)).toBe('1.235')
+    expect(money.unitPrice.toFixed(2)).toBe('10.13')
+  })
+})
+
+describe('mapSaleRow', () => {
+  it('marks standard products stored as otherProductName as non-Other', () => {
+    const stdName = STANDARD_PRODUCTS[0]
+    const mapped = mapSaleRow({
+      id: 'st_1',
+      groupId: 'grp_1',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-1',
+      invoiceKey: 'inv-1',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: null,
+      product: null,
+      otherProductName: stdName,
+      quantity: '2',
+      unitPrice: '100',
+      totalAmount: '200',
+      gstAmount: '18',
+      freightAmount: '0',
+      invoiceAmount: '218',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '218',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.isOtherProduct).toBe(false)
+    expect(mapped.productName).toBe(stdName)
+  })
+
+  it('marks truly custom Other products as Other', () => {
+    const mapped = mapSaleRow({
+      id: 'st_2',
+      groupId: 'grp_2',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-2',
+      invoiceKey: 'inv-2',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: null,
+      product: null,
+      otherProductName: 'Custom XYZ',
+      quantity: '1',
+      unitPrice: '50',
+      totalAmount: '50',
+      gstAmount: '9',
+      freightAmount: '0',
+      invoiceAmount: '59',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '59',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.isOtherProduct).toBe(true)
+    expect(mapped.productName).toBe('Custom XYZ')
   })
 })

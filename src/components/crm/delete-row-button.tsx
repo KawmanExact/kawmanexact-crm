@@ -3,15 +3,18 @@
 import { useState, useTransition } from 'react'
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 export function DeleteRowButton({
   action,
   confirmLabel = 'Delete this? This cannot be undone.',
+  className,
 }: {
   action: () => Promise<{ success?: boolean; error?: string } | void>
   confirmLabel?: string
+  className?: string
 }) {
   const [pending, startTransition] = useTransition()
 
@@ -23,7 +26,7 @@ export function DeleteRowButton({
         type="button"
         variant="ghost"
         size="icon"
-        className="h-7 w-7 text-white/30 hover:text-red-400"
+        className={cn('h-7 w-7 text-white/30 hover:text-red-400', className)}
         disabled={pending}
         onClick={(e) => {
           e.preventDefault()

@@ -16,7 +16,7 @@ import { deleteCompanyAction } from '@/app/companies/actions'
 /**
  * Server-side paginated / searched / sorted companies table. All
  * filtering happens in the DB query (see
- * services/company.service.ts#getCompaniesPage) — mirrors leads-table.tsx.
+ * services/company.service.ts#getCompaniesPage) — mirrors the deals table.
  */
 export function CompaniesTable({ result }: { result: CompanyPage }) {
   const router = useRouter()

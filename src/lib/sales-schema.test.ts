@@ -16,6 +16,34 @@ function line(overrides: Partial<Record<string, unknown>> = {}) {
     unitPrice: 100,
     amountPaid: 0,
     paymentStatus: 'PENDING',
+    hsnCode: '',
+    gstRate: 0,
+    freightAmount: 0,
+    leadTimeDays: 0,
+    advanceAmount: 0,
+    pdcAmount: 0,
+    paymentMode: '',
+    purchaseOrderNo: '',
+    ...overrides,
+  }
+}
+
+function clientLine(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    productId: 'prod_1',
+    otherProductName: '',
+    quantity: '2',
+    unitPrice: '100',
+    amountPaid: '0',
+    paymentStatus: 'PENDING',
+    hsnCode: '',
+    gstRate: '0',
+    freightAmount: '0',
+    leadTimeDays: '0',
+    advanceAmount: '0',
+    pdcAmount: '0',
+    paymentMode: '',
+    purchaseOrderNo: '',
     ...overrides,
   }
 }
@@ -152,26 +180,12 @@ describe('moveLeadStage coercion', () => {
 
 describe('salesClientLineSchema (browser twin)', () => {
   it('accepts the string shape produced by <input type="number">', () => {
-    const result = salesClientLineSchema.safeParse({
-      productId: 'prod_1',
-      otherProductName: '',
-      quantity: '2',
-      unitPrice: '100',
-      amountPaid: '0',
-      paymentStatus: 'PENDING',
-    })
+    const result = salesClientLineSchema.safeParse(clientLine())
     expect(result.success).toBe(true)
   })
 
   it('rejects a BLANK quantity, which would otherwise pass as a valid line', () => {
-    const result = salesClientLineSchema.safeParse({
-      productId: 'prod_1',
-      otherProductName: '',
-      quantity: '',
-      unitPrice: '100',
-      amountPaid: '0',
-      paymentStatus: 'PENDING',
-    })
+    const result = salesClientLineSchema.safeParse(clientLine({ quantity: '' }))
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.issues.some((i) => i.path.join('.') === 'quantity')).toBe(true)
@@ -179,14 +193,7 @@ describe('salesClientLineSchema (browser twin)', () => {
   })
 
   it('rejects a BLANK unit price rather than silently pricing the line at zero', () => {
-    const result = salesClientLineSchema.safeParse({
-      productId: 'prod_1',
-      otherProductName: '',
-      quantity: '2',
-      unitPrice: '',
-      amountPaid: '0',
-      paymentStatus: 'PENDING',
-    })
+    const result = salesClientLineSchema.safeParse(clientLine({ unitPrice: '' }))
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.issues.some((i) => i.path.join('.') === 'unitPrice')).toBe(true)
@@ -194,64 +201,34 @@ describe('salesClientLineSchema (browser twin)', () => {
   })
 
   it('accepts an explicit zero unit price for a free item', () => {
-    const result = salesClientLineSchema.safeParse({
-      productId: 'prod_1',
-      otherProductName: '',
-      quantity: '2',
-      unitPrice: '0',
-      amountPaid: '0',
-      paymentStatus: 'PENDING',
-    })
+    const result = salesClientLineSchema.safeParse(clientLine({ unitPrice: '0' }))
     expect(result.success).toBe(true)
   })
 
   it('treats a blank amount paid as zero and still demands PENDING', () => {
     expect(
-      salesClientLineSchema.safeParse({
-        productId: 'prod_1',
-        otherProductName: '',
-        quantity: '2',
-        unitPrice: '100',
-        amountPaid: '',
-        paymentStatus: 'PENDING',
-      }).success
+      salesClientLineSchema.safeParse(clientLine({ amountPaid: '' })).success
     ).toBe(true)
 
     expect(
-      salesClientLineSchema.safeParse({
-        productId: 'prod_1',
-        otherProductName: '',
-        quantity: '2',
-        unitPrice: '100',
-        amountPaid: '',
-        paymentStatus: 'PAID',
-      }).success
+      salesClientLineSchema.safeParse(clientLine({ amountPaid: '', paymentStatus: 'PAID' })).success
     ).toBe(false)
   })
 
   it('rejects non-numeric text', () => {
-    const result = salesClientLineSchema.safeParse({
-      productId: 'prod_1',
-      otherProductName: '',
-      quantity: 'ten',
-      unitPrice: '100',
-      amountPaid: '0',
-      paymentStatus: 'PENDING',
-    })
+    const result = salesClientLineSchema.safeParse(clientLine({ quantity: 'ten' }))
     expect(result.success).toBe(false)
   })
 })
 
 describe('browser and server schemas agree on the payment date rule', () => {
   const paidClientLines = [
-    {
-      productId: 'prod_1',
-      otherProductName: '',
+    clientLine({
       quantity: '1',
       unitPrice: '100',
       amountPaid: '50',
       paymentStatus: 'PARTIALLY_PAID',
-    },
+    }),
   ]
 
   it('both reject a paid sale with no payment date', () => {
@@ -329,16 +306,7 @@ describe('salesClientFormSchema (browser)', () => {
       invoiceNumber: 'INV-1',
       remarks: '',
       moveLeadStage: false,
-      lines: [
-        {
-          productId: 'prod_1',
-          otherProductName: '',
-          quantity: '1',
-          unitPrice: '10',
-          amountPaid: '0',
-          paymentStatus: 'PENDING',
-        },
-      ],
+      lines: [clientLine({ quantity: '1', unitPrice: '10' })],
     })
     expect(result.success).toBe(false)
   })

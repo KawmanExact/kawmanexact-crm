@@ -14,7 +14,7 @@ export default function HelpPage() {
           <Card className="bg-[#0a111c]/80 border-white/[0.08] p-5">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2"><Keyboard className="h-4 w-4 text-white/40" /> Keyboard</h3>
             <ul className="mt-3 space-y-1.5 text-sm text-white/60">
-              <li><kbd className="rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-xs">⌘K</kbd> / <kbd className="rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-xs">Ctrl+K</kbd> — Open global search (leads, companies, contacts, deals, meetings, files)</li>
+              <li><kbd className="rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-xs">⌘K</kbd> / <kbd className="rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-xs">Ctrl+K</kbd> — Open global search (leads, companies, contacts, deals, files)</li>
               <li><kbd className="rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-xs">Esc</kbd> — Close search / drawer</li>
             </ul>
           </Card>

@@ -78,7 +78,7 @@ const COMPANY_SORT_FIELD: Record<CompanySortKey, string> = {
  * Server-side paginated + searched + sorted company listing — replaces
  * the fetch-everything-then-filter-in-the-browser pattern in
  * companies-table.tsx, which doesn't scale past a few hundred rows.
- * Mirrors services/lead.service.ts#getLeadsPage exactly.
+ * Mirrors the server-paginated list shape exactly.
  */
 export async function getCompaniesPage(query: CompanyQuery = {}): Promise<CompanyPage> {
   const session = await requireApiSession()

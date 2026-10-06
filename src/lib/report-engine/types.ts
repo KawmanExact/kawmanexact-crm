@@ -159,9 +159,10 @@ export function normalizeReport(
       title: d.title ?? d.name,
       tables: [{ columns: d.columns, rows: d.rows }],
       metadata: {
-        generatedAt: legacy.generatedAt,
-        generatedBy: legacy.generatedBy,
-        organizationName: legacy.organizationName,
+        ...d.metadata,
+        generatedAt: legacy.generatedAt ?? d.metadata?.generatedAt,
+        generatedBy: legacy.generatedBy ?? d.metadata?.generatedBy,
+        organizationName: legacy.organizationName ?? d.metadata?.organizationName,
       },
     }
   }

@@ -15,8 +15,11 @@ import {
   INVOICE_NUMBER_MAX,
   OTHER_PRODUCT_NAME_MAX,
   OTHER_PRODUCT_SENTINEL,
+  computeGstAmount,
+  computeInvoiceAmount,
   computeLineTotal,
   derivePaymentStatus,
+  toDecimalOrZero,
   type PaymentStatus,
 } from '@/lib/sales-money'
 
@@ -29,12 +32,24 @@ export const paymentStatusSchema = z.enum(['PAID', 'PARTIALLY_PAID', 'PENDING'])
  */
 export const salesLineSchema = z
   .object({
-    productId: z.string().trim().optional().default(''),
-    otherProductName: z.string().trim().max(OTHER_PRODUCT_NAME_MAX, 'Max 120 characters').optional().default(''),
+    productId: z.string().trim().default(''),
+    otherProductName: z.string().trim().max(OTHER_PRODUCT_NAME_MAX, 'Max 120 characters').default(''),
     quantity: z.coerce.number().positive('Quantity must be greater than 0').refine((n) => Number.isFinite(n), 'Enter a valid quantity'),
     unitPrice: z.coerce.number().min(0, 'Unit price cannot be negative').refine((n) => Number.isFinite(n), 'Enter a valid unit price'),
     amountPaid: z.coerce.number().min(0, 'Amount paid cannot be negative').refine((n) => Number.isFinite(n), 'Enter a valid amount paid'),
     paymentStatus: paymentStatusSchema.default('PENDING'),
+    /// GST / HSN
+    hsnCode: z.string().trim().max(8, 'HSN code max 8 characters').default(''),
+    gstRate: z.coerce.number().min(0).max(100, 'GST rate must be 0-100').default(0),
+    /// Freight / logistics
+    freightAmount: z.coerce.number().min(0, 'Freight cannot be negative').default(0),
+    /// Lead time
+    leadTimeDays: z.coerce.number().int().min(0, 'Lead time cannot be negative').default(0),
+    /// Payment terms
+    advanceAmount: z.coerce.number().min(0, 'Advance cannot be negative').default(0),
+    pdcAmount: z.coerce.number().min(0, 'PDC amount cannot be negative').default(0),
+    paymentMode: z.string().trim().default(''),
+    purchaseOrderNo: z.string().trim().max(50, 'PO number max 50 characters').default(''),
   })
   .superRefine((line, ctx) => {
     const usesOther = line.productId === OTHER_PRODUCT_SENTINEL || (!line.productId && line.otherProductName !== '')
@@ -52,24 +67,53 @@ export const salesLineSchema = z
       ctx.addIssue({ code: 'custom', path: ['otherProductName'], message: 'Enter the product name' })
     }
 
-    const total = computeLineTotal(line.quantity, line.unitPrice)
+    const taxable = computeLineTotal(line.quantity, line.unitPrice)
+    const gst = computeGstAmount(taxable, line.gstRate ?? 0)
+    // Balance and PAID/PENDING are decided against the invoice figure, so the
+    // same chain is recomputed here as the save action will run.
+    const invoiceAmount = computeInvoiceAmount({
+      taxable,
+      gstAmount: gst,
+      freight: line.freightAmount ?? 0,
+    })
 
-    if (new Prisma.Decimal(line.amountPaid).greaterThan(total)) {
+    if (new Prisma.Decimal(line.amountPaid).greaterThan(invoiceAmount)) {
       ctx.addIssue({
         code: 'custom',
         path: ['amountPaid'],
-        message: 'Amount paid cannot be more than the line total',
+        message: 'Amount paid cannot be more than the invoice amount',
       })
     }
 
-    // PAID forces paid = total; PENDING forces paid = 0; PARTIALLY_PAID needs
-    // 0 < paid < total. derivePaymentStatus is the single source of that rule.
-    if (derivePaymentStatus(total, line.amountPaid) !== line.paymentStatus) {
-      const expected = derivePaymentStatus(total, line.amountPaid)
+    // An advance beyond the invoice is an overpayment, not a negative balance.
+    if (line.advanceAmount !== undefined && line.advanceAmount > 0 && line.advanceAmount > Number(invoiceAmount)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['advanceAmount'],
+        message: 'Advance cannot be more than the invoice amount',
+      })
+    }
+
+    // A PDC is a promise against the unpaid balance. More than the balance means
+    // the company has over-committed cheques it cannot honour.
+    const balance = invoiceAmount.minus(toDecimalOrZero(line.amountPaid))
+    if (line.pdcAmount !== undefined && line.pdcAmount > 0 && line.pdcAmount > Number(balance)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['pdcAmount'],
+        message: 'PDC cannot be more than the outstanding balance',
+      })
+    }
+
+    // PAID forces paid = invoiceAmount; PENDING forces paid = 0; PARTIALLY_PAID
+    // needs 0 < paid < invoiceAmount. derivePaymentStatus is the single source
+    // of that rule.
+    if (derivePaymentStatus(invoiceAmount, line.amountPaid) !== line.paymentStatus) {
+      const expected = derivePaymentStatus(invoiceAmount, line.amountPaid)
       ctx.addIssue({
         code: 'custom',
         path: ['paymentStatus'],
-        message: `Payment status must be ${expected} for this total and amount paid`,
+        message: `Payment status must be ${expected} for this invoice amount and amount paid`,
       })
     }
   })
@@ -89,11 +133,25 @@ export const salesClientLineSchema = z
     unitPrice: z.string().trim(),
     amountPaid: z.string().trim(),
     paymentStatus: paymentStatusSchema,
+    /// GST / HSN
+    hsnCode: z.string().trim(),
+    gstRate: z.string().trim(),
+    /// Freight / logistics
+    freightAmount: z.string().trim(),
+    /// Lead time
+    leadTimeDays: z.string().trim(),
+    /// Payment terms
+    advanceAmount: z.string().trim(),
+    pdcAmount: z.string().trim(),
+    paymentMode: z.string().trim(),
+    purchaseOrderNo: z.string().trim(),
   })
   .superRefine((line, ctx) => {
     const quantity = numericField(line.quantity)
     const unitPrice = numericField(line.unitPrice)
     const amountPaid = numericField(line.amountPaid)
+    const gstRate = numericField(line.gstRate)
+    const freight = numericField(line.freightAmount)
 
     const usesOther = line.productId === OTHER_PRODUCT_SENTINEL
     if (line.productId && line.productId !== OTHER_PRODUCT_SENTINEL && line.otherProductName !== '') {
@@ -141,21 +199,53 @@ export const salesClientLineSchema = z
       ctx.addIssue({ code: 'custom', path: ['amountPaid'], message: 'Amount paid cannot be negative' })
     }
 
-    const total = computeLineTotal(quantity ?? 0, unitPrice ?? 0)
-    if (amountPaid !== null && new Prisma.Decimal(amountPaid).greaterThan(total)) {
+    const taxable = computeLineTotal(quantity ?? 0, unitPrice ?? 0)
+    const gst = computeGstAmount(taxable, gstRate ?? 0)
+    const invoiceAmount = computeInvoiceAmount({ taxable, gstAmount: gst, freight: freight ?? 0 })
+
+    if (amountPaid !== null && new Prisma.Decimal(amountPaid).greaterThan(invoiceAmount)) {
       ctx.addIssue({
         code: 'custom',
         path: ['amountPaid'],
-        message: 'Amount paid cannot be more than the line total',
+        message: 'Amount paid cannot be more than the invoice amount',
       })
     }
 
-    const derived = derivePaymentStatus(total, amountPaid ?? 0)
+    // Blank is treated as 0 so an untouched advance/PDC field never blocks a save.
+    const advance = numericField(line.advanceAmount) ?? 0
+    const pdc = numericField(line.pdcAmount) ?? 0
+    if (numericField(line.advanceAmount) === null && line.advanceAmount.trim() !== '') {
+      ctx.addIssue({ code: 'custom', path: ['advanceAmount'], message: 'Enter a valid advance amount' })
+    }
+    if (numericField(line.pdcAmount) === null && line.pdcAmount.trim() !== '') {
+      ctx.addIssue({ code: 'custom', path: ['pdcAmount'], message: 'Enter a valid PDC amount' })
+    }
+    if (advance < 0) {
+      ctx.addIssue({ code: 'custom', path: ['advanceAmount'], message: 'Advance cannot be negative' })
+    } else if (advance > Number(invoiceAmount)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['advanceAmount'],
+        message: 'Advance cannot be more than the invoice amount',
+      })
+    }
+    const balance = invoiceAmount.minus(toDecimalOrZero(amountPaid))
+    if (pdc < 0) {
+      ctx.addIssue({ code: 'custom', path: ['pdcAmount'], message: 'PDC amount cannot be negative' })
+    } else if (pdc > Number(balance)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['pdcAmount'],
+        message: 'PDC cannot be more than the outstanding balance',
+      })
+    }
+
+    const derived = derivePaymentStatus(invoiceAmount, amountPaid ?? 0)
     if (derived !== line.paymentStatus) {
       ctx.addIssue({
         code: 'custom',
         path: ['paymentStatus'],
-        message: `Payment status must be ${derived.replace(/_/g, ' ').toLowerCase()} for this total and amount paid`,
+        message: `Payment status must be ${derived.replace(/_/g, ' ').toLowerCase()} for this invoice amount and amount paid`,
       })
     }
   })

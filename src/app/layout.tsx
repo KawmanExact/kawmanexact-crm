@@ -9,7 +9,7 @@ import { ServiceWorkerRegistration } from '@/components/service-worker-registrat
 export const metadata: Metadata = {
   title: 'Kawman ExAct - Enterprise Workspace Platform',
   description:
-    'Enterprise workspace platform for Kawman ExAct Ingredients Pvt. Ltd. — CRM, field sales, document management, meetings, and AI intelligence.',
+    'Enterprise workspace platform for Kawman ExAct Ingredients Pvt. Ltd. — CRM, field sales, document management, and AI intelligence.',
   keywords: ['CRM', 'Field Sales', 'Lead Management', 'Deal Tracking', 'Document Management', 'Enterprise Workspace'],
   authors: [{ name: 'Kawman ExAct Ingredients Pvt. Ltd.' }],
   manifest: '/manifest.json',

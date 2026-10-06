@@ -54,10 +54,3 @@ export interface FileProcessingJobData {
   operation: 'virus-scan' | 'ocr' | 'thumbnail' | 'metadata'
   metadata?: Record<string, unknown>
 }
-
-export interface TranscriptionJobData {
-  meetingId: string
-  recordingId: string
-  videoUrl: string
-  organizationId: string
-}

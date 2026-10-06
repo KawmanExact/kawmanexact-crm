@@ -12,6 +12,7 @@
  */
 import type { Prisma } from '@/generated/prisma'
 import { PAYMENT_STATUSES, type PaymentStatus } from '@/lib/sales-money'
+import { STANDARD_PRODUCTS } from '@/lib/products'
 
 export const SALES_SORT_KEYS = [
   'saleDate',
@@ -240,11 +241,20 @@ export function buildSalesWhere(
   if (filters.salespersonId) where.salespersonId = filters.salespersonId
   if (filters.customerId) where.customerId = filters.customerId
 
-  if (filters.productId === OTHER_PRODUCTS_FILTER) {
-    // The "Other products" bucket: lines typed freehand, not catalog hits.
-    where.productId = null
-  } else if (filters.productId) {
-    where.productId = filters.productId
+  if (filters.productId) {
+    if (filters.productId === OTHER_PRODUCTS_FILTER) {
+      where.productId = null
+      where.otherProductName = { notIn: [...STANDARD_PRODUCTS] }
+    } else if (filters.productId.startsWith('std-')) {
+      const idx = Number(filters.productId.replace('std-', ''))
+      const name = STANDARD_PRODUCTS[idx]
+      if (name) {
+        where.productId = null
+        where.otherProductName = name
+      }
+    } else {
+      where.productId = filters.productId
+    }
   }
 
   if (filters.paymentStatus) where.paymentStatus = filters.paymentStatus

@@ -5,7 +5,6 @@ vi.mock('@/lib/db', () => ({
     activity: { findMany: vi.fn() },
     lead: { count: vi.fn() },
     deal: { count: vi.fn(), findMany: vi.fn(), groupBy: vi.fn(), findFirst: vi.fn() },
-    meeting: { count: vi.fn(), findMany: vi.fn() },
     followUp: { count: vi.fn(), findMany: vi.fn() },
     fieldVisit: { count: vi.fn() },
     contact: { findMany: vi.fn(), findFirst: vi.fn() },
@@ -43,7 +42,6 @@ import {
   getCrmSummaryTool,
   getDealStatusTool,
   getContactInfoTool,
-  getUpcomingMeetingsTool,
   buildVoiceTools,
   buildVoiceAgent,
 } from '@/services/voice-agent'
@@ -127,7 +125,6 @@ describe('voice-agent scope resolution', () => {
       expect(filters.ownerFilter).toEqual({})
       expect(filters.contactFilter).toEqual({})
       expect(filters.activityFilter).toEqual({})
-      expect(filters.meetingFilter).toEqual({})
       expect(filters.visitFilter).toEqual({})
     })
 
@@ -154,7 +151,6 @@ describe('getTodaysActivitySummary tool — scope enforcement', () => {
     mockPrisma.activity.findMany.mockResolvedValue([])
     mockPrisma.lead.count.mockResolvedValue(5)
     mockPrisma.deal.count.mockResolvedValue(3)
-    mockPrisma.meeting.count.mockResolvedValue(2)
     mockPrisma.followUp.count.mockResolvedValue(1)
     mockPrisma.fieldVisit.count.mockResolvedValue(1)
   })
@@ -210,7 +206,6 @@ describe('getCrmSummary tool — scope enforcement', () => {
     vi.clearAllMocks()
     mockPrisma.deal.groupBy.mockResolvedValue([])
     mockPrisma.lead.count.mockResolvedValue(10)
-    mockPrisma.meeting.findMany.mockResolvedValue([])
     mockPrisma.followUp.findMany.mockResolvedValue([])
   })
 
@@ -314,41 +309,10 @@ describe('getDealStatus tool — scope enforcement', () => {
   })
 })
 
-describe('getUpcomingMeetings tool — scope enforcement', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockPrisma.meeting.findMany.mockResolvedValue([])
-  })
-
-  it('all users see org-wide meetings regardless of role', async () => {
-    mockRequireApiSession.mockResolvedValue({ user: EMPLOYEE_USER } as any)
-
-    const tool = getUpcomingMeetingsTool()
-    await tool.execute({ when: 'today' })
-
-    const call = mockPrisma.meeting.findMany.mock.calls[0][0]
-    expect(call.where.organizationId).toBe('org-1')
-    expect(call.where).not.toHaveProperty('createdById')
-    expect(call.where).not.toHaveProperty('OR')
-  })
-
-  it('admin can see all org meetings', async () => {
-    mockRequireApiSession.mockResolvedValue({ user: ADMIN_USER } as any)
-
-    const tool = getUpcomingMeetingsTool()
-    await tool.execute({ when: 'week' })
-
-    const call = mockPrisma.meeting.findMany.mock.calls[0][0]
-    expect(call.where.organizationId).toBe('org-1')
-    expect(call.where).not.toHaveProperty('createdById')
-    expect(call.where).not.toHaveProperty('OR')
-  })
-})
-
 describe('buildVoiceTools / buildVoiceAgent', () => {
-  it('exposes exactly 14 tools with correct names', () => {
+  it('exposes exactly 13 tools with correct names', () => {
     const tools = buildVoiceTools()
-    expect(tools).toHaveLength(14)
+    expect(tools).toHaveLength(13)
     expect(tools.map((t) => t.name)).toEqual([
       'getTodaysActivitySummary',
       'getCrmSummary',
@@ -357,7 +321,6 @@ describe('buildVoiceTools / buildVoiceAgent', () => {
       'getLeadInfo',
       'getEmployeeInfo',
       'getVisitInfo',
-      'getUpcomingMeetings',
       'getFieldSalesSummary',
       'getEmployeeReports',
       'getVisitHistory',
@@ -400,12 +363,6 @@ describe('tool types', () => {
     const tool = getContactInfoTool()
     expect(tool.parameters).toBeDefined()
     expect(tool.name).toBe('getContactInfo')
-  })
-
-  it('getUpcomingMeetings has when parameter', () => {
-    const tool = getUpcomingMeetingsTool()
-    expect(tool.parameters).toBeDefined()
-    expect(tool.name).toBe('getUpcomingMeetings')
   })
 })
 

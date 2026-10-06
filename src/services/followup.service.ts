@@ -101,7 +101,7 @@ export async function getFollowUpLinkOptions(): Promise<{
     }),
     prisma.company.findMany({ where: { organizationId }, select: { id: true, name: true }, orderBy: { name: 'asc' }, take: 200 }),
     prisma.deal.findMany({
-      where: { organizationId, stage: { notIn: ['WON', 'LOST'] } },
+      where: { organizationId, stage: { notIn: ['PAYMENT', 'LOST'] } },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
       take: 200,

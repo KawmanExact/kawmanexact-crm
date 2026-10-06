@@ -56,6 +56,7 @@ vi.mock('@prisma/client', () => ({
     file: { count: vi.fn() },
     department: { findMany: vi.fn() },
     team: { findMany: vi.fn() },
+    product: { findMany: vi.fn(), count: vi.fn() },
   })),
   Prisma: {},
 }))
@@ -77,6 +78,7 @@ vi.mock('@/lib/db', () => ({
     file: { count: vi.fn() },
     department: { findMany: vi.fn() },
     team: { findMany: vi.fn() },
+    product: { findMany: vi.fn(), count: vi.fn() },
   },
 }))
 

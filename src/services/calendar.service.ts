@@ -2,7 +2,7 @@ import 'server-only'
 import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 
-export type CalendarEventType = 'meeting' | 'visit' | 'followup'
+export type CalendarEventType = 'visit' | 'followup'
 
 export interface CalendarEvent {
   type: CalendarEventType
@@ -17,10 +17,9 @@ export interface CalendarEvent {
 
 /**
  * Unified calendar (audit: "Calendar View — meetings/visits only in
- * table/list"). Pulls from three existing entities that already carry a
- * date — Meeting.scheduledAt, FieldVisit.scheduledAt, FollowUp.dueDate —
- * rather than introducing a new "event" concept the rest of the app
- * doesn't have.
+ * table/list"). Pulls from the two remaining entities that already carry a
+ * date — FieldVisit.scheduledAt and FollowUp.dueDate — rather than
+ * introducing a new "event" concept the rest of the app doesn't have.
  */
 export async function getCalendarEvents(year: number, month: number): Promise<CalendarEvent[]> {
   const session = await requireApiSession()
@@ -33,11 +32,7 @@ export async function getCalendarEvents(year: number, month: number): Promise<Ca
   const rangeEnd = new Date(year, month, 1)
   rangeEnd.setDate(rangeEnd.getDate() + 7)
 
-  const [meetings, visits, followUps] = await Promise.all([
-    prisma.meeting.findMany({
-      where: { organizationId, scheduledAt: { gte: rangeStart, lt: rangeEnd } },
-      select: { id: true, title: true, scheduledAt: true, type: true, company: { select: { name: true } } },
-    }),
+  const [visits, followUps] = await Promise.all([
     prisma.fieldVisit.findMany({
       where: { organizationId, scheduledAt: { gte: rangeStart, lt: rangeEnd } },
       select: { id: true, title: true, scheduledAt: true, company: { select: { name: true } } },
@@ -51,14 +46,6 @@ export async function getCalendarEvents(year: number, month: number): Promise<Ca
   const now = new Date()
 
   const events: CalendarEvent[] = [
-    ...meetings.map((m) => ({
-      type: 'meeting' as const,
-      id: m.id,
-      title: m.title,
-      at: m.scheduledAt?.toISOString() ?? new Date().toISOString(),
-      subtitle: m.company?.name ?? m.type.replace('_', ' '),
-      href: `/meetings/${m.id}`,
-    })),
     ...visits.map((v) => ({
       type: 'visit' as const,
       id: v.id,

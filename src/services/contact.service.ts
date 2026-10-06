@@ -77,7 +77,7 @@ const CONTACT_SORT_FIELD: Record<ContactSortKey, string> = {
 
 /**
  * Server-side paginated + searched + sorted contact listing — mirrors
- * services/lead.service.ts#getLeadsPage. Replaces the client-side-filter
+ * the server-paginated list shape. Replaces the client-side-filter
  * pattern in contacts-table.tsx.
  */
 export async function getContactsPage(query: ContactQuery = {}): Promise<ContactPage> {

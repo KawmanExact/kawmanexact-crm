@@ -45,7 +45,6 @@ export default async function SalesTrackingPage({
   const canEdit = permissions.includes(PERMISSIONS['sales.update'].name)
   const canDelete = permissions.includes(PERMISSIONS['sales.delete'].name)
   const canExport = permissions.includes(PERMISSIONS['sales.export'].name)
-  const canManageProducts = permissions.includes(PERMISSIONS['products.manage'].name)
 
   return (
     <MainLayout>
@@ -79,19 +78,7 @@ export default async function SalesTrackingPage({
           canPickSalesperson={canPickSalesperson}
         />
 
-        {canManageProducts && (
-          <p className="text-xs text-white/35">
-            New products can be added in the{' '}
-            <Link
-              href="/sales-tracking/products"
-              className="underline underline-offset-4 hover:text-white/60"
-            >
-              Product Catalog
-            </Link>
-            .
-          </p>
-        )}
-      </div>
+        </div>
     </MainLayout>
   )
 }

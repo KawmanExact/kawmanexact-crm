@@ -30,14 +30,26 @@ export type DecimalLike = Prisma.Decimal | number | string | null | undefined
  * Parse anything numeric-ish (form value, CSV cell, Decimal) into a Decimal.
  * Returns `null` for null/undefined/blank/non-numeric rather than throwing, so
  * callers can turn that into a validation error of their choosing.
+ *
+ * FIX: values read from the DB can be Decimal objects from a different copy of
+ * decimal.js, which `instanceof Prisma.Decimal` rejects. They used to fall
+ * through to `value.trim()` and crash. `Decimal.isDecimal` matches any copy, and
+ * we re-wrap so callers always get OUR Decimal class.
  */
 export function toDecimal(value: DecimalLike): Prisma.Decimal | null {
   if (value === null || value === undefined) return null
-  if (value instanceof Prisma.Decimal) return value
+
+  if (Prisma.Decimal.isDecimal(value)) {
+    return value instanceof Prisma.Decimal ? value : new Prisma.Decimal(String(value))
+  }
+
   if (typeof value === 'number') {
     return Number.isFinite(value) ? new Prisma.Decimal(value) : null
   }
-  const trimmed = value.trim()
+
+  // Last-resort guard: anything that isn't a string never reaches .trim().
+  const text = typeof value === 'string' ? value : String(value)
+  const trimmed = text.trim()
   if (trimmed === '') return null
   // Reject things Decimal.js would coerce to NaN, e.g. "abc".
   if (!/^-?\d*\.?\d+$/.test(trimmed)) return null
@@ -65,6 +77,11 @@ export function zeroQuantity(): Prisma.Decimal {
 /**
  * Line total = quantity x unitPrice, rounded to the money scale (half-up, so
  * 0.1 x 3 = 0.3 rather than 0.30000000000000004).
+ *
+ * This is the TAXABLE value, not what the customer pays: GST is exclusive and
+ * added on top by computeGstAmount, and freight is added after that by
+ * computeInvoiceAmount. Keep the three steps distinct — collapsing them into one
+ * number is how GST silently ends up excluded from an invoice total.
  */
 export function computeLineTotal(
   quantity: DecimalLike,
@@ -75,28 +92,63 @@ export function computeLineTotal(
   return q.times(p).toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
 }
 
-/** Outstanding balance = line total - amount paid, never below zero. */
+/**
+ * GST on a taxable value at a percentage rate. The rate is a plain percent
+ * (18 means 18%), not a fraction, because that is what the form collects and
+ * what the GST return is filed against.
+ */
+export function computeGstAmount(taxable: DecimalLike, gstRatePercent: DecimalLike): Prisma.Decimal {
+  const base = toDecimalOrZero(taxable)
+  const rate = toDecimalOrZero(gstRatePercent)
+  return base.times(rate).div(100).toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
+}
+
+/**
+ * What the customer owes for a line, in the order the invoice reads:
+ *
+ *   taxable (qty x unitPrice)
+ * + GST     (taxable x rate%)
+ * + freight
+ * = invoice amount
+ *
+ * Freight sits OUTSIDE the GST calculation rather than being added to the
+ * taxable base, because freight is a separate supply under GST law — taxing it
+ * as part of the goods value overstates the liability.
+ */
+export function computeInvoiceAmount(input: {
+  taxable: DecimalLike
+  gstAmount: DecimalLike
+  freight: DecimalLike
+}): Prisma.Decimal {
+  return sumMoney([toDecimalOrZero(input.taxable), toDecimalOrZero(input.gstAmount), toDecimalOrZero(input.freight)])
+}
+
+/** Outstanding balance = invoice amount - amount paid, never below zero. */
 export function computeBalance(
-  total: DecimalLike,
+  invoiceAmount: DecimalLike,
   amountPaid: DecimalLike
 ): Prisma.Decimal {
-  const diff = toDecimalOrZero(total).minus(toDecimalOrZero(amountPaid))
+  const diff = toDecimalOrZero(invoiceAmount).minus(toDecimalOrZero(amountPaid))
   const clamped = diff.isNegative() ? new Prisma.Decimal(0) : diff
   return clamped.toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
 }
 
 /**
- * Derive the payment status implied by total/paid. The status select in the
- * form is a constraint on this value, not an independent choice: PAID means
- * paid === total, PENDING means paid === 0, PARTIALLY_PAID is anything strictly
- * between. A zero-total line is treated as PENDING (nothing is owed because
- * nothing was billed) so a free/sample line does not claim to be PAID.
+ * Derive the payment status implied by invoiceAmount/paid. The status select in
+ * the form is a constraint on this value, not an independent choice: PAID means
+ * paid === invoiceAmount, PENDING means paid === 0, PARTIALLY_PAID is anything
+ * strictly between. A zero-invoice line is treated as PENDING (nothing is owed
+ * because nothing was billed) so a free/sample line does not claim to be PAID.
+ *
+ * Note this takes the INVOICE amount (taxable + GST + freight), not the taxable
+ * line total — deciding "paid in full" against the pre-GST figure would let a
+ * line be marked PAID while GST and freight are still outstanding.
  */
 export function derivePaymentStatus(
-  total: DecimalLike,
+  invoiceAmount: DecimalLike,
   amountPaid: DecimalLike
 ): PaymentStatus {
-  const t = toDecimalOrZero(total).toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
+  const t = toDecimalOrZero(invoiceAmount).toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
   const paid = toDecimalOrZero(amountPaid)
   if (t.lessThanOrEqualTo(0)) return 'PENDING'
   if (paid.lessThanOrEqualTo(0)) return 'PENDING'
@@ -104,13 +156,113 @@ export function derivePaymentStatus(
   return 'PARTIALLY_PAID'
 }
 
-/** True when `status` and the (total, paid) pair agree with derivePaymentStatus. */
+/** True when `status` and the (invoiceAmount, paid) pair agree with derivePaymentStatus. */
 export function isPaymentStatusConsistent(
   status: PaymentStatus,
-  total: DecimalLike,
+  invoiceAmount: DecimalLike,
   amountPaid: DecimalLike
 ): boolean {
-  return derivePaymentStatus(total, amountPaid) === status
+  return derivePaymentStatus(invoiceAmount, amountPaid) === status
+}
+
+/**
+ * Advance received against a line. An advance is money already in hand, so it is
+ * part of what counts toward PAID — otherwise an invoice fully covered by an
+ * advance would still show as pending. Clamped at the invoice amount: an advance
+ * larger than the bill is a customer overpayment, not a negative balance.
+ */
+export function computeAdvanceApplied(advance: DecimalLike, invoiceAmount: DecimalLike): Prisma.Decimal {
+  const a = toDecimalOrZero(advance)
+  const cap = toDecimalOrZero(invoiceAmount)
+  return (a.greaterThan(cap) ? cap : a).toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
+}
+
+/**
+ * Post-dated cheque value promised against a line. This is a future obligation,
+ * NOT a payment: it must never be added to amountPaid or it would mark an unpaid
+ * invoice as settled. It is only ever reported alongside the balance, and the
+ * outstanding figure is checked against it so an over-committed PDC is caught
+ * before the invoice is filed.
+ */
+export function computeOutstandingAfterPdc(input: {
+  balance: DecimalLike
+  pdcAmount: DecimalLike
+}): Prisma.Decimal {
+  const diff = toDecimalOrZero(input.balance).minus(toDecimalOrZero(input.pdcAmount))
+  const clamped = diff.isNegative() ? new Prisma.Decimal(0) : diff
+  return clamped.toDecimalPlaces(MONEY_SCALE, Prisma.Decimal.ROUND_HALF_UP)
+}
+
+/**
+ * Everything money-related for one invoice line, derived in invoice order so no
+ * step can be skipped or computed out of sequence. This is the single source of
+ * truth shared by the live form, the server action, the KPIs and every export —
+ * all four call this so a figure on screen, in the DB and in a spreadsheet cannot
+ * disagree.
+ *
+ * The chain:
+ *   taxable        = quantity x unitPrice
+ *   gstAmount      = taxable x gstRate%
+ *   invoiceAmount  = taxable + gstAmount + freight
+ *   paid           = amountPaid (advance already folded in by the caller)
+ *   balance        = invoiceAmount - paid
+ */
+export interface LineMoney {
+  quantity: Prisma.Decimal
+  unitPrice: Prisma.Decimal
+  /** quantity x unitPrice — the taxable value GST is charged on. */
+  taxableAmount: Prisma.Decimal
+  gstRate: Prisma.Decimal
+  gstAmount: Prisma.Decimal
+  freightAmount: Prisma.Decimal
+  /** What the customer owes: taxable + GST + freight. */
+  invoiceAmount: Prisma.Decimal
+  advanceAmount: Prisma.Decimal
+  pdcAmount: Prisma.Decimal
+  amountPaid: Prisma.Decimal
+  balanceAmount: Prisma.Decimal
+  /** balance minus the promised PDC — the part with no payment attached at all. */
+  uncoveredAmount: Prisma.Decimal
+  paymentStatus: PaymentStatus
+}
+
+export function deriveLineMoneyDetail(input: {
+  quantity: DecimalLike
+  unitPrice: DecimalLike
+  gstRate?: DecimalLike
+  freightAmount?: DecimalLike
+  advanceAmount?: DecimalLike
+  pdcAmount?: DecimalLike
+  amountPaid: DecimalLike
+}): LineMoney {
+  const quantity = toQuantity(input.quantity)
+  const unitPrice = toMoney(input.unitPrice)
+  const taxableAmount = computeLineTotal(quantity, unitPrice)
+  const gstRate = toMoney(input.gstRate ?? 0)
+  const gstAmount = computeGstAmount(taxableAmount, gstRate)
+  const freightAmount = toMoney(input.freightAmount ?? 0)
+  const invoiceAmount = computeInvoiceAmount({ taxable: taxableAmount, gstAmount, freight: freightAmount })
+  const advanceAmount = toMoney(input.advanceAmount ?? 0)
+  const pdcAmount = toMoney(input.pdcAmount ?? 0)
+  const amountPaid = computeAdvanceApplied(input.amountPaid, invoiceAmount)
+  const balanceAmount = computeBalance(invoiceAmount, amountPaid)
+  const uncoveredAmount = computeOutstandingAfterPdc({ balance: balanceAmount, pdcAmount })
+
+  return {
+    quantity,
+    unitPrice,
+    taxableAmount,
+    gstRate,
+    gstAmount,
+    freightAmount,
+    invoiceAmount,
+    advanceAmount,
+    pdcAmount,
+    amountPaid,
+    balanceAmount,
+    uncoveredAmount,
+    paymentStatus: derivePaymentStatus(invoiceAmount, amountPaid),
+  }
 }
 
 /** Round to the money scale (half-up) — for values read back from Decimal columns. */

@@ -17,6 +17,8 @@ import {
 } from '@/lib/sales-export'
 import { getSalesExportData } from '@/services/sales.service'
 
+// exceljs / pdf libraries need Node APIs, so pin the runtime explicitly.
+export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const CONTENT_TYPES: Record<ExportFormat, string> = {
@@ -42,8 +44,10 @@ export async function GET(request: Request) {
   } catch {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
-  if (!(session.user.permissions as string[]).includes('sales.export')) {
-    return new Response('Forbidden', { status: 403 })
+
+  const permissions = (session.user.permissions ?? []) as string[]
+  if (!permissions.includes('sales.export')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const url = new URL(request.url)
@@ -55,63 +59,62 @@ export async function GET(request: Request) {
     )
   }
 
-  // Everything except `format` is a sales filter, including page/pageSize which
-  // are ignored by getAllSalesRows (an export is never paginated).
+  // Everything except `format` / `print` is a sales filter. page/pageSize are
+  // ignored by getSalesExportData (an export is never paginated).
   const rawParams: Record<string, string | string[]> = {}
   url.searchParams.forEach((value, key) => {
     if (key === 'format' || key === 'print') return
     rawParams[key] = value
   })
 
-  const cap = EXPORT_ROW_CAPS[requestedFormat]
-  const data = await getSalesExportData(rawParams, cap)
+  try {
+    const cap = EXPORT_ROW_CAPS[requestedFormat]
+    const data = await getSalesExportData(rawParams, cap)
 
-  if (data.rows.length === 0) {
-    return NextResponse.json(
-      { error: 'No sales match the selected filters, so there is nothing to export.' },
-      { status: 404 }
-    )
-  }
+    if (data.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'No sales match the selected filters, so there is nothing to export.' },
+        { status: 404 }
+      )
+    }
 
-  const meta = {
-    organizationName: data.organizationName,
-    generatedBy: data.generatedBy,
-    generatedAt: new Date(),
-    filterLines: data.filterLines,
-    truncated: data.truncated ? { shown: data.rows.length, total: data.total } : undefined,
-  }
+    const meta = {
+      organizationName: data.organizationName,
+      generatedBy: data.generatedBy,
+      generatedAt: new Date(),
+      filterLines: data.filterLines,
+      truncated: data.truncated ? { shown: data.rows.length, total: data.total } : undefined,
+    }
 
-  let body: Buffer
-  if (requestedFormat === 'xlsx') {
-    body = await buildSalesWorkbook({
-      rows: data.rows,
-      products: data.products,
-      salespeople: data.salespeople,
-      kpis: data.kpis,
-      meta,
-    })
-  } else if (requestedFormat === 'pdf') {
-    body = buildSalesPdf({ rows: data.rows, kpis: data.kpis, meta })
-  } else {
-    const csv = buildSalesCsv(data.rows)
-    // The CSV builder is text, so hand back a string body directly.
-    return new Response(csv, {
-      status: 200,
-      headers: {
-        'Content-Type': CONTENT_TYPES.csv,
-        'Content-Disposition': `attachment; filename="${salesExportFilename('csv', meta.organizationName)}"`,
-        'Cache-Control': 'no-store',
-      },
-    })
-  }
-
-  return new Response(new Uint8Array(body), {
-    status: 200,
-    headers: {
+    const filename = salesExportFilename(requestedFormat, meta.organizationName)
+    const headers = {
       'Content-Type': CONTENT_TYPES[requestedFormat],
-      'Content-Disposition': `attachment; filename="${salesExportFilename(requestedFormat, meta.organizationName)}"`,
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Cache-Control': 'no-store',
       'X-Export-Format': FORMAT_LABEL[requestedFormat],
-    },
-  })
+    }
+
+    if (requestedFormat === 'csv') {
+      return new Response(buildSalesCsv(data.rows), { status: 200, headers })
+    }
+
+    const body: Buffer =
+      requestedFormat === 'xlsx'
+        ? await buildSalesWorkbook({
+            rows: data.rows,
+            products: data.products,
+            salespeople: data.salespeople,
+            kpis: data.kpis,
+            meta,
+          })
+        : buildSalesPdf({ rows: data.rows, kpis: data.kpis, meta })
+
+    return new Response(new Uint8Array(body), { status: 200, headers })
+  } catch (err) {
+    console.error(`[sales export:${requestedFormat}] failed:`, err)
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Export failed' },
+      { status: 500 }
+    )
+  }
 }

@@ -26,9 +26,10 @@ import {
   OTHER_PRODUCT_SENTINEL,
   otherProductNameIsValid,
 } from '@/lib/sales-money'
-import { funnelStageForPaymentState } from '@/lib/funnel'
 import { prisma } from '@/lib/db'
 import { deriveLineMoney, salesWriteWhere } from '@/services/sales.service'
+import { STANDARD_PRODUCTS } from '@/lib/products'
+import { STAGE_PROBABILITIES } from '@/lib/deal-pipeline'
 
 export interface SalesFormState {
   error?: string
@@ -48,7 +49,7 @@ async function assertPermission(permission: string) {
 }
 
 /** Parse the `lines` JSON hidden input written by the multi-line form. */
-export function parseLinesField(raw: FormDataEntryValue | null): unknown {
+function parseLinesField(raw: FormDataEntryValue | null): unknown {
   if (typeof raw !== 'string' || raw.trim() === '') return []
   try {
     const parsed: unknown = JSON.parse(raw)
@@ -91,31 +92,58 @@ export async function findConflictingInvoiceGroup(input: {
 }
 
 /**
- * Optional checkbox: move the customer's open lead to Order/Payment. Only acts
- * when the customer has EXACTLY one open lead — never guess between several.
- * Returns the moved lead id, or a reason string explaining why not.
+ * Optional checkbox: move the customer's open deal to ORDER/PAYMENT. A deal IS
+ * the lead now (see the merged fields on the Deal model), so this stages the
+ * one open opportunity rather than a separate lead row. Only acts when the
+ * customer has EXACTLY one open deal — never guess between several.
+ * Returns the moved deal id, or a reason string explaining why not.
  */
 export async function moveCustomerLeadStage(
   organizationId: string,
   customerId: string,
-  fullyPaid: boolean
+  fullyPaid: boolean,
+  actor: { id: string; name: string }
 ): Promise<{ leadId?: string; skipped?: string }> {
-  const openLeads = await prisma.lead.findMany({
+  const openDeals = await prisma.deal.findMany({
     where: {
       organizationId,
       companyId: customerId,
-      NOT: { status: 'LOST' },
+      stage: { notIn: ['PAYMENT', 'LOST'] },
     },
-    select: { id: true },
+    select: { id: true, name: true, stage: true, probability: true },
     take: 2,
   })
-  if (openLeads.length === 0) return { skipped: 'No open lead for this customer.' }
-  if (openLeads.length > 1) {
-    return { skipped: 'This customer has more than one open lead — stage not changed automatically.' }
+  if (openDeals.length === 0) return { skipped: 'No open deal for this customer.' }
+  if (openDeals.length > 1) {
+    return { skipped: 'This customer has more than one open deal — stage not changed automatically.' }
   }
-  const stage = funnelStageForPaymentState(fullyPaid)
-  await prisma.lead.update({ where: { id: openLeads[0].id }, data: { funnelStage: stage } })
-  return { leadId: openLeads[0].id }
+
+  const deal = openDeals[0]
+  const stage = fullyPaid ? 'PAYMENT' : 'ORDER'
+  const probability = STAGE_PROBABILITIES[stage]
+
+  await prisma.deal.update({
+    where: { id: deal.id },
+    data: {
+      stage,
+      probability,
+      closedAt: fullyPaid ? new Date() : null,
+      lastActivityAt: new Date(),
+    },
+  })
+  await prisma.dealStageHistory.create({
+    data: {
+      dealId: deal.id,
+      stage,
+      previousStage: deal.stage,
+      probability,
+      movedById: actor.id,
+      movedByName: actor.name,
+      organizationId,
+    },
+  })
+
+  return { leadId: deal.id }
 }
 
 interface PreparedLine {
@@ -123,33 +151,71 @@ interface PreparedLine {
   otherProductName: string | null
   quantity: Prisma.Decimal
   unitPrice: Prisma.Decimal
+  /// quantity x unitPrice — the taxable value.
   totalAmount: Prisma.Decimal
+  gstAmount: Prisma.Decimal
+  /// totalAmount + gstAmount + freightAmount. Balance and payment status are
+  /// derived from this, never from the taxable figure.
+  invoiceAmount: Prisma.Decimal
   amountPaid: Prisma.Decimal
   balanceAmount: Prisma.Decimal
   paymentStatus: 'PAID' | 'PARTIALLY_PAID' | 'PENDING'
   paymentDate: Date | null
+  hsnCode: string | null
+  gstRate: Prisma.Decimal | null
+  freightAmount: Prisma.Decimal | null
+  leadTimeDays: number | null
+  advanceAmount: Prisma.Decimal | null
+  pdcAmount: Prisma.Decimal | null
+  paymentMode: string | null
+  purchaseOrderNo: string | null
 }
 
 function prepareLines(data: SalesFormInput): PreparedLine[] {
   const paymentDate = data.paymentDate ? new Date(data.paymentDate) : null
 
   return data.lines.map((line) => {
+    // One call derives the whole chain in invoice order — taxable, GST,
+    // invoice amount, advance-capped paid, balance, status. Nothing here is
+    // trusted from the client.
     const money = deriveLineMoney({
       quantity: line.quantity,
       unitPrice: line.unitPrice,
+      gstRate: line.gstRate,
+      freightAmount: line.freightAmount,
+      advanceAmount: line.advanceAmount,
+      pdcAmount: line.pdcAmount,
       amountPaid: line.amountPaid,
     })
     const usesOther = line.productId === OTHER_PRODUCT_SENTINEL
+    const isStandardized = line.productId?.startsWith('std-')
+    const standardizedName = isStandardized
+      ? STANDARD_PRODUCTS[Number(line.productId.replace('std-', ''))] ?? null
+      : null
     return {
-      productId: usesOther ? null : line.productId || null,
-      otherProductName: usesOther ? line.otherProductName.trim() : null,
+      productId: (usesOther || isStandardized) ? null : (line.productId || null),
+      otherProductName: usesOther
+        ? line.otherProductName.trim()
+        : isStandardized
+          ? (standardizedName ?? line.otherProductName.trim())
+          : null,
       quantity: money.quantity,
       unitPrice: money.unitPrice,
-      totalAmount: money.totalAmount,
+      totalAmount: money.taxableAmount,
+      gstAmount: money.gstAmount,
+      invoiceAmount: money.invoiceAmount,
       amountPaid: money.amountPaid,
       balanceAmount: money.balanceAmount,
       paymentStatus: money.paymentStatus,
       paymentDate: money.amountPaid.greaterThan(0) ? paymentDate : null,
+      hsnCode: line.hsnCode || null,
+      gstRate: line.gstRate !== undefined && line.gstRate !== null ? new Prisma.Decimal(line.gstRate) : null,
+      freightAmount: line.freightAmount !== undefined && line.freightAmount !== null ? new Prisma.Decimal(line.freightAmount) : null,
+      leadTimeDays: line.leadTimeDays !== undefined && line.leadTimeDays !== null ? line.leadTimeDays : null,
+      advanceAmount: line.advanceAmount !== undefined && line.advanceAmount !== null ? new Prisma.Decimal(line.advanceAmount) : null,
+      pdcAmount: line.pdcAmount !== undefined && line.pdcAmount !== null ? new Prisma.Decimal(line.pdcAmount) : null,
+      paymentMode: line.paymentMode || null,
+      purchaseOrderNo: line.purchaseOrderNo || null,
     }
   })
 }
@@ -158,19 +224,30 @@ function prepareLines(data: SalesFormInput): PreparedLine[] {
  * Verify every referenced catalog product exists, is active and belongs to this
  * organisation. Runs before the write so a stale dropdown cannot write a
  * cross-tenant productId.
+ * 
+ * Standardized products (std-*) and "Other" sentinel (__other__) are not database
+ * products, so they're skipped from validation.
  */
 async function assertProductsUsable(
   organizationId: string,
   lines: PreparedLine[]
 ): Promise<{ ok: true } | { ok: false; message: string }> {
-  const ids = Array.from(new Set(lines.map((l) => l.productId).filter((id): id is string => !!id)))
-  if (ids.length === 0) return { ok: true }
+  // Filter out standardized products (std-*) and "Other" sentinel (__other__)
+  const dbProductIds = Array.from(
+    new Set(
+      lines
+        .map((l) => l.productId)
+        .filter((id): id is string => !!id)
+        .filter((id) => !id.startsWith('std-') && id !== OTHER_PRODUCT_SENTINEL)
+    )
+  )
+  if (dbProductIds.length === 0) return { ok: true }
 
   const products = await prisma.product.findMany({
-    where: { organizationId, id: { in: ids } },
+    where: { organizationId, id: { in: dbProductIds } },
     select: { id: true, name: true, variant: true, isActive: true },
   })
-  if (products.length !== ids.length) {
+  if (products.length !== dbProductIds.length) {
     return { ok: false, message: 'One of the selected products no longer exists. Reload the page.' }
   }
   const inactive = products.find((p) => !p.isActive)
@@ -359,12 +436,16 @@ async function runSave(
   let leadNote: string | undefined
   if (data.moveLeadStage) {
     const fullyPaid = lines.every((line) => line.paymentStatus === 'PAID')
-    const result = await moveCustomerLeadStage(organizationId, data.customerId, fullyPaid)
+    const result = await moveCustomerLeadStage(organizationId, data.customerId, fullyPaid, {
+      id: session.user.id,
+      name: session.user.name ?? 'Unknown',
+    })
     leadNote = result.skipped
   }
 
   revalidatePath('/sales-tracking')
   revalidatePath('/leads')
+  revalidatePath('/deals')
   revalidatePath('/funnel')
 
   // "Could not stage the lead" is informational, not a failure of the sale, so

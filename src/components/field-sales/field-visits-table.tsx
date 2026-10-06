@@ -32,7 +32,7 @@ export function FieldVisitsTable(props: FieldVisitsTableProps) {
   const [localStatusFilter, setLocalStatusFilter] = useState<'ALL' | VisitStatus>('ALL')
 
   // Server-mode state (used only when `result` is provided) — mirrors
-  // leads-table.tsx's URL-driven pattern.
+  // the deals table's URL-driven pattern.
   const [query, setQuery] = useState(searchParams.get('q') ?? '')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const statusFilter = (searchParams.get('status') as VisitStatus | null) ?? 'ALL'

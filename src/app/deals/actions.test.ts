@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/db', () => ({
   prisma: {
     deal: { create: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
+    dealItem: { createMany: vi.fn(), deleteMany: vi.fn() },
+    product: { findMany: vi.fn(), count: vi.fn() },
     activity: { create: vi.fn() },
     contact: { findFirst: vi.fn(), create: vi.fn() },
   },
@@ -48,11 +50,15 @@ import { validateCsrf } from '@/lib/csrf'
 import { canManageAssignments } from '@/lib/record-scope'
 import { findOrCreateCompanyByName } from '@/services/company.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
-import { createDealAction, updateDealAction, type DealFormState } from '@/app/deals/actions'
+import { createDealAction, updateDealAction, getDealLineItemOptions, type DealFormState } from '@/app/deals/actions'
 
 const mockDealCreate = vi.mocked(prisma.deal.create)
 const mockDealFindFirst = vi.mocked(prisma.deal.findFirst)
 const mockDealUpdate = vi.mocked(prisma.deal.update)
+const mockDealItemCreateMany = vi.mocked(prisma.dealItem.createMany)
+const mockDealItemDeleteMany = vi.mocked(prisma.dealItem.deleteMany)
+const mockProductFindMany = vi.mocked(prisma.product.findMany)
+const mockProductCount = vi.mocked(prisma.product.count)
 const mockContactCreate = vi.mocked(prisma.contact.create)
 const mockActivityCreate = vi.mocked(prisma.activity.create)
 const mockFindOrCreateContactByName = vi.mocked(findOrCreateContactByName)
@@ -88,9 +94,10 @@ beforeEach(() => {
     id: 'deal-1',
     name: 'Test Deal',
     value: 1000,
-    stage: 'NEW_LEAD',
+    stage: 'SUSPECT',
   } as never)
   mockDealUpdate.mockResolvedValue({} as never)
+  mockProductCount.mockResolvedValue(0)
 })
 
 describe('createDealAction', () => {
@@ -173,7 +180,7 @@ describe('updateDealAction', () => {
       id: 'deal-1',
       organizationId: 'org-A',
       ownerId: 'user-1',
-      stage: 'NEW_LEAD',
+      stage: 'SUSPECT',
       contactId: null,
     } as never)
   })
@@ -211,7 +218,7 @@ describe('updateDealAction', () => {
       id: 'deal-1',
       organizationId: 'org-A',
       ownerId: 'user-1',
-      stage: 'NEW_LEAD',
+      stage: 'SUSPECT',
       contactId: 'contact-preserve',
     } as never)
 
@@ -229,5 +236,107 @@ describe('updateDealAction', () => {
         }),
       }),
     )
+  })
+
+  it('replaces line items and recomputes value from the lines', async () => {
+    await updateDealAction(
+      'deal-1',
+      {} as DealFormState,
+      formData({
+        name: 'Updated Deal',
+        value: '2000',
+        lineItems: JSON.stringify([
+          { productId: 'prod-1', quantity: '2', unitPrice: '100', unitCost: '40' },
+          { productId: 'prod-2', quantity: '5', unitPrice: '10', unitCost: '3' },
+        ]),
+      })
+    )
+
+    expect(mockDealItemDeleteMany).toHaveBeenCalledWith({
+      where: { dealId: 'deal-1', organizationId: 'org-A' },
+    })
+    expect(mockDealItemCreateMany).toHaveBeenCalledWith({
+      data: expect.arrayContaining([
+        expect.objectContaining({ dealId: 'deal-1', productId: 'prod-1', organizationId: 'org-A' }),
+        expect.objectContaining({ dealId: 'deal-1', productId: 'prod-2', organizationId: 'org-A' }),
+      ]),
+    })
+    // 2*100 + 5*10 = 250
+    expect(mockDealUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'deal-1' },
+        data: expect.objectContaining({ value: 250 }),
+      }),
+    )
+  })
+})
+
+describe('createDealAction with line items', () => {
+  it('computes deal value from line items and creates them', async () => {
+    const result = await createDealAction(
+      {} as DealFormState,
+      formData({
+        name: 'Test Deal',
+        value: '1000',
+        lineItems: JSON.stringify([
+          { productId: 'prod-1', quantity: '3', unitPrice: '1000', unitCost: '400' },
+        ]),
+      })
+    )
+
+    expect(result.success).toBe(true)
+    // 3 * 1000 = 3000, overriding the submitted 1000
+    expect(mockDealCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ value: 3000 }),
+      }),
+    )
+    expect(mockDealItemCreateMany).toHaveBeenCalledWith({
+      data: expect.arrayContaining([
+        expect.objectContaining({
+          dealId: 'deal-1',
+          productId: 'prod-1',
+          organizationId: 'org-A',
+          quantity: expect.any(Object),
+          unitPrice: expect.any(Object),
+          unitCost: expect.any(Object),
+        }),
+      ]),
+    })
+  })
+
+  it('falls back to the submitted value when there are no line items', async () => {
+    await createDealAction(
+      {} as DealFormState,
+      formData({ name: 'Test Deal', value: '12500' })
+    )
+
+    expect(mockDealItemCreateMany).not.toHaveBeenCalled()
+    expect(mockDealCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ value: 12500 }),
+      }),
+    )
+  })
+})
+
+describe('getDealLineItemOptions', () => {
+  it('returns active products scoped to the org, mapped to option shape', async () => {
+    mockProductFindMany.mockResolvedValue([
+      { id: 'p1', name: 'AlphaExAct', variant: '1% WD', unit: 'kg', defaultUnitPrice: 1200, unitPrice: 1100, unitCost: 500 },
+      { id: 'p2', name: 'BetaPure', variant: null, unit: 'kg', defaultUnitPrice: null, unitPrice: 300, unitCost: 120 },
+    ] as never)
+
+    const options = await getDealLineItemOptions()
+
+    expect(mockProductFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { organizationId: 'org-A', isActive: true },
+      }),
+    )
+    expect(options).toEqual([
+      { id: 'p1', label: 'AlphaExAct - 1% WD', unit: 'kg', defaultUnitPrice: 1200, unitPrice: 1100, unitCost: 500 },
+      { id: 'p2', label: 'BetaPure', unit: 'kg', defaultUnitPrice: null, unitPrice: 300, unitCost: 120 },
+    ])
   })
 })

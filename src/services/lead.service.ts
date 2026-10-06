@@ -2,7 +2,6 @@ import 'server-only'
 import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 import type { Lead, LeadStatus } from '@/types/crm'
-import { calculateLeadScore, type LeadScoreResult } from '@/lib/lead-scoring'
 import type { Session } from '@/lib/auth'
 import type { Prisma } from '@/generated/prisma'
 import { ownerScopeWhere } from '@/lib/record-scope-helpers'
@@ -39,12 +38,30 @@ function mapLead(row: LeadWithOwner): Lead {
     source: row.source ?? 'Other',
     owner: row.owner.name ?? 'Unassigned',
     ownerInitials: toInitials(row.owner.name ?? 'U'),
+    ownerId: row.ownerId,
     status: row.status as LeadStatus,
-    score: row.score,
-    value: row.value ? Number(row.value) : 0,
     segment: row.segment ?? null,
     createdAt: row.createdAt.toISOString(),
     lastActivityAt: (row.lastActivityAt ?? row.createdAt).toISOString(),
+    notes: row.notes ?? null,
+    contactPerson: row.contactPerson ?? null,
+    designation: row.designation ?? null,
+    meetingDate: row.meetingDate ? row.meetingDate.toISOString() : null,
+    meetingAt: row.meetingAt ?? null,
+    productsDiscussed: row.productsDiscussed ?? [],
+    customProductNames: row.customProductNames ?? [],
+    keyDiscussion: row.keyDiscussionPoints ?? null,
+    requirement: row.customerRequirement ?? null,
+    grade: row.grade ?? null,
+    cdaStatus: row.cdaStatus ?? null,
+    samplingStatus: row.samplingStatus ?? null,
+    rdFeedback: row.rndFeedback ?? null,
+    remark: row.remark ?? null,
+    nextFollowUp: row.nextFollowUp ? row.nextFollowUp.toISOString() : null,
+    loaStatus: row.loaStatus ?? null,
+    location: row.location ?? null,
+    region: row.region ?? null,
+    purposeOfVisit: row.purposeOfVisit ?? null,
   }
 }
 
@@ -55,7 +72,7 @@ export async function getLeads(): Promise<Lead[]> {
   return rows.map(mapLead)
 }
 
-export type LeadSortKey = 'name' | 'score' | 'value' | 'lastActivityAt' | 'createdAt'
+export type LeadSortKey = 'name' | 'lastActivityAt' | 'createdAt'
 
 export interface LeadQuery {
   /** Free-text search against name / company / email. */
@@ -78,8 +95,6 @@ export interface LeadPage {
 
 const SORT_FIELD: Record<LeadSortKey, string> = {
   name: 'name',
-  score: 'score',
-  value: 'value',
   lastActivityAt: 'lastActivityAt',
   createdAt: 'createdAt',
 }
@@ -109,6 +124,8 @@ export async function getLeadsPage(query: LeadQuery = {}): Promise<LeadPage> {
             { company: { contains: search, mode: 'insensitive' as const } },
             { email: { contains: search, mode: 'insensitive' as const } },
             { companyRef: { name: { contains: search, mode: 'insensitive' as const } } },
+            { contactPerson: { contains: search, mode: 'insensitive' as const } },
+            { productsDiscussed: { has: search } },
           ],
         }
       : {}),
@@ -141,78 +158,4 @@ export async function getLeadById(id: string): Promise<Lead | null> {
     include: { owner: { select: { name: true } }, companyRef: { select: { name: true } } },
   })
   return row ? mapLead(row) : null
-}
-
-// ============================================================
-// Automatic lead scoring (audit: "Lead Scoring — no automatic scoring
-// algorithm, no score history"). The actual weighting logic lives in
-// lib/lead-scoring.ts as a pure function; this file's job is just to
-// gather the DB signals it needs and persist the result. Score changes
-// are logged as Activity rows (type LEAD_SCORE_CHANGED) — free score
-// history, using a table that already exists, instead of a new model.
-// ============================================================
-
-export async function recalculateLeadScore(leadId: string): Promise<LeadScoreResult> {
-  const session = await requireApiSession()
-  const lead = await prisma.lead.findFirst({ where: { id: leadId, organizationId: session.user.organizationId } })
-  if (!lead) throw new Error('Lead not found')
-
-  const [activityCount, completedFollowUps, overdueFollowUps] = await Promise.all([
-    prisma.activity.count({ where: { leadId } }),
-    prisma.followUp.count({ where: { leadId, status: 'COMPLETED' } }),
-    prisma.followUp.count({ where: { leadId, status: 'PENDING', dueDate: { lt: new Date() } } }),
-  ])
-
-  const result = calculateLeadScore({
-    status: lead.status,
-    source: lead.source,
-    hasEmail: Boolean(lead.email),
-    hasPhone: Boolean(lead.phone),
-    hasCompanyRecord: Boolean(lead.companyId),
-    dealValue: lead.value ? Number(lead.value) : null,
-    activityCount,
-    lastActivityAt: lead.lastActivityAt,
-    completedFollowUps,
-    overdueFollowUps,
-  })
-
-  if (result.score !== lead.score) {
-    await prisma.$transaction([
-      prisma.lead.update({ where: { id: leadId }, data: { score: result.score } }),
-      prisma.activity.create({
-        data: {
-          type: 'LEAD_SCORE_CHANGED',
-          description: `Lead score recalculated: ${lead.score} → ${result.score}`,
-          organizationId: session.user.organizationId,
-          actorId: session.user.id,
-          leadId,
-          metadata: {
-            previousScore: lead.score,
-            newScore: result.score,
-            factors: result.factors,
-          } as unknown as Prisma.InputJsonValue,
-        },
-      }),
-    ])
-  }
-
-  return result
-}
-
-/** Recalculates every non-closed lead in the org — used by the "Recalculate all" bulk action. */
-export async function recalculateAllLeadScores(): Promise<{ updated: number; total: number }> {
-  const session = await requireApiSession()
-  const leads = await prisma.lead.findMany({
-    where: { organizationId: session.user.organizationId, status: { notIn: ['WON', 'LOST'] } },
-    select: { id: true },
-  })
-
-  let updated = 0
-  for (const lead of leads) {
-    const before = await prisma.lead.findUnique({ where: { id: lead.id }, select: { score: true } })
-    const result = await recalculateLeadScore(lead.id)
-    if (before && result.score !== before.score) updated += 1
-  }
-
-  return { updated, total: leads.length }
 }
