@@ -36,7 +36,6 @@ import { ThemeToggle } from './theme-toggle'
 const NOTIF_COLOR: Record<string, string> = {
   NEW_LEAD: 'bg-purple-500/15 text-purple-400',
   DEAL_UPDATED: 'bg-blue-500/15 text-blue-400',
-  MEETING_REMINDER: 'bg-emerald-500/15 text-emerald-400',
   FOLLOW_UP_DUE: 'bg-orange-500/15 text-orange-400',
   FILE_SHARED: 'bg-cyan-500/15 text-cyan-400',
   FILE_UPLOADED: 'bg-cyan-500/15 text-cyan-400',
@@ -183,7 +182,7 @@ export function Header() {
         >
           <Search className="h-4 w-4 text-white/40 shrink-0" />
           <span className="text-sm text-white/40 flex-1 truncate">
-            Search documents, meetings, leads, companies...
+            Search documents, leads, companies...
           </span>
           <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/40 font-medium">
             ⌘K

@@ -114,7 +114,7 @@ const VISIT_SORT_FIELD: Record<FieldVisitSortKey, string> = {
 
 /**
  * Server-side paginated + searched + sorted field-visit listing for the
- * main /field-sales list page — mirrors services/lead.service.ts#getLeadsPage.
+ * main /field-sales list page — mirrors the server-paginated list shape.
  *
  * Kept separate from getFieldVisits()/getTodaysVisits(): the latter backs
  * /field-sales/visits ("Today's Visits"), which is inherently a small,

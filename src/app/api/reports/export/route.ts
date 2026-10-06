@@ -23,7 +23,7 @@ import type { UniversalReportDefinition, ExportFormat } from '@/lib/report-engin
  * Coexists with legacy per-entity GET /export routes — does NOT break them.
  *
  * ── AUDIT OF EXISTING EXPORT ROUTES (2026-09-15) ────────────────────
- * src/app/api/leads/export/route.ts             GET  perm: leads.export        -> toCSV + csvResponse, leads-{date}.csv
+ * src/app/api/deals/export/route.ts             GET  perm: deals.export        -> toCSV + csvResponse, deals-{date}.csv  (also serves the old leads export — a deal IS the lead)
  * src/app/api/companies/export/route.ts         GET  perm: companies.view      -> toCSV + csvResponse, companies-{date}.csv  [perm bug: should be companies.export]
  * src/app/api/contacts/export/route.ts          GET  perm: contacts.view       -> toCSV + csvResponse, contacts-{date}.csv   [perm bug: should be contacts.export]
  * src/app/api/deals/export/route.ts             GET  perm: deals.export        -> toCSV + csvResponse, deals-{date}.csv
@@ -35,7 +35,7 @@ import type { UniversalReportDefinition, ExportFormat } from '@/lib/report-engin
  * ── MIGRATION PLAN ──────────────────────────────────────────────────
  * 1) Keep legacy GET /export routes as-is for backwards compat (bookmarks, external scripts, tests).
  * 2) New code should call POST /api/reports/export with UniversalReportDefinition — it supports pdf/csv/xlsx/print + Kawman-ExAct-* naming.
- * 3) When adoption > 90% (grep for /api/(leads|companies|contacts|deals)/export), deprecate legacy routes:
+ * 3) When adoption > 90% (grep for /api/(companies|contacts|deals)/export), deprecate legacy routes:
  *    - Add `Deprecation: true` + `Sunset` header + console.warn to each legacy handler.
  *    - After 1 release, make legacy handlers thin wrappers that build a UniversalReportDefinition and call the engine's CSV path.
  * 4) Fix permission bugs: companies/contacts should check companies.export/contacts.export (add those perms to PERMISSIONS if missing) — do in same PR as wrapper step.
@@ -49,7 +49,6 @@ function hasExportPermission(perms: string[]): boolean {
   const allowed = new Set([
     'reports.export',
     'reports.view',
-    'leads.export',
     'deals.export',
     'audit_logs.view',
     'companies.view',

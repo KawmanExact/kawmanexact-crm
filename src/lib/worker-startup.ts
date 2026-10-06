@@ -20,15 +20,4 @@ export function startWorkers() {
   if (!process.env.REDIS_URL) return
 
   globalForWorkers.__workersStarted = true
-
-  void import('@/workers/transcription-worker')
-    .then(({ startTranscriptionWorker }) => {
-      startTranscriptionWorker()
-      console.log('[WORKERS] Transcription worker started')
-    })
-    .catch((err) => {
-      console.error('[WORKERS] Failed to start transcription worker:', err)
-    })
 }
-
-startWorkers()

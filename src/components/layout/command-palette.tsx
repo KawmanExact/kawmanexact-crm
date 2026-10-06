@@ -4,29 +4,25 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useShallow } from 'zustand/react/shallow'
-import { Search, User, Building2, Contact as ContactIcon, Handshake, CalendarClock, FileText, Loader2, AlertCircle, LogIn } from 'lucide-react'
+import { Search, User, Building2, Contact as ContactIcon, Handshake, FileText, Loader2, AlertCircle, LogIn } from 'lucide-react'
 import { useUIStore } from '@/stores/ui'
 import type { SearchResult, SearchResultType } from '@/services/search.service'
 
 const TYPE_ICON: Record<SearchResultType, typeof User> = {
-  lead: User,
   company: Building2,
   contact: ContactIcon,
   deal: Handshake,
-  meeting: CalendarClock,
   file: FileText,
 }
 
 const TYPE_LABEL: Record<SearchResultType, string> = {
-  lead: 'Leads',
   company: 'Companies',
   contact: 'Contacts',
   deal: 'Deals',
-  meeting: 'Meetings',
   file: 'Files',
 }
 
-const GROUP_ORDER: SearchResultType[] = ['lead', 'company', 'contact', 'deal', 'meeting', 'file']
+const GROUP_ORDER: SearchResultType[] = ['deal', 'company', 'contact', 'file']
 
 type FetchState =
   | { status: 'idle' }
@@ -167,7 +163,7 @@ export function CommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search leads, companies, contacts, deals, meetings, files…"
+            placeholder="Search leads, companies, contacts, deals, files…"
             className="flex-1 bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none"
           />
           <kbd className="hidden sm:inline-flex rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/40">

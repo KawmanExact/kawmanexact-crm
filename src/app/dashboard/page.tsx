@@ -10,6 +10,7 @@ import { LiveMapCard } from '@/components/dashboard/live-map-card'
 import { LeadSourceChart } from '@/components/dashboard/lead-source-chart'
 import { FollowUpList } from '@/components/dashboard/follow-up-list'
 import { RecentActivities } from '@/components/dashboard/recent-activities'
+import { TopProductsCard } from '@/components/dashboard/top-products-card'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ClipboardCheck } from 'lucide-react'
@@ -95,10 +96,11 @@ export default async function DashboardPage() {
         {/* Live map */}
         <LiveMapCard markers={metrics.liveVisits} />
 
-        {/* Leads by source / Upcoming follow-ups */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Leads by source / Upcoming follow-ups / Top Products */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <LeadSourceChart sources={metrics.leadSources} total={metrics.totalLeads} />
           <FollowUpList items={metrics.upcomingFollowUps} />
+          <TopProductsCard items={metrics.topProducts} />
         </div>
 
         {/* Recent activities */}

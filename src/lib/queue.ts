@@ -22,7 +22,6 @@ export const QUEUE_NAMES = {
   AI_REPORT: 'ai-report',
   FILE_PROCESSING: 'file-processing',
   NOTIFICATION: 'notification',
-  TRANSCRIPTION: 'transcription',
 } as const
 
 export type QueueName = typeof QUEUE_NAMES[keyof typeof QUEUE_NAMES]

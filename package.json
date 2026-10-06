@@ -21,6 +21,8 @@
     "db:studio": "prisma studio",
     "db:backfill-email-key": "tsx prisma/scripts/backfill-contact-email-key.ts",
     "db:cleanup-phone-names": "tsx prisma/scripts/cleanup-phone-number-as-name.ts",
+    "db:sync-sales-permissions": "tsx prisma/scripts/sync-sales-permissions.ts",
+    "db:seed-products": "tsx prisma/scripts/seed-products.ts",
     "setup:chrome": "node scripts/setup-chrome.mjs",
     "postinstall": "node scripts/setup-chrome.mjs"
   },
@@ -106,6 +108,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.1.11",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",

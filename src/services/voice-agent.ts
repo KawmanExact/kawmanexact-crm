@@ -23,7 +23,6 @@ interface VoiceScopeFilters {
   ownerFilter: Prisma.LeadWhereInput & Prisma.DealWhereInput & Prisma.FollowUpWhereInput
   contactFilter: Prisma.ContactWhereInput
   activityFilter: Prisma.ActivityWhereInput
-  meetingFilter: Prisma.MeetingWhereInput
   visitFilter: Prisma.FieldVisitWhereInput
 }
 
@@ -32,7 +31,6 @@ export function buildVoiceScopeFilters(): VoiceScopeFilters {
     ownerFilter: {},
     contactFilter: {},
     activityFilter: {},
-    meetingFilter: {},
     visitFilter: {},
   }
 }
@@ -60,7 +58,7 @@ export async function getTodaysActivitySummaryData(
   tomorrow.setDate(tomorrow.getDate() + 1)
   const filters = buildVoiceScopeFilters()
 
-  const [activities, leadsAdded, dealsUpdated, meetingsCompleted, followUpsCompleted, visitsLogged] = await Promise.all([
+  const [activities, leadsAdded, dealsUpdated, followUpsCompleted, visitsLogged] = await Promise.all([
     prisma.activity.findMany({
       where: {
         organizationId: orgId,
@@ -82,14 +80,6 @@ export async function getTodaysActivitySummaryData(
       where: {
         organizationId: orgId,
         ...filters.ownerFilter,
-        updatedAt: { gte: today, lt: tomorrow },
-      },
-    }),
-    prisma.meeting.count({
-      where: {
-        organizationId: orgId,
-        ...filters.meetingFilter,
-        status: 'COMPLETED',
         updatedAt: { gte: today, lt: tomorrow },
       },
     }),
@@ -120,7 +110,6 @@ export async function getTodaysActivitySummaryData(
     summary: {
       leadsAdded,
       dealsUpdated,
-      meetingsCompleted,
       followUpsCompleted,
       visitsLogged,
       activityCount: activities.length,
@@ -138,7 +127,7 @@ export function getTodaysActivitySummaryTool(): ToolDefinition {
   return {
     name: 'getTodaysActivitySummary',
     description:
-      "Counts and describes what the caller created, updated, or completed today (leads added, deals stage-changed, meetings held, follow-ups completed, field visits logged, general activity notes). Returns JSON.",
+      "Counts and describes what the caller created, updated, or completed today (leads added, deals stage-changed, follow-ups completed, field visits logged, general activity notes). Returns JSON.",
     parameters: todaysActivitySummarySchema,
     execute: async () => {
       const session = await requireApiSession()
@@ -162,13 +151,13 @@ export async function getCrmSummaryData(
   const filters = buildVoiceScopeFilters()
   const now = new Date()
 
-  const [pipelineByStage, openLeadsCount, upcomingMeetings, overdueFollowUps] = await Promise.all([
+  const [pipelineByStage, openLeadsCount, overdueFollowUps] = await Promise.all([
     prisma.deal.groupBy({
       by: ['stage'],
       where: {
         organizationId: orgId,
         ...filters.ownerFilter,
-        stage: { notIn: ['WON', 'LOST'] },
+        stage: { notIn: ['PAYMENT', 'LOST'] },
       },
       _count: { _all: true },
       _sum: { value: true },
@@ -179,17 +168,6 @@ export async function getCrmSummaryData(
         ...filters.ownerFilter,
         status: { notIn: ['WON', 'LOST'] },
       },
-    }),
-    prisma.meeting.findMany({
-      where: {
-        organizationId: orgId,
-        ...filters.meetingFilter,
-        scheduledAt: { gt: now },
-        status: { in: ['SCHEDULED', 'PROCESSING'] },
-      },
-      include: { company: { select: { name: true } } },
-      orderBy: { scheduledAt: 'asc' },
-      take: 10,
     }),
     prisma.followUp.findMany({
       where: {
@@ -214,12 +192,6 @@ export async function getCrmSummaryData(
       byStage: pipelineByStage.map((row) => ({ stage: row.stage, count: row._count._all, value: Number(row._sum.value ?? 0) })),
     },
     openLeads: openLeadsCount,
-    upcomingMeetings: upcomingMeetings.map((m) => ({
-      title: m.title,
-      scheduledAt: m.scheduledAt?.toISOString() ?? null,
-      company: m.company?.name ?? null,
-      status: m.status,
-    })),
     overdueFollowUps: overdueFollowUps.map((f) => ({
       title: f.title,
       dueDate: f.dueDate.toISOString(),
@@ -231,7 +203,7 @@ export async function getCrmSummaryData(
 export function getCrmSummaryTool(): ToolDefinition {
   return {
     name: 'getCrmSummary',
-    description: 'An overview of the CRM: pipeline value and stage breakdown, open leads count, upcoming meetings, and overdue follow-ups. Returns JSON.',
+    description: 'An overview of the CRM: pipeline value and stage breakdown, open leads count, and overdue follow-ups. Returns JSON.',
     parameters: crmSummarySchema,
     execute: async () => {
       const session = await requireApiSession()
@@ -348,87 +320,6 @@ export function getContactInfoTool(): ToolDefinition {
           phone: row.phone ?? null,
           designation: row.designation ?? null,
           company: row.company?.name ?? null,
-        })),
-      })
-    },
-  }
-}
-
-// ============================================================
-// Tool 5: getUpcomingMeetings
-// ============================================================
-
-const upcomingMeetingsSchema = z.object({
-  when: z.enum(['today', 'week', 'overdue']).optional(),
-})
-
-export function getUpcomingMeetingsTool(): ToolDefinition {
-  return {
-    name: 'getUpcomingMeetings',
-    description: 'Lists meetings the caller can see within a time window: today (default), this week, or overdue (past scheduled time). Returns JSON array of meetings with title, scheduled time, company, and participant count.',
-    parameters: upcomingMeetingsSchema,
-    execute: async (args) => {
-      const session = await requireApiSession()
-      const now = new Date()
-      const todayStart = startOfDay()
-      const weekEnd = new Date(todayStart)
-      weekEnd.setDate(weekEnd.getDate() + 7)
-
-      const when = args.when ?? 'today'
-
-      if (when === 'overdue') {
-        const rows = await prisma.meeting.findMany({
-          where: {
-            organizationId: session.user.organizationId,
-            ...buildMeetingScopeWhere(),
-            scheduledAt: { lt: now },
-            status: { in: ['SCHEDULED', 'PROCESSING'] },
-          },
-          include: { company: { select: { name: true } }, participants: { select: { id: true } } },
-          orderBy: { scheduledAt: 'desc' },
-          take: 10,
-        })
-        return JSON.stringify({
-          meetings: rows.map((m) => ({
-            id: m.id,
-            title: m.title,
-            scheduledAt: m.scheduledAt?.toISOString() ?? null,
-            company: m.company?.name ?? null,
-            participantCount: m.participants.length,
-            status: m.status,
-          })),
-        })
-      }
-
-      let dateFilter: Prisma.DateTimeFilter
-      if (when === 'week') {
-        dateFilter = { gte: todayStart, lt: weekEnd }
-      } else {
-        const tomorrow = new Date(todayStart)
-        tomorrow.setDate(tomorrow.getDate() + 1)
-        dateFilter = { gte: todayStart, lt: tomorrow }
-      }
-
-      const rows = await prisma.meeting.findMany({
-        where: {
-          organizationId: session.user.organizationId,
-            ...buildMeetingScopeWhere(),
-          scheduledAt: dateFilter,
-          status: { in: ['SCHEDULED', 'PROCESSING', 'IN_PROGRESS'] },
-        },
-        include: { company: { select: { name: true } }, participants: { select: { id: true } } },
-        orderBy: { scheduledAt: 'asc' },
-        take: 20,
-      })
-
-      return JSON.stringify({
-        meetings: rows.map((m) => ({
-          id: m.id,
-          title: m.title,
-          scheduledAt: m.scheduledAt?.toISOString() ?? null,
-          company: m.company?.name ?? null,
-          participantCount: m.participants.length,
-          status: m.status,
         })),
       })
     },
@@ -1089,7 +980,7 @@ export function getReportSummaryTool(): ToolDefinition {
           by: ['stage'],
           where: {
             organizationId: orgId,
-            stage: { notIn: ['WON', 'LOST'] },
+            stage: { notIn: ['PAYMENT', 'LOST'] },
           },
           _count: { _all: true },
           _sum: { value: true },
@@ -1112,7 +1003,7 @@ export function getReportSummaryTool(): ToolDefinition {
       const totalPipeline = pipelineValue.reduce((sum, r) => sum + Number(r._sum.value ?? 0), 0)
       const totalOpenDeals = pipelineValue.reduce((sum, r) => sum + r._count._all, 0)
       const totalDeals = conversionStats.reduce((sum, r) => sum + r._count._all, 0)
-      const wonDeals = conversionStats.find((r) => r.stage === 'WON')?._count._all ?? 0
+      const wonDeals = conversionStats.find((r) => r.stage === 'PAYMENT')?._count._all ?? 0
       const conversionRate = totalDeals > 0 ? ((wonDeals / totalDeals) * 100).toFixed(1) : '0'
 
       return JSON.stringify({
@@ -1142,21 +1033,16 @@ export function getReportSummaryTool(): ToolDefinition {
   }
 }
 
-function buildMeetingScopeWhere(): Prisma.MeetingWhereInput {
-  return {}
-}
-
 const VOICE_AGENT_INSTRUCTIONS = `You are a voice assistant inside a CRM dashboard. You have access to all CRM data the current user is authorized to see — already filtered before it reaches you. Never claim to know about data outside what a tool call returned. Keep spoken answers concise — 2-4 sentences unless the user asks for detail.
 
 Available tools:
-- getTodaysActivitySummary: today's activity counts (leads, deals, meetings, follow-ups, visits, activities)
-- getCrmSummary: pipeline overview, open leads, upcoming meetings, overdue follow-ups
+- getTodaysActivitySummary: today's activity counts (leads, deals, follow-ups, visits, activities)
+- getCrmSummary: pipeline overview, open leads, overdue follow-ups
 - getDealStatus: look up deal by name or ID
 - getContactInfo: look up contact by name or email
 - getLeadInfo: look up lead by name or email
 - getEmployeeInfo: look up team member/employee by name or email
 - getVisitInfo: look up field visit by ID or title
-- getUpcomingMeetings: list meetings (today, this week, or overdue)
 - getFieldSalesSummary: field sales overview (visits, check-ins, live locations, geo-fences)
 - getEmployeeReports: employee daily reports with work descriptions, tasks completed, blockers
 - getVisitHistory: complete visit history with check-ins, visit reports, and activity logs
@@ -1179,7 +1065,6 @@ export function buildVoiceTools(): VoiceTool[] {
     getLeadInfoTool(),
     getEmployeeInfoTool(),
     getVisitInfoTool(),
-    getUpcomingMeetingsTool(),
     getFieldSalesSummaryTool(),
     getEmployeeReportsTool(),
     getVisitHistoryTool(),

@@ -25,12 +25,30 @@ export interface Lead {
   source: string
   owner: string
   ownerInitials: string
+  ownerId: string
   status: LeadStatus
-  score: number
-  value: number
   segment: string | null
   createdAt: string
   lastActivityAt: string
+  notes: string | null
+  contactPerson: string | null
+  designation: string | null
+  meetingDate: string | null
+  meetingAt: string | null
+  productsDiscussed: string[]
+  customProductNames: string[]
+  keyDiscussion: string | null
+  requirement: string | null
+  grade: string | null
+  cdaStatus: string | null
+  samplingStatus: string | null
+  rdFeedback: string | null
+  remark: string | null
+  nextFollowUp: string | null
+  loaStatus: string | null
+  location: string | null
+  region: string | null
+  purposeOfVisit: string | null
 }
 
 export interface Company {
@@ -66,7 +84,7 @@ export interface Contact {
    lastActivityAt: string
 }
 
-export type DealStage = 'NEW_LEAD' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL' | 'NEGOTIATION' | 'WON' | 'LOST'
+export type DealStage = 'SUSPECT' | 'PROSPECT' | 'APPROACH_ANALYSE' | 'NEGOTIATE' | 'CLOSE' | 'ORDER' | 'PAYMENT' | 'LOST'
 export type DealPriority = 'LOW' | 'MEDIUM' | 'HIGH'
 
 export interface Deal {
@@ -81,5 +99,32 @@ export interface Deal {
   ownerInitials: string
   expectedClose: string
   priority: DealPriority
-  segment: string | null
+  paymentStatus?: string
+  /** Enquiry detail, merged in from the old lead form — a deal IS the lead. */
+  email: string
+  phone: string
+  source: string
+  contactPerson: string | null
+  designation: string | null
+  city: string | null
+  country: string | null
+  pinCode: string | null
+  cdaStatus: string | null
+  samplingStatus: string | null
+  grade: string | null
+  application: string | null
+  applicationOther: string | null
+  loaStatus: string | null
+  nextFollowUp: string | null
+  purposeOfVisit: string | null
+  keyDiscussion: string | null
+  requirement: string | null
+  meetingAt: string | null
+  meetingMode: string | null
+  rdFeedback: string | null
+  remark: string | null
+  productsDiscussed: string[]
+  customProductNames: string[]
+  createdAt: string
+  lastActivityAt: string
 }

@@ -36,7 +36,7 @@ export default async function CrmDashboardPage() {
   })
 
   const stats = [
-    { label: 'Leads', value: data.totals.leads, icon: Users, href: '/leads', color: 'text-purple-400 bg-purple-500/15' },
+    { label: 'Leads', value: data.totals.leads, icon: Users, href: '/deals?view=leads', color: 'text-purple-400 bg-purple-500/15' },
     { label: 'Companies', value: data.totals.companies, icon: Building2, href: '/companies', color: 'text-blue-400 bg-blue-500/15' },
     { label: 'Contacts', value: data.totals.contacts, icon: User, href: '/contacts', color: 'text-emerald-400 bg-emerald-500/15' },
     { label: 'Open Deals', value: data.totals.openDeals, icon: Handshake, href: '/deals', color: 'text-orange-400 bg-orange-500/15' },

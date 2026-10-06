@@ -1,26 +1,29 @@
 import 'server-only'
 import { prisma } from '@/lib/db'
 import { requireSession } from '@/lib/session'
-import type { DashboardMetrics, RecentActivity, LiveVisitMarker } from '@/types/dashboard'
+import type { DashboardMetrics, RecentActivity, LiveVisitMarker, ProductSalesMetric } from '@/types/dashboard'
 import { logger } from '@/lib/logger'
+import type { Prisma } from '@/generated/prisma'
 
 const SPARKLINE_DAYS = 12
 const PIPELINE_COLORS: Record<string, string> = {
-  NEW_LEAD: '#60a5fa',
-  CONTACTED: '#38bdf8',
-  QUALIFIED: '#34d399',
-  PROPOSAL: '#fb923c',
-  NEGOTIATION: '#a78bfa',
-  WON: '#22c55e',
-  LOST: '#ef4444',
+  SUSPECT: '#ef4444',
+  PROSPECT: '#f97316',
+  APPROACH_ANALYSE: '#eab308',
+  NEGOTIATE: '#22c55e',
+  CLOSE: '#3b82f6',
+  ORDER: '#1e40af',
+  PAYMENT: '#8b5cf6',
+  LOST: '#6b7280',
 }
 const PIPELINE_LABELS: Record<string, string> = {
-  NEW_LEAD: 'New Leads',
-  CONTACTED: 'Contacted',
-  QUALIFIED: 'Qualified',
-  PROPOSAL: 'Proposal',
-  NEGOTIATION: 'Negotiation',
-  WON: 'Won',
+  SUSPECT: 'Suspect',
+  PROSPECT: 'Prospect',
+  APPROACH_ANALYSE: 'Approach & Analyse',
+  NEGOTIATE: 'Negotiate',
+  CLOSE: 'Close',
+  ORDER: 'Order',
+  PAYMENT: 'Payment',
   LOST: 'Lost',
 }
 const LEAD_SOURCE_COLORS = ['#818cf8', '#38bdf8', '#34d399', '#fb923c', '#f472b6', '#facc15', '#f87171']
@@ -119,11 +122,14 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     followUpsDueCount,
     wonDealsThisMonth,
   ] = await Promise.all([
-    safe(prisma.lead.count({ where: { organizationId } }), 0),
-    safe(prisma.deal.count({ where: { organizationId, stage: { notIn: ['WON', 'LOST'] } } }), 0),
+    // Enquiries are deals now (see the Deal model's merged lead fields), so
+    // every "lead" metric reads the Deal table. Counting prisma.lead here
+    // would report a number frozen at whatever existed before the merge.
+    safe(prisma.deal.count({ where: { organizationId } }), 0),
+    safe(prisma.deal.count({ where: { organizationId, stage: { notIn: ['PAYMENT', 'LOST'] } } }), 0),
     safe(prisma.fieldVisit.count({ where: { organizationId, scheduledAt: { gte: today, lt: tomorrow } } }), 0),
     safe(prisma.followUp.count({ where: { organizationId, status: { in: ['PENDING', 'OVERDUE'] }, dueDate: { lt: tomorrow } } }), 0),
-    safe(prisma.deal.aggregate({ where: { organizationId, stage: 'WON', closedAt: { gte: monthStart } }, _sum: { value: true } }), { _sum: { value: null } } as unknown as Awaited<ReturnType<typeof prisma.deal.aggregate>>),
+    safe(prisma.deal.aggregate({ where: { organizationId, stage: 'PAYMENT', closedAt: { gte: monthStart } }, _sum: { value: true } }), { _sum: { value: null } } as unknown as Awaited<ReturnType<typeof prisma.deal.aggregate>>),
   ])
 
   const [
@@ -134,12 +140,12 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     dealsByStage,
     leadsBySourceUnused,
   ] = await Promise.all([
-    safe(prisma.lead.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
+    safe(prisma.deal.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
     safe(prisma.deal.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
     safe(prisma.fieldVisit.findMany({ where: { organizationId, scheduledAt: { gte: windowStart } }, select: { scheduledAt: true } }), [] as { scheduledAt: Date }[]),
     safe(prisma.followUp.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
     safe(prisma.deal.groupBy({ by: ['stage'], where: { organizationId }, _count: { _all: true }, _sum: { value: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>),
-    safe(prisma.lead.groupBy({ by: ['source'], where: { organizationId }, _count: { _all: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.lead.groupBy>>),
+    safe(prisma.deal.groupBy({ by: ['source'], where: { organizationId }, _count: { _all: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>),
   ])
   void leadsBySourceUnused
 
@@ -147,17 +153,16 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     checkedInToday,
     inMeetingNow,
     geoVerifiedToday,
-    momsToday,
     activeVisitsToday,
     leadSourceRows,
     upcomingFollowUps,
     recentActivities,
     fileSizeAgg,
+    topProductRows,
   ] = await Promise.all([
     safe(prisma.checkIn.count({ where: { visit: { organizationId }, createdAt: { gte: today, lt: tomorrow } } }), 0),
     safe(prisma.fieldVisit.count({ where: { organizationId, status: 'IN_MEETING' } }), 0),
     safe(prisma.checkIn.count({ where: { visit: { organizationId }, createdAt: { gte: today, lt: tomorrow }, verificationStatus: 'VERIFIED' } }), 0),
-    safe(prisma.meetingSummary.count({ where: { meeting: { organizationId }, createdAt: { gte: today, lt: tomorrow } } }), 0),
     safe(
       prisma.fieldVisit.findMany({
         where: { organizationId, scheduledAt: { gte: today, lt: tomorrow }, status: { notIn: ['CANCELLED'] } },
@@ -166,7 +171,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       }),
       [] as unknown as Awaited<ReturnType<typeof prisma.fieldVisit.findMany>>,
     ),
-    safe(prisma.lead.groupBy({ by: ['source'], where: { organizationId }, _count: { _all: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.lead.groupBy>>),
+    safe(prisma.deal.groupBy({ by: ['source'], where: { organizationId }, _count: { _all: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>),
     safe(
       prisma.followUp.findMany({
         where: { organizationId, status: 'PENDING' },
@@ -181,6 +186,13 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       [] as unknown as Awaited<ReturnType<typeof prisma.activity.findMany>>,
     ),
     safe(prisma.file.aggregate({ where: { organizationId }, _sum: { fileSize: true } }), { _sum: { fileSize: null } } as unknown as Awaited<ReturnType<typeof prisma.file.aggregate>>),
+    safe(
+      prisma.salesTransaction.findMany({
+        where: { organizationId, saleDate: { gte: monthStart } },
+        include: { product: { select: { name: true, unit: true } } },
+        take: 1000,
+      }),
+      [] as Array<{ productId: string | null; otherProductName: string | null; product: { name: string; unit: string } | null; invoiceAmount: Prisma.Decimal; quantity: Prisma.Decimal; amountPaid: Prisma.Decimal; balanceAmount: Prisma.Decimal }>),
   ])
 
   const leadTrend = bucketCounts(leadDates.map((r) => r.createdAt))
@@ -190,7 +202,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 
   // Won-value trend needs the raw rows (already summed above for the KPI number).
   const wonDealRows = await prisma.deal
-    .findMany({ where: { organizationId, stage: 'WON', closedAt: { gte: windowStart } }, select: { closedAt: true, value: true } })
+    .findMany({ where: { organizationId, stage: 'PAYMENT', closedAt: { gte: windowStart } }, select: { closedAt: true, value: true } })
     .catch((err) => {
       logger.error('wonTrend query failed', {}, err as Error)
       return [] as { closedAt: Date | null; value: unknown }[]
@@ -200,6 +212,33 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   )
 
   const wonValue = wonDealsThisMonth._sum.value ? Number(wonDealsThisMonth._sum.value) : 0
+
+  // --- Top Products by Sales Value (this month) ---
+  const productGroups = new Map<string, { name: string; unit: string; invoiceAmount: number; quantity: number; amountPaid: number; balanceAmount: number }>()
+  for (const row of topProductRows) {
+    const name = row.product?.name ?? row.otherProductName ?? 'Unknown'
+    const unit = row.product?.unit ?? 'pcs'
+    const key = row.productId ?? `other:${name.toLowerCase()}`
+    const existing = productGroups.get(key) ?? { name, unit, invoiceAmount: 0, quantity: 0, amountPaid: 0, balanceAmount: 0 }
+    existing.invoiceAmount += row.invoiceAmount.toNumber()
+    existing.quantity += row.quantity.toNumber()
+    existing.amountPaid += row.amountPaid.toNumber()
+    existing.balanceAmount += row.balanceAmount.toNumber()
+    productGroups.set(key, existing)
+  }
+  const topProducts: ProductSalesMetric[] = [...productGroups.entries()]
+    .sort((a, b) => b[1].invoiceAmount - a[1].invoiceAmount)
+    .slice(0, 5)
+    .map(([id, data]) => ({
+      id: id.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: data.name,
+      salesValue: formatCompactCurrency(data.invoiceAmount),
+      rawValue: data.invoiceAmount,
+      quantity: data.quantity,
+      unit: data.unit,
+      pendingAmount: formatCompactCurrency(data.balanceAmount),
+      rawPending: data.balanceAmount,
+    }))
 
   const totalLeadSources = leadSourceRows.reduce((sum, r) => sum + r._count._all, 0) || 1
 
@@ -224,12 +263,11 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   // --- AI insights: deterministic, computed straight from the org's own
   // data (no external AI call unless an AI provider key is configured —
   // see services/ai.service.ts for that upgrade path).
-  const [highPriorityLeadsCount, stuckDeals, topOpenDeal, meetingsCompletedToday, followUpsDueTodayCount] =
+  const [highPriorityLeadsCount, stuckDeals, topOpenDeal, followUpsDueTodayCount] =
     await Promise.all([
-      prisma.lead.count({ where: { organizationId, score: { gte: 80 }, status: { notIn: ['WON', 'LOST'] } } }).catch(() => 0),
-      prisma.deal.count({ where: { organizationId, stage: 'NEGOTIATION', updatedAt: { lt: daysAgo(15) } } }).catch(() => 0),
-      prisma.deal.findFirst({ where: { organizationId, stage: { notIn: ['WON', 'LOST'] } }, orderBy: { value: 'desc' }, include: { company: { select: { name: true } } } }).catch(() => null),
-      prisma.meeting.count({ where: { organizationId, status: 'COMPLETED', updatedAt: { gte: today, lt: tomorrow } } }).catch(() => 0),
+      prisma.deal.count({ where: { organizationId, stage: { in: ['SUSPECT', 'PROSPECT', 'APPROACH_ANALYSE'] } } }).catch(() => 0),
+      prisma.deal.count({ where: { organizationId, stage: 'CLOSE', updatedAt: { lt: daysAgo(15) } } }).catch(() => 0),
+      prisma.deal.findFirst({ where: { organizationId, stage: { notIn: ['PAYMENT', 'LOST'] } }, orderBy: { value: 'desc' }, include: { company: { select: { name: true } } } }).catch(() => null),
       prisma.followUp.count({ where: { organizationId, status: 'PENDING', dueDate: { gte: today, lt: tomorrow } } }).catch(() => 0),
     ])
 
@@ -299,7 +337,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
         color: PIPELINE_COLORS[row.stage] ?? '#94a3b8',
       })),
     conversionRate: (() => {
-      const won = dealsByStage.find((d) => d.stage === 'WON')?._count._all ?? 0
+      const won = dealsByStage.find((d) => d.stage === 'PAYMENT')?._count._all ?? 0
       const total = dealsByStage.reduce((sum, d) => sum + d._count._all, 0)
       return total ? ((won / total) * 100).toFixed(1) + '%' : '0%'
     })(),
@@ -327,17 +365,11 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
         title: 'Stuck in Pipeline',
         description: stuckDeals + ' deal' + (stuckDeals === 1 ? '' : 's') + ' stuck in negotiation > 15 days',
       },
-      {
-        id: 'best-product',
-        icon: 'trend',
+{
+        id: 'top-opportunity',
+        icon: 'deal',
         title: 'Top Open Opportunity',
         description: topOpenDeal ? topOpenDeal.name + ' — ' + formatCompactCurrency(Number(topOpenDeal.value)) : 'No open deals yet',
-      },
-      {
-        id: 'meeting-summary',
-        icon: 'meeting',
-        title: 'Meeting Summary',
-        description: meetingsCompletedToday + ' meeting' + (meetingsCompletedToday === 1 ? '' : 's') + ' completed today',
       },
     ],
 
@@ -345,7 +377,6 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       { id: 'checked-in', label: 'Checked-in', value: checkedInToday, sublabel: 'Salespersons', icon: 'checkin', color: 'green' },
       { id: 'in-meetings', label: 'In Meetings', value: inMeetingNow, sublabel: 'Right now', icon: 'meeting', color: 'purple' },
       { id: 'geo-verified', label: 'Geo-Verified Visits', value: geoVerifiedToday, sublabel: 'Today', icon: 'geo', color: 'blue' },
-      { id: 'moms-generated', label: 'MoMs Generated', value: momsToday, sublabel: 'Today', icon: 'mom', color: 'orange' },
     ],
 
     liveVisits,
@@ -383,6 +414,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       usedGb: Number((Number(fileSizeAgg._sum.fileSize ?? 0) / 1024 ** 3).toFixed(2)),
       totalGb: 100,
     },
+
+    topProducts,
   }
 }
 

@@ -9,13 +9,11 @@ import { Badge } from '@/components/ui/badge'
 import type { CalendarEvent, CalendarEventType } from '@/services/calendar.service'
 
 const TYPE_ICON: Record<CalendarEventType, typeof CalendarClock> = {
-  meeting: CalendarClock,
   visit: MapPin,
   followup: ClipboardList,
 }
 
 const TYPE_DOT: Record<CalendarEventType, string> = {
-  meeting: 'bg-blue-400',
   visit: 'bg-emerald-400',
   followup: 'bg-orange-400',
 }

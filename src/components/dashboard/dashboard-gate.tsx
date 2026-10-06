@@ -16,7 +16,7 @@ export function DashboardGate() {
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <Button asChild variant="outline" className="border-white/10 bg-white/[0.04] text-white hover:bg-white/10">
-          <Link href="/leads">Go to Leads</Link>
+          <Link href="/deals?view=leads">Go to Leads</Link>
         </Button>
         <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
           <Link href="/files/my-files">Go to My Files</Link>

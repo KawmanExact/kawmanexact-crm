@@ -26,7 +26,7 @@ export interface PipelineStage {
 
 export interface AIInsight {
   id: string
-  icon: 'flame' | 'clock' | 'trend' | 'meeting'
+  icon: 'flame' | 'clock' | 'trend' | 'deal'
   title: string
   description: string
 }
@@ -89,4 +89,16 @@ export interface DashboardMetrics {
   upcomingFollowUps: FollowUp[]
   recentActivities: RecentActivity[]
   storage: { usedGb: number; totalGb: number }
+  topProducts: ProductSalesMetric[]
+}
+
+export interface ProductSalesMetric {
+  id: string
+  name: string
+  salesValue: string
+  rawValue: number
+  quantity: number
+  unit: string
+  pendingAmount: string
+  rawPending: number
 }

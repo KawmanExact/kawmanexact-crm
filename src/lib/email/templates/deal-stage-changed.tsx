@@ -27,13 +27,14 @@ export function DealStageChangedTemplate({
     : ''
 
   const stageLabels: Record<string, string> = {
-    NEW_LEAD: 'New Lead',
-    CONTACTED: 'Contacted',
-    QUALIFIED: 'Qualified',
-    PROPOSAL: 'Proposal',
-    NEGOTIATION: 'Negotiation',
-    WON: 'Won',
-    LOST: 'Lost',
+    SUSPECT: 'SUSPECT',
+    PROSPECT: 'PROSPECT',
+    APPROACH_ANALYSE: 'APPROACH & ANALYSE',
+    NEGOTIATE: 'NEGOTIATE',
+    CLOSE: 'CLOSE',
+    ORDER: 'ORDER',
+    PAYMENT: 'PAYMENT',
+    LOST: 'LOST',
   }
 
   const fromLabel = stageLabels[fromStage] || fromStage

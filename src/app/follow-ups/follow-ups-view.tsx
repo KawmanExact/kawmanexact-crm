@@ -19,7 +19,7 @@ const STATUS_VARIANT: Record<string, BadgeVariant> = {
 }
 
 const LINK_HREF: Record<'lead' | 'company' | 'deal', string> = {
-  lead: '/leads',
+  lead: '/deals?view=leads',
   company: '/companies',
   deal: '/deals',
 }

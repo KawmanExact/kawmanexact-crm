@@ -5,7 +5,6 @@ import { queueEmail } from '@/services/queue.service'
 import {
   LeadAssignedTemplate,
   DealStageChangedTemplate,
-  MeetingReminderTemplate,
   DailyReportReminderTemplate,
   FieldVisitAssignedTemplate,
   AIReportReadyTemplate,
@@ -15,7 +14,6 @@ import {
 import type {
   LeadAssignedTemplateProps,
   DealStageChangedTemplateProps,
-  MeetingReminderTemplateProps,
   DailyReportReminderTemplateProps,
   FieldVisitAssignedTemplateProps,
   AIReportReadyTemplateProps,
@@ -42,7 +40,7 @@ export interface NotificationInput {
   message: string
   data?: Prisma.InputJsonValue
   sendEmail?: boolean
-  emailTemplate?: 'lead-assigned' | 'deal-stage-changed' | 'meeting-reminder' | 'daily-report-reminder' | 'field-visit-assigned' | 'ai-report-ready' | 'file-shared' | 'mention'
+  emailTemplate?: 'lead-assigned' | 'deal-stage-changed' | 'daily-report-reminder' | 'field-visit-assigned' | 'ai-report-ready' | 'file-shared' | 'mention'
   emailData?: Record<string, unknown>
 }
 
@@ -119,13 +117,6 @@ async function queueEmailNotification(
       emailHtml = html
       emailText = text
       subject = `Deal Updated: ${data.dealName}`
-      break
-    }
-    case 'meeting-reminder': {
-      const { html, text } = MeetingReminderTemplate(data as unknown as MeetingReminderTemplateProps)
-      emailHtml = html
-      emailText = text
-      subject = `Meeting Reminder: ${data.meetingTitle}`
       break
     }
     case 'daily-report-reminder': {
@@ -327,13 +318,14 @@ export async function notifyDealStageChanged(args: {
   const { organizationId, userId, dealId, dealName, dealValue, currency, fromStage, toStage, changedByName, dealUrl } = args
 
   const stageLabels: Record<string, string> = {
-    NEW_LEAD: 'New Lead',
-    CONTACTED: 'Contacted',
-    QUALIFIED: 'Qualified',
-    PROPOSAL: 'Proposal',
-    NEGOTIATION: 'Negotiation',
-    WON: 'Won',
-    LOST: 'Lost',
+    SUSPECT: 'SUSPECT',
+    PROSPECT: 'PROSPECT',
+    APPROACH_ANALYSE: 'APPROACH & ANALYSE',
+    NEGOTIATE: 'NEGOTIATE',
+    CLOSE: 'CLOSE',
+    ORDER: 'ORDER',
+    PAYMENT: 'PAYMENT',
+    LOST: 'LOST',
   }
 
   await createNotification({
@@ -346,35 +338,6 @@ export async function notifyDealStageChanged(args: {
     sendEmail: true,
     emailTemplate: 'deal-stage-changed',
     emailData: { dealName, dealValue, currency, fromStage, toStage, changedByName, dealUrl, organizationName: '' },
-  })
-}
-
-export async function notifyMeetingReminder(args: {
-  organizationId: string
-  userId: string
-  meetingId: string
-  meetingTitle: string
-  meetingType: 'IN_PERSON' | 'VIDEO_CALL' | 'PHONE'
-  startTime: Date
-  durationMinutes: number
-  location?: string
-  videoUrl?: string
-  attendees: string[]
-  meetingUrl: string
-  reminderMinutes: number
-}) {
-  const { organizationId, userId, meetingId, meetingTitle, meetingType, startTime, durationMinutes, location, videoUrl, attendees, meetingUrl, reminderMinutes } = args
-
-  await createNotification({
-    organizationId,
-    userId,
-    type: 'MEETING_REMINDER',
-    title: `Meeting in ${reminderMinutes} minutes`,
-    message: `"${meetingTitle}" starts at ${startTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
-    data: { meetingId, meetingTitle, meetingType, startTime, durationMinutes, location, videoUrl, attendees, meetingUrl, reminderMinutes },
-    sendEmail: true,
-    emailTemplate: 'meeting-reminder',
-    emailData: { meetingTitle, meetingType, startTime, durationMinutes, location, videoUrl, attendees, meetingUrl, organizationName: '', reminderMinutes },
   })
 }
 

@@ -5,11 +5,7 @@ import ExcelJS from 'exceljs'
 import type { UniversalReportDefinition, ReportTable, ReportColumn } from './types'
 import { normalizeReport } from './types'
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 function sanitizeSheetName(name: string): string {
-  // Excel sheet names: max 31 chars, no : \ / ? * [ ]
   return name.replace(/[:\\/?*[\]]/g, ' ').slice(0, 31).trim() || 'Sheet'
 }
 
@@ -28,28 +24,30 @@ const HEADER_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: 
 const HEADER_FONT: Partial<ExcelJS.Font> = {
   color: { argb: 'FFFFFFFF' },
   bold: true,
-  size: 9,
+  size: 10,
   name: 'Calibri',
 }
-const TITLE_FONT: Partial<ExcelJS.Font> = { bold: true, size: 14, color: { argb: 'FF0F1D3A' }, name: 'Calibri' }
+const TITLE_FONT: Partial<ExcelJS.Font> = { bold: true, size: 18, color: { argb: 'FF0F1D3A' }, name: 'Calibri' }
 const SUBTITLE_FONT: Partial<ExcelJS.Font> = { size: 9, color: { argb: 'FF64748B' }, name: 'Calibri' }
+const VALUE_FONT: Partial<ExcelJS.Font> = { size: 10, color: { argb: 'FF1E293B' }, name: 'Calibri' }
+
+const BORDER_COLOR = 'FFCBD5E1'
 const THIN_BORDER: Partial<ExcelJS.Borders> = {
-  top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-  bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-  left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-  right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+  top: { style: 'thin', color: { argb: BORDER_COLOR } },
+  bottom: { style: 'thin', color: { argb: BORDER_COLOR } },
+  left: { style: 'thin', color: { argb: BORDER_COLOR } },
+  right: { style: 'thin', color: { argb: BORDER_COLOR } },
 }
 
 function excelColumnWidth(col: ReportColumn): number {
-  if (col.width) return Math.min(48, Math.max(10, col.width))
-  if (col.format === 'currency' || col.format === 'number') return 16
-  if (col.format === 'date' || col.format === 'datetime') return 18
-  return 20
+  if (col.width) return Math.min(48, Math.max(12, col.width))
+  if (col.format === 'currency' || col.format === 'number') return 18
+  if (col.format === 'date' || col.format === 'datetime') return 20
+  return 22
 }
 
 function applyNumberFormat(cell: ExcelJS.Cell, format: string | undefined, raw: unknown): void {
   if (format === 'currency') {
-    // INR — ExcelJS number format with ₹ symbol (Calibri supports it)
     cell.numFmt = '[$\u20B9-en-IN]#,##0.00'
     const n = typeof raw === 'number' ? raw : Number(String(raw ?? '').replace(/[\u20B9,\s]/g, ''))
     if (Number.isFinite(n)) cell.value = n
@@ -87,11 +85,13 @@ function addReportHeader(ws: ExcelJS.Worksheet, def: UniversalReportDefinition):
   ws.getCell(`A${row}`).font = TITLE_FONT
   ws.getCell(`A${row}`).alignment = { vertical: 'middle' }
   ws.mergeCells(`A${row}:${colLetter(colCount)}${row}`)
+  ws.getRow(row).height = 32
   row++
 
   if (def.subtitle || def.periodLabel) {
     ws.getCell(`A${row}`).value = def.subtitle ?? def.periodLabel ?? ''
     ws.getCell(`A${row}`).font = SUBTITLE_FONT
+    ws.getRow(row).height = 18
     row++
   }
 
@@ -115,12 +115,11 @@ function addReportHeader(ws: ExcelJS.Worksheet, def: UniversalReportDefinition):
 
   if (metaParts.length) {
     ws.getCell(`A${row}`).value = metaParts.join('  •  ')
-    ws.getCell(`A${row}`).font = { size: 8, color: { argb: 'FF64748B' }, name: 'Calibri' }
+    ws.getCell(`A${row}`).font = { size: 9, color: { argb: 'FF64748B' }, name: 'Calibri' }
     ws.getCell(`A${row}`).alignment = { wrapText: true }
-    ws.getRow(row).height = 14
+    ws.getRow(row).height = 16
     row++
   }
-  // Blank separator row
   row++
   return row
 }
@@ -135,11 +134,14 @@ function addTableToSheet(
 
   if (table.title && options?.showTitle !== false) {
     ws.getCell(`A${row}`).value = table.title
-    ws.getCell(`A${row}`).font = { bold: true, size: 10, color: { argb: 'FF0F1D3A' }, name: 'Calibri' }
+    ws.getCell(`A${row}`).font = { bold: true, size: 11, color: { argb: 'FF0F1D3A' }, name: 'Calibri' }
+    ws.getCell(`A${row}`).alignment = { vertical: 'middle' }
+    ws.getRow(row).height = 22
     row++
     if (table.subtitle) {
       ws.getCell(`A${row}`).value = table.subtitle
       ws.getCell(`A${row}`).font = SUBTITLE_FONT
+      ws.getRow(row).height = 16
       row++
     }
   }
@@ -149,6 +151,7 @@ function addTableToSheet(
   if (!table.rows.length) {
     ws.getCell(`A${row}`).value = table.emptyMessage ?? 'No data available for the selected filters.'
     ws.getCell(`A${row}`).font = { italic: true, size: 9, color: { argb: 'FF64748B' }, name: 'Calibri' }
+    ws.getRow(row).height = 18
     return row + 2
   }
 
@@ -158,36 +161,42 @@ function addTableToSheet(
     c.value = col.header
     c.fill = HEADER_FILL
     c.font = HEADER_FONT
-    c.alignment = { horizontal: col.align ?? 'left', vertical: 'middle', wrapText: true }
+    c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
     c.border = THIN_BORDER
   })
-  headerRow.height = 16
+  headerRow.height = 24
   headerRow.commit()
   row++
 
   const dataStartRow = row
 
-  // Large datasets: stream row-by-row, commit each, avoid holding huge intermediate arrays
   for (const r of table.rows) {
     const excelRow = ws.getRow(row)
     table.columns.forEach((col, i) => {
-      const raw = r[col.key]
+      let raw = r[col.key]
       const cell = excelRow.getCell(i + 1)
+
+      if (Array.isArray(raw)) {
+        raw = raw.length > 0 ? raw.join(', ') : '—'
+      } else if (raw === null || raw === undefined || raw === '') {
+        raw = '—'
+      }
+
       if (col.format && col.format !== 'text') {
         applyNumberFormat(cell, col.format, raw)
-        if (cell.value == null) cell.value = raw == null || raw === '' ? '—' : String(raw)
+        if (cell.value == null) cell.value = raw as ExcelJS.CellValue
       } else {
-        cell.value = raw == null || raw === '' ? '—' : String(raw)
+        cell.value = raw as ExcelJS.CellValue
       }
-      cell.font = { size: 9, name: 'Calibri', color: { argb: 'FF1E293B' } }
+      cell.font = VALUE_FONT
       cell.alignment = { horizontal: col.align ?? 'left', vertical: 'middle', wrapText: true }
       cell.border = THIN_BORDER
-    })
-    if (row % 2 === 0) {
-      excelRow.eachCell((cell) => {
+
+      if (row % 2 === 0) {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } }
-      })
-    }
+      }
+    })
+    excelRow.height = 20
     excelRow.commit()
     row++
   }
@@ -208,6 +217,7 @@ function addTableToSheet(
 
   ws.getCell(`A${row}`).value = `${table.rows.length} ${table.rows.length === 1 ? 'record' : 'records'}`
   ws.getCell(`A${row}`).font = { size: 8, color: { argb: 'FF94A3B8' }, name: 'Calibri' }
+  ws.getRow(row).height = 14
   row += 2
 
   return row
@@ -224,6 +234,7 @@ function addMetricsSheet(wb: ExcelJS.Workbook, def: UniversalReportDefinition): 
 
   ws.getCell(`A${row}`).value = 'Key Metrics'
   ws.getCell(`A${row}`).font = { bold: true, size: 11, color: { argb: 'FF0F1D3A' }, name: 'Calibri' }
+  ws.getRow(row).height = 22
   row++
 
   const hRow = ws.getRow(row)
@@ -235,6 +246,7 @@ function addMetricsSheet(wb: ExcelJS.Workbook, def: UniversalReportDefinition): 
     c.font = HEADER_FONT
     c.border = THIN_BORDER
   })
+  hRow.height = 22
   hRow.commit()
   row++
 
@@ -245,11 +257,11 @@ function addMetricsSheet(wb: ExcelJS.Workbook, def: UniversalReportDefinition): 
     r.getCell(3).value = m.sublabel ?? ''
     r.getCell(4).value = m.trend ? `${m.trend.value}${m.trend.label ? ` ${m.trend.label}` : ''}` : ''
     r.eachCell((cell) => {
-      cell.font = { size: 9, name: 'Calibri' }
+      cell.font = VALUE_FONT
       cell.border = THIN_BORDER
       cell.alignment = { vertical: 'middle', wrapText: true }
     })
-    r.getCell(2).font = { size: 10, bold: true, name: 'Calibri', color: { argb: 'FF0F1D3A' } }
+    r.getCell(2).font = { size: 11, bold: true, name: 'Calibri', color: { argb: 'FF0F1D3A' } }
     if (row % 2 === 0) {
       r.eachCell((cell) => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } }
@@ -263,23 +275,11 @@ function addMetricsSheet(wb: ExcelJS.Workbook, def: UniversalReportDefinition): 
   ws.getColumn(2).width = 18
   ws.getColumn(3).width = 30
   ws.getColumn(4).width = 18
-  // Freeze title+header rows
+
   const freezeAt = (def.subtitle || def.periodLabel ? 4 : 3) + 1
   ws.views = [{ state: 'frozen', xSplit: 0, ySplit: freezeAt }]
 }
 
-/**
- * Generate a styled Excel workbook from a UniversalReportDefinition.
- * - Uses exceljs (typed workbook/worksheet/cell APIs)
- * - Styled headers (Kawman navy #0F1D3A), alternating zebra rows, borders
- * - Column widths from ReportColumn.width / format hints
- * - Number formats: INR currency (₹#,##0.00 via en-IN locale), plain numbers, percent, dates
- * - Auto-filter on header row, frozen header row
- * - Print setup (A4, orientation auto by column count, fit-to-width, header/footer with page numbers)
- * - KPIs get a dedicated sheet; each table/section-table gets its own sheet
- * - Large datasets: rows are written incrementally (no giant intermediate string)
- * - All data is pre-scoped by the caller (org + permission filters already applied upstream)
- */
 export async function generateReportExcelBuffer(def: UniversalReportDefinition): Promise<Buffer> {
   const report = normalizeReport(def)
   const wb = new ExcelJS.Workbook()
@@ -308,7 +308,9 @@ export async function generateReportExcelBuffer(def: UniversalReportDefinition):
   }
 
   if (!tables.length) {
-    const ws = wb.addWorksheet(sanitizeSheetName(report.name || 'Report'))
+    const ws = wb.addWorksheet(sanitizeSheetName(report.name || 'Report'), {
+      properties: { tabColor: { argb: 'FF0F1D3A' } },
+    })
     const row = addReportHeader(ws, report)
     ws.getCell(`A${row}`).value = 'No tabular data for this report.'
     ws.getCell(`A${row}`).font = { italic: true, color: { argb: 'FF64748B' }, name: 'Calibri' }
@@ -329,7 +331,7 @@ export async function generateReportExcelBuffer(def: UniversalReportDefinition):
       row = addTableToSheet(ws, table, row)
 
       ws.pageSetup = {
-        paperSize: 9, // A4
+        paperSize: 9,
         orientation: table.columns.length >= 7 ? 'landscape' : 'portrait',
         fitToPage: true,
         fitToWidth: 1,

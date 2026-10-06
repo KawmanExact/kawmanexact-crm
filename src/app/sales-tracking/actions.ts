@@ -1,0 +1,543 @@
+'use server'
+
+/**
+ * Sales Product Tracking server actions.
+ *
+ * One form submission writes one SalesTransaction row PER PRODUCT LINE, all
+ * sharing groupId / invoiceNumber / invoiceKey / saleDate / salesperson /
+ * customer, inside a single prisma.$transaction so a failure leaves no partial
+ * invoice behind.
+ *
+ * Server is authoritative: the client sends only quantity, unitPrice,
+ * amountPaid and paymentStatus. totalAmount, balanceAmount and the final
+ * paymentStatus are recomputed here from Decimals (see deriveLineMoney).
+ */
+import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+import { Prisma } from '@/generated/prisma'
+import { validateCsrf } from '@/lib/csrf'
+import { requireApiSession } from '@/lib/session'
+import { logAudit } from '@/lib/audit-log'
+import { PERMISSIONS } from '@/lib/permissions-data'
+import { salesFormSchema, type SalesFormInput } from '@/lib/sales-schema'
+import {
+  buildInvoiceKey,
+  INVOICE_NUMBER_MAX,
+  OTHER_PRODUCT_SENTINEL,
+  otherProductNameIsValid,
+} from '@/lib/sales-money'
+import { prisma } from '@/lib/db'
+import { deriveLineMoney, salesWriteWhere } from '@/services/sales.service'
+import { STANDARD_PRODUCTS } from '@/lib/products'
+import { STAGE_PROBABILITIES } from '@/lib/deal-pipeline'
+
+export interface SalesFormState {
+  error?: string
+  fieldErrors?: Record<string, string>
+  /** Non-blocking information, e.g. the open-lead stage could not be moved. */
+  notice?: string
+  success?: boolean
+  groupId?: string
+}
+
+async function assertPermission(permission: string) {
+  const session = await requireApiSession()
+  if (!(session.user.permissions as string[]).includes(permission)) {
+    throw new Error('You do not have permission to do this.')
+  }
+  return session
+}
+
+/** Parse the `lines` JSON hidden input written by the multi-line form. */
+function parseLinesField(raw: FormDataEntryValue | null): unknown {
+  if (typeof raw !== 'string' || raw.trim() === '') return []
+  try {
+    const parsed: unknown = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function fieldErrorsFromZod(error: z.ZodError): Record<string, string> {
+  const fieldErrors: Record<string, string> = {}
+  for (const issue of error.issues) {
+    // Line-level issues are prefixed `lines.0` by the caller; the shared schema
+    // reports bare paths, which map straight onto form fields.
+    const key = String(issue.path[0] ?? 'form')
+    if (!fieldErrors[key]) fieldErrors[key] = issue.message
+  }
+  return fieldErrors
+}
+
+/**
+ * Invoice numbers are unique per organisation, case-insensitively. An invoice
+ * already used by a DIFFERENT groupId is rejected; the same groupId is allowed
+ * so editing a sale can keep (and re-save) its own number.
+ */
+export async function findConflictingInvoiceGroup(input: {
+  organizationId: string
+  invoiceKey: string
+  groupId?: string
+}): Promise<string | null> {
+  const existing = await prisma.salesTransaction.findFirst({
+    where: {
+      organizationId: input.organizationId,
+      invoiceKey: input.invoiceKey,
+      ...(input.groupId ? { NOT: { groupId: input.groupId } } : {}),
+    },
+    select: { groupId: true },
+  })
+  return existing?.groupId ?? null
+}
+
+/**
+ * Optional checkbox: move the customer's open deal to ORDER/PAYMENT. A deal IS
+ * the lead now (see the merged fields on the Deal model), so this stages the
+ * one open opportunity rather than a separate lead row. Only acts when the
+ * customer has EXACTLY one open deal — never guess between several.
+ * Returns the moved deal id, or a reason string explaining why not.
+ */
+export async function moveCustomerLeadStage(
+  organizationId: string,
+  customerId: string,
+  fullyPaid: boolean,
+  actor: { id: string; name: string }
+): Promise<{ leadId?: string; skipped?: string }> {
+  const openDeals = await prisma.deal.findMany({
+    where: {
+      organizationId,
+      companyId: customerId,
+      stage: { notIn: ['PAYMENT', 'LOST'] },
+    },
+    select: { id: true, name: true, stage: true, probability: true },
+    take: 2,
+  })
+  if (openDeals.length === 0) return { skipped: 'No open deal for this customer.' }
+  if (openDeals.length > 1) {
+    return { skipped: 'This customer has more than one open deal — stage not changed automatically.' }
+  }
+
+  const deal = openDeals[0]
+  const stage = fullyPaid ? 'PAYMENT' : 'ORDER'
+  const probability = STAGE_PROBABILITIES[stage]
+
+  await prisma.deal.update({
+    where: { id: deal.id },
+    data: {
+      stage,
+      probability,
+      closedAt: fullyPaid ? new Date() : null,
+      lastActivityAt: new Date(),
+    },
+  })
+  await prisma.dealStageHistory.create({
+    data: {
+      dealId: deal.id,
+      stage,
+      previousStage: deal.stage,
+      probability,
+      movedById: actor.id,
+      movedByName: actor.name,
+      organizationId,
+    },
+  })
+
+  return { leadId: deal.id }
+}
+
+interface PreparedLine {
+  productId: string | null
+  otherProductName: string | null
+  quantity: Prisma.Decimal
+  unitPrice: Prisma.Decimal
+  /// quantity x unitPrice — the taxable value.
+  totalAmount: Prisma.Decimal
+  gstAmount: Prisma.Decimal
+  /// totalAmount + gstAmount + freightAmount. Balance and payment status are
+  /// derived from this, never from the taxable figure.
+  invoiceAmount: Prisma.Decimal
+  amountPaid: Prisma.Decimal
+  balanceAmount: Prisma.Decimal
+  paymentStatus: 'PAID' | 'PARTIALLY_PAID' | 'PENDING'
+  paymentDate: Date | null
+  hsnCode: string | null
+  gstRate: Prisma.Decimal | null
+  freightAmount: Prisma.Decimal | null
+  leadTimeDays: number | null
+  advanceAmount: Prisma.Decimal | null
+  pdcAmount: Prisma.Decimal | null
+  paymentMode: string | null
+  purchaseOrderNo: string | null
+}
+
+function prepareLines(data: SalesFormInput): PreparedLine[] {
+  const paymentDate = data.paymentDate ? new Date(data.paymentDate) : null
+
+  return data.lines.map((line) => {
+    // One call derives the whole chain in invoice order — taxable, GST,
+    // invoice amount, advance-capped paid, balance, status. Nothing here is
+    // trusted from the client.
+    const money = deriveLineMoney({
+      quantity: line.quantity,
+      unitPrice: line.unitPrice,
+      gstRate: line.gstRate,
+      freightAmount: line.freightAmount,
+      advanceAmount: line.advanceAmount,
+      pdcAmount: line.pdcAmount,
+      amountPaid: line.amountPaid,
+    })
+    const usesOther = line.productId === OTHER_PRODUCT_SENTINEL
+    const isStandardized = line.productId?.startsWith('std-')
+    const standardizedName = isStandardized
+      ? STANDARD_PRODUCTS[Number(line.productId.replace('std-', ''))] ?? null
+      : null
+    return {
+      productId: (usesOther || isStandardized) ? null : (line.productId || null),
+      otherProductName: usesOther
+        ? line.otherProductName.trim()
+        : isStandardized
+          ? (standardizedName ?? line.otherProductName.trim())
+          : null,
+      quantity: money.quantity,
+      unitPrice: money.unitPrice,
+      totalAmount: money.taxableAmount,
+      gstAmount: money.gstAmount,
+      invoiceAmount: money.invoiceAmount,
+      amountPaid: money.amountPaid,
+      balanceAmount: money.balanceAmount,
+      paymentStatus: money.paymentStatus,
+      paymentDate: money.amountPaid.greaterThan(0) ? paymentDate : null,
+      hsnCode: line.hsnCode || null,
+      gstRate: line.gstRate !== undefined && line.gstRate !== null ? new Prisma.Decimal(line.gstRate) : null,
+      freightAmount: line.freightAmount !== undefined && line.freightAmount !== null ? new Prisma.Decimal(line.freightAmount) : null,
+      leadTimeDays: line.leadTimeDays !== undefined && line.leadTimeDays !== null ? line.leadTimeDays : null,
+      advanceAmount: line.advanceAmount !== undefined && line.advanceAmount !== null ? new Prisma.Decimal(line.advanceAmount) : null,
+      pdcAmount: line.pdcAmount !== undefined && line.pdcAmount !== null ? new Prisma.Decimal(line.pdcAmount) : null,
+      paymentMode: line.paymentMode || null,
+      purchaseOrderNo: line.purchaseOrderNo || null,
+    }
+  })
+}
+
+/**
+ * Verify every referenced catalog product exists, is active and belongs to this
+ * organisation. Runs before the write so a stale dropdown cannot write a
+ * cross-tenant productId.
+ * 
+ * Standardized products (std-*) and "Other" sentinel (__other__) are not database
+ * products, so they're skipped from validation.
+ */
+async function assertProductsUsable(
+  organizationId: string,
+  lines: PreparedLine[]
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  // Filter out standardized products (std-*) and "Other" sentinel (__other__)
+  const dbProductIds = Array.from(
+    new Set(
+      lines
+        .map((l) => l.productId)
+        .filter((id): id is string => !!id)
+        .filter((id) => !id.startsWith('std-') && id !== OTHER_PRODUCT_SENTINEL)
+    )
+  )
+  if (dbProductIds.length === 0) return { ok: true }
+
+  const products = await prisma.product.findMany({
+    where: { organizationId, id: { in: dbProductIds } },
+    select: { id: true, name: true, variant: true, isActive: true },
+  })
+  if (products.length !== dbProductIds.length) {
+    return { ok: false, message: 'One of the selected products no longer exists. Reload the page.' }
+  }
+  const inactive = products.find((p) => !p.isActive)
+  if (inactive) {
+    return {
+      ok: false,
+      message: `"${inactive.name}${inactive.variant ? ` (${inactive.variant})` : ''}" is deactivated and cannot be sold.`,
+    }
+  }
+  return { ok: true }
+}
+
+async function assertCustomerUsable(
+  organizationId: string,
+  customerId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const customer = await prisma.company.findFirst({
+    where: { id: customerId, organizationId },
+    select: { id: true },
+  })
+  if (!customer) return { ok: false, message: 'Customer not found in this organisation.' }
+  return { ok: true }
+}
+
+async function assertSalespersonUsable(
+  organizationId: string,
+  salespersonId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const user = await prisma.user.findFirst({
+    where: { id: salespersonId, organizationId, status: 'ACTIVE' },
+    select: { id: true },
+  })
+  if (!user) return { ok: false, message: 'Salesperson not found or inactive in this organisation.' }
+  return { ok: true }
+}
+
+/** A salesperson other than me may only be chosen by sales.view_all holders. */
+function salespersonForcedToSelf(session: Awaited<ReturnType<typeof assertPermission>>): boolean {
+  return !(session.user.permissions as string[]).includes(PERMISSIONS['sales.view_all'].name)
+}
+
+export async function saveSaleAction(
+  _prev: SalesFormState,
+  formData: FormData
+): Promise<SalesFormState> {
+  await validateCsrf()
+  const session = await assertPermission(PERMISSIONS['sales.create'].name)
+
+  return runSave(session, formData, false)
+}
+
+export async function updateSaleAction(
+  _prev: SalesFormState,
+  formData: FormData
+): Promise<SalesFormState> {
+  await validateCsrf()
+  const session = await assertPermission(PERMISSIONS['sales.update'].name)
+
+  return runSave(session, formData, true)
+}
+
+async function runSave(
+  session: Awaited<ReturnType<typeof assertPermission>>,
+  formData: FormData,
+  isUpdate: boolean
+): Promise<SalesFormState> {
+  const organizationId = session.user.organizationId
+  const groupId = String(formData.get('groupId') ?? '').trim()
+
+  const raw = {
+    salespersonId: String(formData.get('salespersonId') ?? '').trim(),
+    customerId: String(formData.get('customerId') ?? '').trim(),
+    saleDate: String(formData.get('saleDate') ?? '').trim(),
+    paymentDate: String(formData.get('paymentDate') ?? '').trim(),
+    invoiceNumber: String(formData.get('invoiceNumber') ?? '').trim(),
+    remarks: String(formData.get('remarks') ?? '').trim(),
+    moveLeadStage: formData.get('moveLeadStage') === 'on' || formData.get('moveLeadStage') === 'true',
+    lines: parseLinesField(formData.get('lines')),
+  }
+
+  // A salesperson may only file the sale under their own name unless they hold
+  // sales.view_all. Forced server-side — hiding the dropdown is not enough.
+  const salespersonId = salespersonForcedToSelf(session) ? session.user.id : raw.salespersonId || session.user.id
+
+  const parsed = salesFormSchema.safeParse({ ...raw, salespersonId })
+  if (!parsed.success) {
+    return { fieldErrors: fieldErrorsFromZod(parsed.error) }
+  }
+  const data = parsed.data
+
+  if (data.invoiceNumber.length > INVOICE_NUMBER_MAX) {
+    return { fieldErrors: { invoiceNumber: `Invoice number must be ${INVOICE_NUMBER_MAX} characters or fewer` } }
+  }
+
+  // "Other" product names are re-validated here because `lines` is raw JSON.
+  for (const [index, line] of data.lines.entries()) {
+    if (line.productId === OTHER_PRODUCT_SENTINEL || (!line.productId && line.otherProductName)) {
+      const problem = otherProductNameIsValid(line.otherProductName)
+      if (problem) return { fieldErrors: { [`lines.${index}.otherProductName`]: problem } }
+    }
+  }
+
+  const invoiceKey = buildInvoiceKey(data.invoiceNumber)
+  const conflict = await findConflictingInvoiceGroup({
+    organizationId,
+    invoiceKey,
+    ...(groupId ? { groupId } : {}),
+  })
+  if (conflict) {
+    return {
+      fieldErrors: {
+        invoiceNumber: `Invoice number "${data.invoiceNumber}" is already used by another sale.`,
+      },
+    }
+  }
+
+  const lines = prepareLines(data)
+
+  const [customerCheck, salespersonCheck, productCheck] = await Promise.all([
+    assertCustomerUsable(organizationId, data.customerId),
+    assertSalespersonUsable(organizationId, salespersonId),
+    assertProductsUsable(organizationId, lines),
+  ])
+  for (const check of [customerCheck, salespersonCheck, productCheck]) {
+    if (!check.ok) return { error: check.message }
+  }
+
+  const saleDate = new Date(data.saleDate)
+  const targetGroupId = isUpdate && groupId ? groupId : newGroupId()
+
+  // An update REWRITES the invoice by deleting its old lines first, so the
+  // target must be proven visible inside this transaction. Without this check a
+  // user with sales.update but not sales.view_all could overwrite a colleague's
+  // invoice by guessing its groupId.
+  if (isUpdate && groupId) {
+    const visible = await prisma.salesTransaction.findFirst({
+      where: await salesWriteWhere(groupId),
+      select: { id: true },
+    })
+    if (!visible) return { error: 'Sale not found, or it is outside your records.' }
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      if (isUpdate && groupId) {
+        // Delete the old lines and rewrite them, so line count can change on edit.
+        await tx.salesTransaction.deleteMany({ where: { organizationId, groupId } })
+      }
+
+      await tx.salesTransaction.createMany({
+        data: lines.map((line, index) => ({
+          organizationId,
+          salespersonId,
+          customerId: data.customerId,
+          saleDate,
+          invoiceNumber: data.invoiceNumber,
+          invoiceKey,
+          groupId: targetGroupId,
+          lineNumber: index + 1,
+          remarks: data.remarks || null,
+          ...line,
+        })),
+      })
+
+      await tx.auditLog.create({
+        data: {
+          organizationId,
+          actorId: session.user.id,
+          action: isUpdate ? 'UPDATE' : 'CREATE',
+          resource: 'SalesTransaction',
+          resourceId: targetGroupId,
+          metadata: {
+            invoiceNumber: data.invoiceNumber,
+            customerId: data.customerId,
+            salespersonId,
+            lineCount: lines.length,
+            moveLeadStage: data.moveLeadStage,
+          } as never,
+        },
+      })
+    })
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Could not save the sale.' }
+  }
+
+  let leadNote: string | undefined
+  if (data.moveLeadStage) {
+    const fullyPaid = lines.every((line) => line.paymentStatus === 'PAID')
+    const result = await moveCustomerLeadStage(organizationId, data.customerId, fullyPaid, {
+      id: session.user.id,
+      name: session.user.name ?? 'Unknown',
+    })
+    leadNote = result.skipped
+  }
+
+  revalidatePath('/sales-tracking')
+  revalidatePath('/leads')
+  revalidatePath('/deals')
+  revalidatePath('/funnel')
+
+  // "Could not stage the lead" is informational, not a failure of the sale, so
+  // it rides on its own channel instead of `error`.
+  return { success: true, groupId: targetGroupId, notice: leadNote }
+}
+
+function newGroupId(): string {
+  return `grp_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`
+}
+
+/** Delete every line of one sale (one invoice) and audit it. */
+export async function deleteSaleAction(
+  groupId: string
+): Promise<{ success?: boolean; error?: string }> {
+  await validateCsrf()
+  const session = await assertPermission(PERMISSIONS['sales.delete'].name)
+
+  try {
+    // Scoped by record visibility, not just organisation: a user holding
+    // sales.delete must not be able to delete somebody else's invoice by
+    // passing a groupId they guessed.
+    const where = await salesWriteWhere(groupId)
+    const result = await prisma.salesTransaction.deleteMany({ where })
+    if (result.count === 0) return { error: 'Sale not found.' }
+    await logAudit({
+      organizationId: session.user.organizationId,
+      actorId: session.user.id,
+      action: 'DELETE',
+      resource: 'SalesTransaction',
+      resourceId: groupId,
+      metadata: { lineCount: result.count },
+    })
+    revalidatePath('/sales-tracking')
+    return { success: true }
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Could not delete the sale.' }
+  }
+}
+
+/** Row-level edit/delete rights, so the UI never offers an action that 403s. */
+export async function saleRowCapabilities(
+  groupId: string
+): Promise<{ canEdit: boolean; canDelete: boolean }> {
+  const perms = (await requireApiSession()).user.permissions as string[]
+  const row = await prisma.salesTransaction.findFirst({
+    where: await salesWriteWhere(groupId),
+    select: { salespersonId: true },
+  })
+  if (!row) return { canEdit: false, canDelete: false }
+  const canEdit = perms.includes(PERMISSIONS['sales.update'].name)
+  const canDelete = perms.includes(PERMISSIONS['sales.delete'].name)
+  return { canEdit, canDelete }
+}
+
+/**
+ * Type-ahead for the customer picker. Deliberately org-scoped but NOT
+ * owner-scoped: a customer is a shared entity, and requiring a salesperson to
+ * pick "their own" companies would make recording a sale impossible whenever
+ * the account was created by someone else. Only the id/name pair crosses the
+ * boundary.
+ */
+export async function searchCompaniesAction(
+  term: string
+): Promise<Array<{ id: string; name: string }>> {
+  await validateCsrf()
+  const session = await requireApiSession()
+  const perms = session.user.permissions as string[]
+  if (
+    !perms.includes(PERMISSIONS['sales.view'].name) &&
+    !perms.includes(PERMISSIONS['sales.create'].name)
+  ) {
+    throw new Error('You do not have permission to do this.')
+  }
+
+  const search = term.trim()
+  return prisma.company.findMany({
+    where: {
+      organizationId: session.user.organizationId,
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' as const } },
+              { city: { contains: search, mode: 'insensitive' as const } },
+              { state: { contains: search, mode: 'insensitive' as const } },
+              { industry: { contains: search, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
+    },
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+    take: 20,
+  })
+}

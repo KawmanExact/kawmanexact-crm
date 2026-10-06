@@ -1,0 +1,230 @@
+/**
+ * Seed the product catalog for one organisation with Kawman ExAct's real
+ * products, so the sales dropdowns and the lead importer's "Products
+ * Discussed" matching work out of the box.
+ *
+ * Idempotent: matches on (organizationId, name, variant) case-insensitively and
+ * only fills fields that are still empty. Re-running never duplicates a row and
+ * never overwrites a price somebody has since set.
+ *
+ * NO PRICES ARE INVENTED, AND THERE IS NO WAY TO SEED ONE. `defaultUnitPrice` is
+ * always left null — a price list is a commercial decision and must be entered
+ * per organisation in the Product Catalog after it is agreed.
+ *
+ * Flags:
+ *   --dry-run            Report what would be created/updated, write nothing.
+ *   --org=<slug>         Target organisation by slug (repeatable).
+ *   --all-orgs           Seed every organisation in the database.
+ *
+ * Usage:
+ *   npx tsx prisma/scripts/seed-products.ts --org=kawman
+ *   npm run db:seed-products -- --org=kawman --dry-run
+ */
+import { createScriptPrismaClient } from './_client'
+
+const prisma = createScriptPrismaClient()
+
+/**
+ * Local copy of product.service.ts's normalizeProductText. The service carries
+ * `import 'server-only'`, which throws outside a Next.js bundle, so a tsx
+ * script cannot import from it — the same reason lib/rbac-seed.ts has no
+ * server-only marker.
+ */
+function normalizeProductText(value: string | null | undefined): string | null {
+  if (!value) return null
+  const trimmed = value.trim()
+  return trimmed === '' ? null : trimmed
+}
+
+interface SeedProduct {
+  name: string
+  variant: string | null
+  category: string
+  grade: string | null
+  description: string
+}
+
+// Parse products from the standardized list (name + variant if present)
+function parseProductName(fullName: string): { name: string; variant: string | null } {
+  const knownVariants = ['75%', '15%', 'RD', 'WD', 'WS', 'CWD', 'CWS', '0.1%', '1%', '10% / 20% Emulsion']
+  
+  for (const variant of knownVariants) {
+    if (fullName.endsWith(` ${variant}`)) {
+      return { name: fullName.slice(0, -variant.length - 1).trim(), variant }
+    }
+  }
+  
+  // Handle special cases
+  if (fullName.includes(' - ')) {
+    const parts = fullName.split(' - ')
+    if (parts.length === 2) {
+      return { name: parts[0].trim(), variant: parts[1].trim() }
+    }
+  }
+  
+  return { name: fullName, variant: null }
+}
+
+const STANDARD_PRODUCTS = [
+  'CafRelExAct™',
+  'AsparExAct™',
+  'NacExAct™',
+  'AlphaExAct™ 75%',
+  'AlphaExAct™ 15%',
+  'CarniExAct™',
+  'ArginExAct™',
+  'MetExAct™',
+  'α KetoExAct™',
+  'BranChExAct RD™',
+  'TelmiExAct™',
+  'VitExAct™ B12 0.1%',
+  'VitExAct™ B12 1%',
+  'CoQExAct™',
+  'CoQExAct™ 10% / 20% Emulsion',
+  'DHA ExAct™ - CWD',
+  'SoluExAct™ MCT - CWS',
+] as const
+
+const CATALOG: SeedProduct[] = STANDARD_PRODUCTS.map((fullName) => {
+  const { name, variant } = parseProductName(fullName)
+  let category: string
+  let grade: string | null = null
+  
+  // Assign categories based on product type
+  if (['VitExAct™ B12 0.1%', 'VitExAct™ B12 1%', 'CoQExAct™', 'CoQExAct™ 10% / 20% Emulsion'].includes(fullName)) {
+    category = 'Nutraceutical'
+  } else if (['CafRelExAct™', 'DHA ExAct™ - CWD', 'SoluExAct™ MCT - CWS'].includes(fullName)) {
+    category = 'Food & Beverage'
+  } else {
+    category = 'Nutraceutical'
+  }
+  
+  // Assign grades
+  if (['BranChExAct RD™', 'CarniExAct™'].includes(fullName)) {
+    grade = 'RD'
+  }
+  
+  return {
+    name,
+    variant,
+    category,
+    grade,
+    description: `${fullName} ingredient.`,
+  }
+})
+
+function argValues(flag: string): string[] {
+  return process.argv.filter((a) => a.startsWith(`--${flag}=`)).map((a) => a.slice(flag.length + 3))
+}
+
+async function resolveOrganizations(dryRun: boolean) {
+  const slugs = argValues('org')
+  const allOrgs = process.argv.includes('--all-orgs')
+
+  if (slugs.length === 0 && !allOrgs) {
+    const all = await prisma.organization.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { slug: 'asc' },
+    })
+    console.log(`[seed-products] No --org=<slug> or --all-orgs given. Available organisations:`)
+    for (const org of all) console.log(`[seed-products]   ${org.slug}  (${org.name})`)
+    console.log(
+      '[seed-products] Re-run with e.g. --org=kawman, or --all-orgs to seed every organisation.'
+    )
+    if (!dryRun && !allOrgs) {
+      await prisma.$disconnect()
+      return []
+    }
+    return all
+  }
+
+  const where = allOrgs ? {} : { slug: { in: slugs } }
+  const orgs = await prisma.organization.findMany({
+    where,
+    select: { id: true, name: true, slug: true },
+    orderBy: { slug: 'asc' },
+  })
+
+  if (orgs.length === 0 && !allOrgs) {
+    console.error(
+      `[seed-products] No organisation matched ${JSON.stringify(slugs)}. Nothing was written.`
+    )
+  }
+  return orgs
+}
+
+async function main() {
+  const dryRun = process.argv.includes('--dry-run')
+
+  const organizations = await resolveOrganizations(dryRun)
+  if (organizations.length === 0) {
+    await prisma.$disconnect()
+    return
+  }
+
+  for (const org of organizations) {
+    console.log(`[seed-products] ${org.name} (${org.slug})${dryRun ? ' — DRY RUN' : ''}`)
+
+    let created = 0
+    let updated = 0
+
+    for (const seed of CATALOG) {
+      const variant = normalizeProductText(seed.variant)
+      const existing = await prisma.product.findFirst({
+        where: {
+          organizationId: org.id,
+          name: { equals: seed.name, mode: 'insensitive' },
+          ...(variant === null ? { variant: null } : { variant: { equals: variant, mode: 'insensitive' } }),
+        },
+      })
+
+      if (existing) {
+        // Fill only blanks so a hand-edited catalog is never clobbered.
+        // defaultUnitPrice is intentionally absent from this list: the script
+        // has no price data and must never write a price column at all.
+        const data = {
+          ...(existing.category ? {} : { category: seed.category }),
+          ...(existing.grade ? {} : { grade: seed.grade }),
+          ...(existing.description ? {} : { description: seed.description }),
+        }
+        if (Object.keys(data).length > 0) {
+          updated += 1
+          console.log(`[seed-products]   update  ${seed.name}${variant ? ` (${variant})` : ''}`)
+          if (!dryRun) await prisma.product.update({ where: { id: existing.id }, data })
+        } else {
+          console.log(`[seed-products]   present ${seed.name}${variant ? ` (${variant})` : ''}`)
+        }
+        continue
+      }
+
+      created += 1
+      console.log(`[seed-products]   create  ${seed.name}${variant ? ` (${variant})` : ''}`)
+      if (!dryRun) {
+        await prisma.product.create({
+          data: {
+            organizationId: org.id,
+            name: seed.name,
+            variant,
+            category: seed.category,
+            grade: seed.grade,
+            description: seed.description,
+            unit: 'kg',
+            // defaultUnitPrice is omitted on purpose — no prices are invented.
+          },
+        })
+      }
+    }
+
+    console.log(`[seed-products] ${org.slug}: ${created} created, ${updated} updated.`)
+  }
+
+  console.log('[seed-products] defaultUnitPrice left NULL on purpose — set prices in the Product Catalog.')
+  console.log(`[seed-products] ${dryRun ? 'DRY RUN — nothing written.' : 'Done.'}`)
+
+  await prisma.$disconnect()
+}
+
+main().catch((err) => {
+  console.error('[seed-products] Error:', err)
+  process.exit(1)
+})

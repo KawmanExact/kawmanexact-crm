@@ -17,17 +17,13 @@ import {
   FileSearch,
   FileBarChart,
   LineChart,
-  Target,
   Building2,
   User,
   Handshake,
   ClipboardList,
   MapPin,
   BarChart3,
-  Video,
-  FileText,
   Calendar,
-  Sparkles,
   Navigation,
   UserCheck,
   ClipboardCheck,
@@ -54,6 +50,9 @@ interface NavLeaf {
   icon: React.ComponentType<{ className?: string }>
   badge?: 'New'
   permission?: string
+  /** Extra path prefixes that should also light this item up. Used when a
+   *  segment absorbed another route (e.g. /leads lives under Deals & Pipeline). */
+  matchPrefixes?: string[]
 }
 
 interface NavGroup {
@@ -95,22 +94,26 @@ const NAV_GROUPS: NavGroup[] = [
     badge: 'New',
     items: [
       { name: 'CRM Dashboard', href: '/crm', icon: LayoutDashboard, permission: 'dashboard.view' },
-      { name: 'Leads', href: '/leads', icon: Target },
       { name: 'Companies', href: '/companies', icon: Building2 },
       { name: 'Contacts', href: '/contacts', icon: User },
-      { name: 'Deals & Pipeline', href: '/deals', icon: Handshake },
+      {
+        name: 'Deals & Pipeline',
+        href: '/deals',
+        icon: Handshake,
+        matchPrefixes: ['/leads'],
+      },
       { name: 'Follow-ups', href: '/follow-ups', icon: ClipboardList },
       { name: 'Calendar', href: '/calendar', icon: Calendar },
       { name: 'Field Visits', href: '/field-sales', icon: MapPin },
       { name: 'Sales Reports', href: '/reports/sales', icon: BarChart3 },
+      { name: 'Product Sales', href: '/reports/sales/by-employee', icon: BarChart3, badge: 'New' },
     ],
   },
   {
-    label: 'Meetings',
+    label: 'Sales Tracking',
+    badge: 'New',
     items: [
-      { name: 'Meeting Videos', href: '/meetings/videos', icon: Video },
-      { name: 'MOM & Insights', href: '/meetings/mom', icon: FileText },
-      { name: 'New Meeting (MOM)', href: '/meetings/new', icon: Sparkles },
+      { name: 'Product Tracking', href: '/sales-tracking', icon: LineChart, permission: 'sales.view' },
     ],
   },
   {
@@ -169,32 +172,50 @@ function NavBadge() {
 function NavLink({
   item,
   collapsed,
+  active,
   onNavigate,
 }: {
   item: NavLeaf
   collapsed: boolean
+  active: boolean
   onNavigate?: () => void
 }) {
-  const pathname = usePathname()
-  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-
   return (
     <Link
       href={item.href}
       onClick={onNavigate}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[40px]',
-        isActive
+        active
           ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
           : 'text-white/65 hover:bg-white/5 hover:text-white active:bg-white/10'
       )}
-      aria-current={isActive ? 'page' : undefined}
+      aria-current={active ? 'page' : undefined}
     >
       <item.icon className="h-[18px] w-[18px] shrink-0" />
       {!collapsed && <span className="truncate">{item.name}</span>}
       {!collapsed && item.badge && <NavBadge />}
     </Link>
   )
+}
+
+/**
+ * The deepest nav href that covers the current pathname. A plain prefix match
+ * lights up every ancestor — `/reports/sales/by-employee` would highlight both
+ * "Product Sales" and "Sales Reports" — so only the longest match is active.
+ */
+function deepestActiveHref(pathname: string): string | null {
+  let best: string | null = null
+  for (const group of NAV_GROUPS) {
+    for (const item of group.items) {
+      const prefixes = [item.href, ...(item.matchPrefixes ?? [])]
+      const matched = prefixes.some((p) => pathname === p || pathname.startsWith(p + '/'))
+      if (!matched) continue
+      const score = Math.max(...prefixes.map((p) => p.length))
+      if (best === null || score > best.length) best = item.href
+    }
+  }
+  return best
 }
 
 type StorageUsage = { usedGb: number; totalGb: number; pct: number; fileCount: number }
@@ -264,6 +285,8 @@ export function Sidebar() {
         }))
         .filter((group) => group.items.length > 0)
     : NAV_GROUPS
+
+  const activeHref = deepestActiveHref(pathname)
 
   return (
     <aside
@@ -356,7 +379,13 @@ export function Sidebar() {
             )}
             <div className="space-y-0.5">
               {group.items.map((item) => (
-                <NavLink key={item.href} item={item} collapsed={sidebarCollapsed} onNavigate={closeDrawer} />
+                <NavLink
+                  key={item.href}
+                  item={item}
+                  collapsed={sidebarCollapsed}
+                  active={activeHref === item.href}
+                  onNavigate={closeDrawer}
+                />
               ))}
             </div>
           </div>

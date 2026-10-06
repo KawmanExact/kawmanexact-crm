@@ -7,9 +7,8 @@ export const metadata = { title: 'Storage | Kawman ExAct Admin' }
 
 export default async function AdminStoragePage() {
   const session = await requirePermission('files.manage')
-  const [fileAgg, recordingAgg, versionAgg, byUploader] = await Promise.all([
+  const [fileAgg, versionAgg, byUploader] = await Promise.all([
     prisma.file.aggregate({ where: { organizationId: session.user.organizationId, uploadedById: session.user.id }, _sum: { fileSize: true }, _count: true }),
-    prisma.meetingRecording.aggregate({ where: { meeting: { organizationId: session.user.organizationId } }, _sum: { fileSize: true } }),
     prisma.fileVersion.aggregate({ where: { file: { organizationId: session.user.organizationId, uploadedById: session.user.id } }, _sum: { fileSize: true } }),
     prisma.file.groupBy({
       by: ['uploadedById'],
@@ -20,9 +19,8 @@ export default async function AdminStoragePage() {
   ])
 
   const fileBytes = Number(fileAgg._sum.fileSize ?? 0)
-  const recordingBytes = Number(recordingAgg._sum.fileSize ?? 0)
   const versionBytes = Number(versionAgg._sum.fileSize ?? 0)
-  const usedBytes = fileBytes + recordingBytes + versionBytes
+  const usedBytes = fileBytes + versionBytes
   const usedGb = usedBytes / 1024 ** 3
   const totalGb = 100
   const pct = Math.min(100, Math.round((usedGb / totalGb) * 100))
