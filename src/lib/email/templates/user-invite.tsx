@@ -63,7 +63,7 @@ export function UserInviteTemplate({
 
     cta: {
       text: "Sign In to Kawman ExAct",
-      url: "https://kawman-dashboard.vercel.app/login",
+      url: "https://kawmanexact-crm.vercel.app/login",
     },
 
     footer:
@@ -75,7 +75,7 @@ export function UserInviteTemplate({
     children: `Hi ${userName},\n\nYou've been added to ${organizationName} on Kawman ExAct${inviterText}. Your account has been created.\n\nEmail: ${userName}\nTemporary Password: ${tempPassword}\n\nPlease sign in and change your password immediately.`,
     cta: {
       text: "Sign In",
-      url: "https://kawman-dashboard.vercel.app/login",
+      url: "https://kawmanexact-crm.vercel.app/login",
     },
   });
 
