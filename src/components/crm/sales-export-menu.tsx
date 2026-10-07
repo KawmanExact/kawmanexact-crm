@@ -13,6 +13,9 @@ const FORMATS: Array<{ format: ExportFormat; label: string; hint: string }> = [
   { format: 'csv', label: 'CSV', hint: 'Plain text, formula-injection safe' },
 ]
 
+const PANEL_WIDTH = 288 // 18rem = 288px
+const MARGIN = 8
+
 /**
  * Export dropdown. Each item downloads the CURRENT URL filters (minus
  * pagination / print params), so the file contains the full filtered set that
@@ -23,11 +26,12 @@ const FORMATS: Array<{ format: ExportFormat; label: string; hint: string }> = [
  *   above the table card and is never clipped by an overflow-hidden ancestor.
  * - The download uses fetch -> blob, so server errors show up under the button
  *   instead of being saved as a broken "export.json" file.
+ * - Position is clamped to viewport with 8px margins. On screens < 640px, panel is full-width minus margins.
  */
 export function SalesExportMenu() {
   const searchParams = useSearchParams()
   const [open, setOpen] = useState(false)
-  const [pos, setPos] = useState({ top: 0, right: 0 })
+  const [pos, setPos] = useState({ top: 0, left: 0 })
   const [exporting, setExporting] = useState<ExportFormat | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,9 +47,26 @@ export function SalesExportMenu() {
     setError(null)
     if (!open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
+      const vw = window.innerWidth
+      const isMobile = vw < 640
+      const panelWidth = isMobile ? vw - 2 * MARGIN : PANEL_WIDTH
+
+      // Clamp left position so panel stays within viewport
+      let left = rect.left
+      if (isMobile) {
+        left = MARGIN
+      } else {
+        left = Math.min(Math.max(rect.left, MARGIN), vw - panelWidth - MARGIN)
+      }
+
+      // If panel would go off right edge, align to right margin
+      if (left + panelWidth > vw - MARGIN) {
+        left = vw - panelWidth - MARGIN
+      }
+
       setPos({
         top: rect.bottom + 6,
-        right: Math.max(8, window.innerWidth - rect.right),
+        left,
       })
     }
     setOpen((prev) => !prev)
@@ -156,6 +177,10 @@ export function SalesExportMenu() {
     }
   }
 
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1024
+  const isMobile = vw < 640
+  const panelWidth = isMobile ? `calc(100vw - ${2 * MARGIN}px)` : `${PANEL_WIDTH}px`
+
   return (
     <div className="relative">
       <button
@@ -165,7 +190,7 @@ export function SalesExportMenu() {
         disabled={exporting !== null}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-sm text-white/70 transition-colors hover:bg-white/[0.05] hover:text-white disabled:opacity-60"
+        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-sm text-white/70 transition-colors hover:bg-white/[0.05] hover:text-white disabled:opacity-60 min-w-[40px] touch-target"
       >
         <Download className="h-4 w-4" />
         {exporting ? 'Exporting…' : 'Export'}
@@ -175,7 +200,7 @@ export function SalesExportMenu() {
       {error && (
         <p
           role="alert"
-          className="absolute right-0 top-full z-[100] mt-1.5 w-72 max-w-[calc(100vw-1rem)] rounded-lg border border-red-500/30 bg-[#0d1523] p-2 text-xs text-red-300 shadow-xl shadow-black/40"
+          className="absolute left-0 top-full z-[100] mt-1.5 max-w-[calc(100vw-1rem)] rounded-lg border border-red-500/30 bg-[#0d1523] p-2 text-xs text-red-300 shadow-xl shadow-black/40"
         >
           {error}
         </p>
@@ -187,8 +212,8 @@ export function SalesExportMenu() {
             ref={panelRef}
             role="menu"
             aria-label="Export format"
-            style={{ position: 'fixed', top: pos.top, right: pos.right }}
-            className="z-[100] w-72 max-w-[calc(100vw-1rem)] rounded-xl border border-white/[0.08] bg-[#0d1523] p-1.5 shadow-xl shadow-black/40"
+            style={{ position: 'fixed', top: pos.top, left: pos.left, width: panelWidth }}
+            className="z-[100] rounded-xl border border-white/[0.08] bg-[#0d1523] p-1.5 shadow-xl shadow-black/40"
           >
             {FORMATS.map((item) => (
               <button
@@ -196,7 +221,7 @@ export function SalesExportMenu() {
                 type="button"
                 role="menuitem"
                 onClick={() => start(item.format)}
-                className="block w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-white/[0.05] focus:bg-white/[0.05] focus:outline-none"
+                className="block w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-white/[0.05] focus:bg-white/[0.05] focus:outline-none min-h-[40px] touch-target"
               >
                 <span className="block text-sm text-white">{item.label}</span>
                 <span className="block text-xs text-white/40">{item.hint}</span>

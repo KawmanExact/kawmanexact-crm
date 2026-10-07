@@ -138,14 +138,14 @@ export function SalesTrackingView({
       <Card className="bg-[#0a111c]/80 border-white/[0.08] p-4 print:hidden">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 overflow-visible">
-            <div className="relative flex-1 max-w-sm">
+            <div className="relative flex-1 max-w-sm sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/35" />
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search invoice number, product..."
                 aria-label="Search sales"
-                className="pl-9"
+                className="pl-9 min-w-[40px] touch-target"
               />
             </div>
 
@@ -154,7 +154,7 @@ export function SalesTrackingView({
               onChange={(event) => updateParams({ salesperson: event.target.value || null })}
               aria-label="Filter by salesperson"
               disabled={!canPickSalesperson && !salespersonFilter}
-              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50"
+              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50 min-w-[40px] touch-target"
             >
               <option value="">{canPickSalesperson ? 'All salespersons' : 'My sales only'}</option>
               {options.salespeople.map((person) => (
@@ -168,7 +168,7 @@ export function SalesTrackingView({
               value={customerFilter}
               onChange={(event) => updateParams({ customer: event.target.value || null })}
               aria-label="Filter by customer"
-              className="h-9 max-w-[14rem] rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
             >
               <option value="">All customers</option>
               {options.customers.map((customer) => (
@@ -182,7 +182,7 @@ export function SalesTrackingView({
               value={productFilter}
               onChange={(event) => updateParams({ product: event.target.value || null })}
               aria-label="Filter by product"
-              className="h-9 max-w-[14rem] rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
             >
               <option value="">All products</option>
               {options.products.map((product) => (
@@ -197,7 +197,7 @@ export function SalesTrackingView({
               value={statusFilter}
               onChange={(event) => updateParams({ paymentStatus: event.target.value || null })}
               aria-label="Filter by payment status"
-              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
             >
               <option value="">All payment statuses</option>
               {(Object.keys(STATUS_FILTER_VALUE) as PaymentStatus[]).map((status) => (
@@ -208,71 +208,82 @@ export function SalesTrackingView({
             </select>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 overflow-visible">
-            <select
-              value={datePreset}
-              onChange={(event) => updateParams({ date: event.target.value, from: null, to: null })}
-              aria-label="Date range preset"
-              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-            >
-              {DATE_PRESETS.map((preset) => (
-                <option key={preset} value={preset}>
-                  {DATE_PRESET_LABEL[preset]}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col gap-3">
+            {/* Row 1: Date preset + custom dates */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <select
+                value={datePreset}
+                onChange={(event) => updateParams({ date: event.target.value, from: null, to: null })}
+                aria-label="Date range preset"
+                className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
+              >
+                {DATE_PRESETS.map((preset) => (
+                  <option key={preset} value={preset}>
+                    {DATE_PRESET_LABEL[preset]}
+                  </option>
+                ))}
+              </select>
 
-            {datePreset === 'custom' && (
-              <>
-                <input
-                  type="date"
-                  defaultValue={searchParams.get('from') ?? ''}
-                  onChange={(event) => updateParams({ from: event.target.value || null })}
-                  aria-label="From date"
-                  className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                />
-                <input
-                  type="date"
-                  defaultValue={searchParams.get('to') ?? ''}
-                  onChange={(event) => updateParams({ to: event.target.value || null })}
-                  aria-label="To date"
-                  className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                />
-              </>
-            )}
+              {datePreset === 'custom' && (
+                <>
+                  <input
+                    type="date"
+                    defaultValue={searchParams.get('from') ?? ''}
+                    onChange={(event) => updateParams({ from: event.target.value || null })}
+                    aria-label="From date"
+                    className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
+                  />
+                  <input
+                    type="date"
+                    defaultValue={searchParams.get('to') ?? ''}
+                    onChange={(event) => updateParams({ to: event.target.value || null })}
+                    aria-label="To date"
+                    className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
+                  />
+                </>
+              )}
+            </div>
 
-            <span className="text-xs text-white/35 sm:ml-auto">
-              {total === 0 ? '0 sales lines' : `${rangeStart}–${rangeEnd} of ${total} sales lines`}
-            </span>
+            {/* Row 2: Count, rows per page, Export, Print, Print view - 2-col grid on mobile */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <span className="text-xs text-white/35 sm:ml-auto">
+                {total === 0 ? '0 sales lines' : `${rangeStart}–${rangeEnd} of ${total} sales lines`}
+              </span>
 
-            <select
-              value={String(data.pageSize)}
-              onChange={(event) => updateParams({ pageSize: event.target.value })}
-              aria-label="Rows per page"
-              className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-            >
-              {PAGE_SIZES.map((size) => (
-                <option key={size} value={size}>
-                  {size} / page
-                </option>
-              ))}
-            </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
+                <select
+                  value={String(data.pageSize)}
+                  onChange={(event) => updateParams({ pageSize: event.target.value })}
+                  aria-label="Rows per page"
+                  className="h-9 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 min-w-[40px] touch-target"
+                >
+                  {PAGE_SIZES.map((size) => (
+                    <option key={size} value={size}>
+                      {size} / page
+                    </option>
+                  ))}
+                </select>
 
-            {canExport && <SalesExportMenu />}
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="h-9 rounded-lg border border-white/[0.08] px-3 text-sm text-white/70 hover:bg-white/[0.05] transition-colors"
-            >
-              Print
-            </button>
-            <Link
-              href="/sales-tracking?print=1"
-              target="_blank"
-              className="text-xs text-white/35 hover:text-white transition-colors underline underline-offset-4"
-            >
-              Print view
-            </Link>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  {canExport && <SalesExportMenu />}
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="h-9 rounded-lg border border-white/[0.08] px-3 text-sm text-white/70 hover:bg-white/[0.05] transition-colors min-w-[40px] touch-target"
+                  >
+                    Print
+                  </button>
+                </div>
+              </div>
+
+              <Link
+                href="/sales-tracking?print=1"
+                target="_blank"
+                className="text-xs text-white/35 hover:text-white transition-colors underline underline-offset-4 self-start"
+              >
+                Print view
+              </Link>
+            </div>
           </div>
         </div>
       </Card>
@@ -353,7 +364,7 @@ export function SalesTrackingView({
                             {canEdit && (
                               <Link
                                 href={`/sales-tracking/${row.groupId}/edit`}
-                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-white/60 hover:bg-white/[0.05] hover:text-white transition-colors"
+                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-white/60 hover:bg-white/[0.05] hover:text-white transition-colors min-h-[40px] touch-target"
                               >
                                 <Pencil className="h-3 w-3" /> Edit
                               </Link>
@@ -376,7 +387,7 @@ export function SalesTrackingView({
                         <span className="text-white/40">No sales recorded yet.</span>
                         <Link
                           href="/sales-tracking/new"
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-500 transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-purple-500 transition-colors min-h-[40px] touch-target"
                         >
                           Record your first sale
                         </Link>
@@ -399,7 +410,7 @@ export function SalesTrackingView({
                 type="button"
                 onClick={() => updateParams({ page: String(page - 1) })}
                 disabled={page <= 1}
-                className="flex items-center gap-1 h-8 px-2.5 rounded-lg border border-white/[0.08] text-xs text-white/70 hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="flex items-center gap-1 h-8 px-2.5 rounded-lg border border-white/[0.08] text-xs text-white/70 hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none transition-colors min-h-[40px] touch-target"
               >
                 <ChevronLeft className="h-3.5 w-3.5" /> Prev
               </button>
@@ -407,7 +418,7 @@ export function SalesTrackingView({
                 type="button"
                 onClick={() => updateParams({ page: String(page + 1) })}
                 disabled={page >= pageCount}
-                className="flex items-center gap-1 h-8 px-2.5 rounded-lg border border-white/[0.08] text-xs text-white/70 hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="flex items-center gap-1 h-8 px-2.5 rounded-lg border border-white/[0.08] text-xs text-white/70 hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none transition-colors min-h-[40px] touch-target"
               >
                 Next <ChevronRight className="h-3.5 w-3.5" />
               </button>
@@ -450,7 +461,7 @@ function SortableHeader({
       <button
         type="button"
         onClick={() => onClick(sortKey)}
-        className="inline-flex items-center gap-1 font-medium hover:text-white transition-colors"
+        className="inline-flex items-center gap-1 font-medium hover:text-white transition-colors min-h-[40px] touch-target"
       >
         {label}
         <ArrowUpDown className={`h-3 w-3 ${isActive ? 'text-purple-400' : 'text-white/25'}`} />

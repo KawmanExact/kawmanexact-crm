@@ -208,7 +208,7 @@ export function ChatPanel({
   }
 
   return (
-    <div className={cn('grid gap-4 h-[calc(100vh-9.5rem)]', sidebarOpen ? 'lg:grid-cols-[260px_1fr]' : 'lg:grid-cols-[0_1fr]')}>
+    <div className={cn('grid gap-4 h-[calc(100dvh-9.5rem)]', sidebarOpen ? 'lg:grid-cols-[260px_1fr]' : 'lg:grid-cols-[0_1fr]')}>
       {/* Conversation list — desktop sidebar + mobile sheet */}
       {mobileListOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setMobileListOpen(false)}>
