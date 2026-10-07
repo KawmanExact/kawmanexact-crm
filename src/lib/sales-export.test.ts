@@ -75,6 +75,9 @@ const products: ProductBreakdownRow[] = [
     unit: 'kg',
     quantity: 2,
     totalValue: 3001,
+    taxableValue: 3001,
+    gstAmount: 0,
+    avgUnitPrice: 1500.5,
     amountPaid: 3001,
     pendingAmount: 0,
     transactionCount: 1,
@@ -677,10 +680,11 @@ describe('buildSalesWorkbook — Sales Tracking layout', () => {
     const totalRow = sheet.getRow(headerRow + sampleProducts.length + 1)
     expect(totalRow.getCell(1).value).toBe('TOTAL')
     expect(totalRow.getCell(4).value).toBe(137) // Quantity
-    expect(totalRow.getCell(5).value).toBe(212591) // Sales Value
-    expect(totalRow.getCell(6).value).toBe(136491) // Amount Paid
-    expect(totalRow.getCell(7).value).toBe(76100) // Pending
-    expect(totalRow.getCell(9).value).toBe(1) // % of Sales = 100%
+    expect(totalRow.getCell(5).value).toBeNull() // Avg Unit Price: no overall price
+    expect(totalRow.getCell(6).value).toBe(212591) // Sales Value
+    expect(totalRow.getCell(7).value).toBe(136491) // Amount Paid
+    expect(totalRow.getCell(8).value).toBe(76100) // Pending
+    expect(totalRow.getCell(10).value).toBe(1) // % of Sales = 100%
   })
 
   it('ends the Salesperson x Product sheet with a TOTAL row', async () => {
@@ -696,10 +700,11 @@ describe('buildSalesWorkbook — Sales Tracking layout', () => {
     const totalRow = sheet.getRow(headerRow + dataRows + 1)
     expect(totalRow.getCell(1).value).toBe('TOTAL')
     expect(totalRow.getCell(4).value).toBe(137)
-    expect(totalRow.getCell(5).value).toBe(212591)
-    expect(totalRow.getCell(6).value).toBe(136491)
-    expect(totalRow.getCell(7).value).toBe(76100)
-    expect(totalRow.getCell(8).value).toBe(1) // % of Salesperson = 100%
+    expect(totalRow.getCell(5).value).toBeNull() // Avg Unit Price: no overall price
+    expect(totalRow.getCell(6).value).toBe(212591)
+    expect(totalRow.getCell(7).value).toBe(136491)
+    expect(totalRow.getCell(8).value).toBe(76100)
+    expect(totalRow.getCell(9).value).toBe(1) // % of Salesperson = 100%
   })
 })
 
@@ -828,6 +833,275 @@ describe('buildSalesWorkbook — quantity and unit display', () => {
       .slice(1)
       .map((line) => line.split(',')[5])
     expect(quantities).toEqual(['500', '12.5'])
+  })
+})
+
+describe('buildSalesWorkbook — Avg Unit Price', () => {
+  // Sample data pinning the weighted-average price: each
+  // group's TAXABLE value (quantity x unit price, before
+  // GST and freight) divided by its quantity. Column sums —
+  // quantity 1,800, invoice 212,591, paid 136,491, balance
+  // 76,100 — are the figures the TOTAL row must keep showing.
+  const AVG_LINES: DbSaleLine[] = [
+    dbLine({
+      id: 'avg_a',
+      groupId: 'grp_avg_a',
+      salespersonId: 'u_sameer',
+      salesperson: { id: 'u_sameer', name: 'Sameer Selokar', email: 'sameer@example.com' },
+      productId: 'p_branch',
+      product: catalogProduct('p_branch', 'BranChExAct RD™'),
+      quantity: 2,
+      unitPrice: 1450,
+      totalAmount: 2900,
+      gstRate: 18,
+      gstAmount: 522,
+      freightAmount: 0,
+      invoiceAmount: 3422,
+      amountPaid: 3322,
+      balanceAmount: 100,
+      paymentStatus: 'PARTIALLY_PAID',
+      paymentDate: new Date('2026-03-05T00:00:00.000Z'),
+    }),
+    dbLine({
+      id: 'avg_b',
+      groupId: 'grp_avg_b',
+      salespersonId: 'u_sameer',
+      salesperson: { id: 'u_sameer', name: 'Sameer Selokar', email: 'sameer@example.com' },
+      productId: 'p_dha',
+      product: catalogProduct('p_dha', 'DHA ExAct™ CWD'),
+      quantity: 2,
+      unitPrice: 50,
+      totalAmount: 100,
+      gstRate: 5,
+      gstAmount: 5,
+      freightAmount: 0,
+      invoiceAmount: 105,
+      amountPaid: 105,
+      paymentDate: new Date('2026-03-06T00:00:00.000Z'),
+    }),
+    dbLine({
+      id: 'avg_c',
+      groupId: 'grp_avg_c',
+      salespersonId: 'u_sameer',
+      salesperson: { id: 'u_sameer', name: 'Sameer Selokar', email: 'sameer@example.com' },
+      // No catalog product and no typed name: the row
+      // renders as "Other product".
+      productId: null,
+      product: null,
+      otherProductName: null,
+      unit: 'kg',
+      quantity: 1000,
+      unitPrice: 4.3,
+      totalAmount: 4300,
+      gstRate: 5,
+      gstAmount: 215,
+      freightAmount: 0,
+      invoiceAmount: 4515,
+      amountPaid: 4515,
+      paymentDate: new Date('2026-03-07T00:00:00.000Z'),
+    }),
+    dbLine({
+      id: 'avg_d',
+      groupId: 'grp_avg_d',
+      salespersonId: 'u_sameer',
+      salesperson: { id: 'u_sameer', name: 'Sameer Selokar', email: 'sameer@example.com' },
+      productId: 'p_alpha',
+      product: catalogProduct('p_alpha', 'AlphaExAct™ 15% WS'),
+      quantity: 100,
+      unitPrice: 6,
+      totalAmount: 600,
+      gstRate: 18,
+      gstAmount: 108,
+      freightAmount: 0,
+      invoiceAmount: 708,
+      amountPaid: 708,
+      paymentDate: new Date('2026-03-08T00:00:00.000Z'),
+    }),
+    dbLine({
+      id: 'avg_e',
+      groupId: 'grp_avg_e',
+      salespersonId: 'u_sameer',
+      salesperson: { id: 'u_sameer', name: 'Sameer Selokar', email: 'sameer@example.com' },
+      productId: 'p_met',
+      product: catalogProduct('p_met', 'MetExAct'),
+      quantity: 696,
+      unitPrice: 240,
+      totalAmount: 167040,
+      gstRate: 18,
+      gstAmount: 30067.2,
+      freightAmount: 6733.8,
+      invoiceAmount: 203841,
+      amountPaid: 127841,
+      balanceAmount: 76000,
+      paymentStatus: 'PARTIALLY_PAID',
+      paymentDate: new Date('2026-03-09T00:00:00.000Z'),
+    }),
+  ]
+  const avgRows = AVG_LINES.map(mapSaleRow)
+  const avgProducts = computeProductBreakdown(avgRows)
+  const avgSalespeople = computeSalespersonBreakdown(avgRows)
+
+  async function buildAvg() {
+    return load(
+      await buildSalesWorkbook({
+        rows: avgRows,
+        products: avgProducts,
+        salespeople: avgSalespeople,
+        kpis: computeSalesKpis(avgRows),
+        meta,
+      })
+    )
+  }
+
+  function productSheetOf(wb: ExcelJS.Workbook) {
+    const sheet = wb.worksheets[1]
+    const headerRow = rowWhere(
+      sheet,
+      (r) => r.getCell(1).value === 'Product' && r.getCell(2).value === 'Type'
+    )
+    return { sheet, headerRow }
+  }
+
+  function matrixSheetOf(wb: ExcelJS.Workbook) {
+    const sheet = wb.worksheets[2]
+    const headerRow = rowWhere(
+      sheet,
+      (r) => r.getCell(1).value === 'Salesperson' && r.getCell(2).value === 'Product'
+    )
+    return { sheet, headerRow }
+  }
+
+  it('places Avg Unit Price between Quantity and Sales Value on both sheets', async () => {
+    const wb = await buildAvg()
+
+    const { sheet, headerRow } = productSheetOf(wb)
+    expect(
+      Array.from({ length: 10 }, (_, i) => sheet.getRow(headerRow).getCell(i + 1).value)
+    ).toEqual([
+      'Product',
+      'Type',
+      'Unit',
+      'Quantity',
+      'Avg Unit Price',
+      'Sales Value',
+      'Amount Paid',
+      'Pending',
+      'Transactions',
+      '% of Sales',
+    ])
+
+    const matrix = matrixSheetOf(wb)
+    expect(
+      Array.from({ length: 9 }, (_, i) => matrix.sheet.getRow(matrix.headerRow).getCell(i + 1).value)
+    ).toEqual([
+      'Salesperson',
+      'Product',
+      'Unit',
+      'Quantity',
+      'Avg Unit Price',
+      'Sales Value',
+      'Amount Paid',
+      'Pending',
+      '% of Salesperson',
+    ])
+  })
+
+  it('prices each product at its taxable value over its quantity', async () => {
+    const wb = await buildAvg()
+    const { sheet, headerRow } = productSheetOf(wb)
+
+    const avgByProduct = new Map<string, ExcelJS.Cell>()
+    for (let r = headerRow + 1; r <= headerRow + avgProducts.length; r += 1) {
+      const row = sheet.getRow(r)
+      avgByProduct.set(String(row.getCell(1).value), row.getCell(5))
+    }
+
+    // Weighted averages, within half a paisa.
+    expect(avgByProduct.get('BranChExAct RD™')?.value).toBeCloseTo(1450, 2)
+    expect(avgByProduct.get('DHA ExAct™ CWD')?.value).toBeCloseTo(50, 2)
+    expect(avgByProduct.get('Other product')?.value).toBeCloseTo(4.3, 2)
+    expect(avgByProduct.get('AlphaExAct™ 15% WS')?.value).toBeCloseTo(6, 2)
+
+    // A numeric cell with the money format, right-aligned.
+    const cell = avgByProduct.get('BranChExAct RD™')!
+    expect(typeof cell.value).toBe('number')
+    expect(cell.numFmt).toBe('#,##0.00')
+    expect(cell.alignment?.horizontal).toBe('right')
+  })
+
+  it('shows the same four prices on Salesperson x Product', async () => {
+    const wb = await buildAvg()
+    const { sheet, headerRow } = matrixSheetOf(wb)
+
+    const avgByProduct = new Map<string, ExcelJS.Cell>()
+    for (let r = headerRow + 1; r <= headerRow + avgProducts.length; r += 1) {
+      const row = sheet.getRow(r)
+      expect(row.getCell(1).value).toBe('Sameer Selokar')
+      avgByProduct.set(String(row.getCell(2).value), row.getCell(5))
+    }
+
+    expect(avgByProduct.get('BranChExAct RD™')?.value).toBeCloseTo(1450, 2)
+    expect(avgByProduct.get('DHA ExAct™ CWD')?.value).toBeCloseTo(50, 2)
+    expect(avgByProduct.get('Other product')?.value).toBeCloseTo(4.3, 2)
+    expect(avgByProduct.get('AlphaExAct™ 15% WS')?.value).toBeCloseTo(6, 2)
+  })
+
+  it('leaves the TOTAL row Avg Unit Price empty and keeps the other totals', async () => {
+    const wb = await buildAvg()
+    const { sheet } = productSheetOf(wb)
+    const totalRow = rowWhere(sheet, (r) => r.getCell(1).value === 'TOTAL')
+    expect(totalRow).toBeGreaterThan(0)
+
+    // No overall average price — products are priced
+    // differently — but every other total is unchanged.
+    expect(sheet.getRow(totalRow).getCell(5).value).toBeNull()
+    expect(sheet.getRow(totalRow).getCell(4).value).toBe(1800)
+    expect(sheet.getRow(totalRow).getCell(6).value).toBe(212591)
+    expect(sheet.getRow(totalRow).getCell(7).value).toBe(136491)
+    expect(sheet.getRow(totalRow).getCell(8).value).toBe(76100)
+  })
+
+  it('leaves Avg Unit Price empty — not an error — for a group that sold nothing', async () => {
+    const rows = [
+      row({ productId: 'p1', productName: 'CarniExAct', quantity: 2, unitPrice: 1500, totalAmount: 3000, gstAmount: 0, freightAmount: 0, invoiceAmount: 3000 }),
+      row({
+        id: 'st_0',
+        groupId: 'grp_0',
+        invoiceNumber: 'INV-0',
+        invoiceKey: 'inv-0',
+        productId: 'p2',
+        productName: 'NacExAct',
+        // A free-sample line: nothing sold, nothing billed.
+        quantity: 0,
+        unitPrice: 3000,
+        totalAmount: 0,
+        gstAmount: 0,
+        freightAmount: 0,
+        invoiceAmount: 0,
+        amountPaid: 0,
+        balanceAmount: 0,
+        paymentStatus: 'PENDING',
+        paymentDate: null,
+      }),
+    ]
+    const wb = await load(
+      await buildSalesWorkbook({
+        rows,
+        products: computeProductBreakdown(rows),
+        salespeople: computeSalespersonBreakdown(rows),
+        kpis: computeSalesKpis(rows),
+        meta,
+      })
+    )
+    const { sheet, headerRow } = productSheetOf(wb)
+
+    const avgByProduct = new Map<string, unknown>()
+    for (let r = headerRow + 1; r <= headerRow + 2; r += 1) {
+      const sheetRow = sheet.getRow(r)
+      avgByProduct.set(String(sheetRow.getCell(1).value), sheetRow.getCell(5).value)
+    }
+    expect(avgByProduct.get('CarniExAct')).toBe(1500)
+    expect(avgByProduct.get('NacExAct')).toBeNull()
   })
 })
 

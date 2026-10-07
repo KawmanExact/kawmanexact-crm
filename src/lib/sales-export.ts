@@ -441,6 +441,7 @@ export async function buildSalesWorkbook(input: {
     { header: 'Type', key: 'kind', width: 10 },
     { header: 'Unit', key: 'unit', width: 8 },
     { header: 'Quantity', key: 'quantity', width: 14 },
+    { header: 'Avg Unit Price', key: 'avgUnitPrice', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
@@ -454,6 +455,7 @@ export async function buildSalesWorkbook(input: {
       kind: product.isOther ? 'Other' : 'Catalog',
       unit: product.unit,
       quantity: product.quantity,
+      avgUnitPrice: product.avgUnitPrice,
       totalValue: product.totalValue,
       amountPaid: product.amountPaid,
       pendingAmount: product.pendingAmount,
@@ -465,6 +467,7 @@ export async function buildSalesWorkbook(input: {
     // otherwise.
     added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
     added.getCell('share').numFmt = '0.00%'
+    added.getCell('avgUnitPrice').alignment = { horizontal: 'right' }
     added.eachCell((cell) => {
       cell.border = thinBorder
     })
@@ -481,6 +484,9 @@ export async function buildSalesWorkbook(input: {
     const productTotalRow = productWs.addRow({
       productName: 'TOTAL',
       quantity: productQuantityTotal,
+      // No overall average price: every product is
+      // priced differently, so the cell stays empty.
+      avgUnitPrice: null,
       totalValue: sumMoney(input.products.map((p) => p.totalValue)).toNumber(),
       amountPaid: sumMoney(input.products.map((p) => p.amountPaid)).toNumber(),
       pendingAmount: sumMoney(input.products.map((p) => p.pendingAmount)).toNumber(),
@@ -519,6 +525,7 @@ export async function buildSalesWorkbook(input: {
     { header: 'Product', key: 'productName', width: 32 },
     { header: 'Unit', key: 'unit', width: 8 },
     { header: 'Quantity', key: 'quantity', width: 14 },
+    { header: 'Avg Unit Price', key: 'avgUnitPrice', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
@@ -532,6 +539,7 @@ export async function buildSalesWorkbook(input: {
         productName: product.productName,
         unit: product.unit,
         quantity: product.quantity,
+        avgUnitPrice: product.avgUnitPrice,
         totalValue: product.totalValue,
         amountPaid: product.amountPaid,
         pendingAmount: product.pendingAmount,
@@ -539,6 +547,7 @@ export async function buildSalesWorkbook(input: {
       })
       added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
       added.getCell('share').numFmt = '0.00%'
+      added.getCell('avgUnitPrice').alignment = { horizontal: 'right' }
       added.eachCell((cell) => {
         cell.border = thinBorder
       })
@@ -554,6 +563,9 @@ export async function buildSalesWorkbook(input: {
     const matrixTotalRow = matrixWs.addRow({
       salespersonName: 'TOTAL',
       quantity: matrixQuantityTotal,
+      // No overall average price: every product is
+      // priced differently, so the cell stays empty.
+      avgUnitPrice: null,
       totalValue: sumMoney(matrixRows.map((p) => p.totalValue)).toNumber(),
       amountPaid: sumMoney(matrixRows.map((p) => p.amountPaid)).toNumber(),
       pendingAmount: sumMoney(matrixRows.map((p) => p.pendingAmount)).toNumber(),

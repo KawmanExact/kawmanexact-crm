@@ -113,6 +113,12 @@ export interface ProductBreakdownRow {
   totalValue: number
   /** Pre-GST subtotal = quantity x unitPrice. */
   taxableValue: number
+  /**
+   * Weighted-average unit price: taxableValue / quantity.
+   * Null when the group sold zero — there is no meaningful
+   * average price and dividing would be a divide-by-zero.
+   */
+  avgUnitPrice: number | null
   gstAmount: number
   amountPaid: number
   pendingAmount: number

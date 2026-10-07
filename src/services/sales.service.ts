@@ -289,6 +289,14 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
         quantity: toQuantity(group.quantity).toNumber(),
         totalValue: value.toNumber(),
         taxableValue: toMoney(group.taxableValue).toNumber(),
+        // Weighted-average unit price: the group's taxable
+        // value over its quantity — what a unit of this
+        // product actually sold for on average, before GST
+        // and freight. Null when nothing was sold, so the
+        // export shows an empty cell rather than #DIV/0!.
+        avgUnitPrice: group.quantity.isZero()
+          ? null
+          : toMoney(group.taxableValue.dividedBy(group.quantity)).toNumber(),
         gstAmount: toMoney(group.gstAmount).toNumber(),
         amountPaid: toMoney(group.amountPaid).toNumber(),
         pendingAmount: toMoney(value.minus(group.amountPaid)).toNumber(),
