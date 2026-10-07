@@ -81,6 +81,7 @@ export const OPTIONAL_CAPTURE_STRING_FIELDS = [
   'country',
   'pinCode',
   'purposeOfVisit',
+  'source',
 ] as const
 
 const DEAL_FIELD_NAME_MAP: Record<string, string> = {

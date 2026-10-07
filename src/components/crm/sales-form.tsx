@@ -41,6 +41,7 @@ const SALES_ERROR_ANCHOR_ID = 'sales-error-anchor'
 export interface SalesFormLine {
   productId: string
   otherProductName: string
+  unit: string
   quantity: string
   unitPrice: string
   amountPaid: string
@@ -58,6 +59,7 @@ export interface SalesFormLine {
 const emptyLine = (): SalesFormLine => ({
   productId: '',
   otherProductName: '',
+  unit: '',
   quantity: '',
   unitPrice: '',
   amountPaid: '',
@@ -130,6 +132,7 @@ export function SalesForm({
             return {
               productId: row.isOtherProduct ? OTHER_PRODUCT_SENTINEL : (isStandard ? `std-${stdIndex}` : (row.productId ?? '')),
               otherProductName: row.otherProductName ?? '',
+              unit: row.unit ?? '',
               quantity: String(row.quantity),
               unitPrice: String(row.unitPrice),
               amountPaid: String(row.amountPaid),
@@ -486,21 +489,54 @@ export function SalesForm({
                 </div>
 
                 {usesOther && (
-                  <div className="space-y-1.5 lg:col-span-2">
-                    <label htmlFor={`lines.${index}.otherProductName`} className="text-sm text-white/70">
-                      Other product name<span className="text-red-400"> *</span>
-                    </label>
-                    <Input
-                      id={`lines.${index}.otherProductName`}
-                      {...register(`lines.${index}.otherProductName` as const)}
-                      placeholder="Type the product name"
-                      maxLength={120}
-                      aria-invalid={Boolean(lineErrors.otherProductName)}
-                    />
-                    {lineErrors.otherProductName && (
-                      <p className="text-xs text-red-400">{lineErrors.otherProductName.message}</p>
-                    )}
-                  </div>
+                  <>
+                    <div className="space-y-1.5 lg:col-span-2">
+                      <label htmlFor={`lines.${index}.otherProductName`} className="text-sm text-white/70">
+                        Other product name<span className="text-red-400"> *</span>
+                      </label>
+                      <Input
+                        id={`lines.${index}.otherProductName`}
+                        {...register(`lines.${index}.otherProductName` as const)}
+                        placeholder="Type the product name"
+                        maxLength={120}
+                        aria-invalid={Boolean(lineErrors.otherProductName)}
+                      />
+                      {lineErrors.otherProductName && (
+                        <p className="text-xs text-red-400">{lineErrors.otherProductName.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <label htmlFor={`lines.${index}.unit`} className="text-sm text-white/70">
+                        Unit<span className="text-red-400"> *</span>
+                      </label>
+                      <select
+                        id={`lines.${index}.unit`}
+                        {...register(`lines.${index}.unit` as const)}
+                        aria-invalid={Boolean(lineErrors.unit)}
+                        className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      >
+                        <option value="">Select unit…</option>
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="mg">mg</option>
+                        <option value="L">L</option>
+                        <option value="mL">mL</option>
+                        <option value="µL">µL</option>
+                        <option value="pcs">pcs</option>
+                        <option value="box">box</option>
+                        <option value="bag">bag</option>
+                        <option value="drum">drum</option>
+                        <option value="tote">tote</option>
+                        <option value="pack">pack</option>
+                        <option value="roll">roll</option>
+                        <option value="m">m</option>
+                        <option value="m²">m²</option>
+                      </select>
+                      {lineErrors.unit && (
+                        <p className="text-xs text-red-400">{lineErrors.unit.message}</p>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
 

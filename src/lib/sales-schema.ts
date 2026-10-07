@@ -34,6 +34,7 @@ export const salesLineSchema = z
   .object({
     productId: z.string().trim().default(''),
     otherProductName: z.string().trim().max(OTHER_PRODUCT_NAME_MAX, 'Max 120 characters').default(''),
+    unit: z.string().trim().max(20, 'Unit max 20 characters').default(''),
     quantity: z.coerce.number().positive('Quantity must be greater than 0').refine((n) => Number.isFinite(n), 'Enter a valid quantity'),
     unitPrice: z.coerce.number().min(0, 'Unit price cannot be negative').refine((n) => Number.isFinite(n), 'Enter a valid unit price'),
     amountPaid: z.coerce.number().min(0, 'Amount paid cannot be negative').refine((n) => Number.isFinite(n), 'Enter a valid amount paid'),
@@ -65,6 +66,9 @@ export const salesLineSchema = z
     }
     if (usesOther && line.otherProductName === '') {
       ctx.addIssue({ code: 'custom', path: ['otherProductName'], message: 'Enter the product name' })
+    }
+    if (usesOther && line.unit === '') {
+      ctx.addIssue({ code: 'custom', path: ['unit'], message: 'Select a unit for "Other" products' })
     }
 
     const taxable = computeLineTotal(line.quantity, line.unitPrice)
@@ -129,6 +133,7 @@ export const salesClientLineSchema = z
   .object({
     productId: z.string().trim(),
     otherProductName: z.string().trim(),
+    unit: z.string().trim(),
     quantity: z.string().trim(),
     unitPrice: z.string().trim(),
     amountPaid: z.string().trim(),
@@ -166,6 +171,9 @@ export const salesClientLineSchema = z
     }
     if (usesOther && line.otherProductName === '') {
       ctx.addIssue({ code: 'custom', path: ['otherProductName'], message: 'Enter the product name' })
+    }
+    if (usesOther && line.unit === '') {
+      ctx.addIssue({ code: 'custom', path: ['unit'], message: 'Select a unit for "Other" products' })
     }
 
     // A blank quantity coerces to 0 on the server and is rejected there, but the

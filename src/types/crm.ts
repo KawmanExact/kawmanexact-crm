@@ -120,6 +120,7 @@ export interface Deal {
   keyDiscussion: string | null
   requirement: string | null
   meetingAt: string | null
+  meetingDate: string | null
   meetingMode: string | null
   rdFeedback: string | null
   remark: string | null

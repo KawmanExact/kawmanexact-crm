@@ -85,6 +85,7 @@ function mapDeal(row: DealRow): Deal {
     keyDiscussion: row.keyDiscussionPoints ?? null,
     requirement: row.customerRequirement ?? null,
     meetingAt: row.meetingAt ?? null,
+    meetingDate: row.meetingDate ? row.meetingDate.toISOString().slice(0, 10) : null,
     meetingMode: row.meetingMode ?? null,
     rdFeedback: row.rndFeedback ?? null,
     remark: row.remark ?? null,

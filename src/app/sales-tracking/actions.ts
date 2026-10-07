@@ -149,6 +149,7 @@ export async function moveCustomerLeadStage(
 interface PreparedLine {
   productId: string | null
   otherProductName: string | null
+  unit: string | null
   quantity: Prisma.Decimal
   unitPrice: Prisma.Decimal
   /// quantity x unitPrice — the taxable value.
@@ -199,6 +200,7 @@ function prepareLines(data: SalesFormInput): PreparedLine[] {
         : isStandardized
           ? (standardizedName ?? line.otherProductName.trim())
           : null,
+      unit: usesOther ? (line.unit?.trim() || null) : null,
       quantity: money.quantity,
       unitPrice: money.unitPrice,
       totalAmount: money.taxableAmount,

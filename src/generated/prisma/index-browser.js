@@ -553,6 +553,7 @@ exports.Prisma.SalesTransactionScalarFieldEnum = {
   customerId: 'customerId',
   productId: 'productId',
   otherProductName: 'otherProductName',
+  unit: 'unit',
   saleDate: 'saleDate',
   invoiceNumber: 'invoiceNumber',
   invoiceKey: 'invoiceKey',

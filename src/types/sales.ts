@@ -52,7 +52,10 @@ export interface SalesTransactionRow {
   customerId: string
   customerName: string
   productId: string | null
-  /** Display name: catalog "Name - variant", or the typed "Other" name. */
+  /**
+   * Display name: catalog "Name - variant", the typed "Other"
+   * name, or "Other product" when nothing was typed. Never blank.
+   */
   productName: string
   otherProductName: string | null
   isOtherProduct: boolean

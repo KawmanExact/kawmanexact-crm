@@ -380,7 +380,7 @@ export function DealForm({
         <h2 className="text-sm font-medium text-white/80">Core</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Deal / lead name *" error={state.fieldErrors?.name}>
-            <Input name="name" placeholder="Rahul Sharma" required />
+            <Input name="name" placeholder="lead name" required />
           </Field>
           <Field label="Company" error={state.fieldErrors?.company}>
             <Input name="company" placeholder="Acme Nutraceuticals" />
