@@ -14,7 +14,7 @@ import { jsPDF } from 'jspdf'
 import { applyPlugin, autoTable } from 'jspdf-autotable'
 import { toCSV, CSV_BOM, type CsvColumn } from '@/lib/csv'
 import { PAYMENT_STATUS_LABEL } from '@/lib/sales-schema'
-import type { PaymentStatus } from '@/lib/sales-money'
+import { sumMoney, sumQuantity, type PaymentStatus } from '@/lib/sales-money'
 import type { ProductBreakdownRow, SalespersonBreakdownRow, SalesTransactionRow } from '@/types/sales'
 
 /** Hard row caps. Beyond these the file says so rather than silently lying. */
@@ -34,7 +34,8 @@ export interface SalesExportMeta {
 }
 
 const MONEY_FMT = '#,##0.00'
-const QTY_FMT = '#,##0.###'
+const QTY_WHOLE_FMT = '#,##0'
+const QTY_DECIMAL_FMT = '#,##0.0##'
 const DATE_FMT = 'dd-mmm-yyyy'
 
 /** Keys of SalesTransactionRow that a column can render. */
@@ -76,7 +77,7 @@ export const SALES_EXPORT_COLUMNS: readonly SalesExportColumn[] = [
   { header: 'Customer', key: 'customerName', width: 28 },
   { header: 'Product', key: 'productName', width: 30 },
   { header: 'Invoice Number', key: 'invoiceNumber', width: 18 },
-  { header: 'Quantity', key: 'quantity', width: 12, format: QTY_FMT, align: 'right' },
+  { header: 'Quantity', key: 'quantity', width: 12, align: 'right' },
   { header: 'Unit', key: 'unit', width: 8 },
   { header: 'Unit Price', key: 'unitPrice', width: 14, format: MONEY_FMT, align: 'right' },
   { header: 'Taxable Value', key: 'totalAmount', width: 15, format: MONEY_FMT, align: 'right' },
@@ -108,6 +109,72 @@ const PAYMENT_FILL: Record<PaymentStatus, string> = {
   PAID: 'FFD6F5E6',
   PARTIALLY_PAID: 'FFFDE9C8',
   PENDING: 'FFFAD3D3',
+}
+
+/** 1 -> A, 2 -> B, ..., 27 -> AA. exceljs has no public helper. */
+function columnLetter(columnIndex: number): string {
+  let letter = ''
+  let n = columnIndex
+  while (n > 0) {
+    const remainder = (n - 1) % 26
+    letter = String.fromCharCode(65 + remainder) + letter
+    n = Math.floor((n - 1) / 26)
+  }
+  return letter
+}
+
+/**
+ * Per-cell quantity number format. `#,##0.###` (the old
+ * format) renders a whole number with a dangling decimal
+ * point ("500."), so whole quantities get no decimals at
+ * all and fractional ones keep up to three.
+ */
+function quantityNumFmt(value: number): string {
+  return Number.isInteger(value) ? QTY_WHOLE_FMT : QTY_DECIMAL_FMT
+}
+
+/** Plain-text quantity for CSV/PDF: "500", "1800", "12.5" — never "500.". */
+function formatQuantity(value: number): string {
+  if (Number.isInteger(value)) return String(value)
+  return value
+    .toFixed(3)
+    .replace(/0+$/, '')
+    .replace(/\.$/, '')
+}
+
+/** Thousands-separated quantity for the summary line: "1,200 kg, 600 pcs". */
+function formatQuantityLabel(value: number): string {
+  return value.toLocaleString('en-US', { maximumFractionDigits: 3 })
+}
+
+/**
+ * The Quantity TOTAL only makes sense when every summed row
+ * shares one unit — adding kg to pcs would be meaningless.
+ */
+function singleUnitOrNull<T extends { unit: string }>(rows: T[]): string | null {
+  const units = new Set(rows.map((row) => row.unit))
+  return units.size <= 1 ? (units.values().next().value ?? null) : null
+}
+
+/** TOTAL row treatment: bold, a rule above, and a light fill. */
+const TOTAL_BORDER: Partial<ExcelJS.Borders> = {
+  top: { style: 'medium', color: { argb: 'FF0F1D3A' } },
+  left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+  bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+  right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+}
+const TOTAL_FILL: ExcelJS.Fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } }
+
+/** Bold / bordered / filled TOTAL row, with per-column display formats. */
+function styleTotalRow(row: ExcelJS.Row, formats: Record<string, string>): void {
+  row.eachCell((cell) => {
+    cell.font = { bold: true }
+    cell.border = TOTAL_BORDER
+    cell.fill = TOTAL_FILL
+  })
+  for (const [key, format] of Object.entries(formats)) {
+    row.getCell(key).numFmt = format
+  }
 }
 
 function exportDate(date: Date): string {
@@ -159,8 +226,11 @@ export async function buildSalesWorkbook(input: {
 
   // ---- Detail sheet ----
   const ws = wb.addWorksheet('Sales Transactions')
+  // Column definitions register the keys (so rows can be written by key)
+  // and the widths. NO `header` here: exceljs writes column headers into
+  // row 1, and the title block below owns row 1 — the report's real
+  // header row is written explicitly at `headerRowNumber` further down.
   ws.columns = SALES_EXPORT_COLUMNS.map((col) => ({
-    header: col.header,
     key: col.key as string,
     width: Math.min(50, Math.max(10, col.width)),
   }))
@@ -212,7 +282,10 @@ export async function buildSalesWorkbook(input: {
     { label: 'Number of Transactions', value: input.kpis.transactionCount, money: false },
     {
       label: 'Total Quantity Sold',
-      value: input.kpis.quantityByUnit.map((q) => `${q.quantity} ${q.unit}`).join(', ') || '0',
+      value:
+        input.kpis.quantityByUnit
+          .map((q) => `${formatQuantityLabel(q.quantity)} ${q.unit}`)
+          .join(', ') || '0',
       money: false,
     },
     { label: 'Total Taxable Value', value: input.kpis.totalTaxableValue, money: true },
@@ -244,82 +317,111 @@ export async function buildSalesWorkbook(input: {
   const excelHeader = ws.getRow(headerRowNumber)
   for (const col of SALES_EXPORT_COLUMNS) {
     const cell = excelHeader.getCell(col.key as string)
+    // The header TEXT is written here, on the very row that is
+    // styled — styling alone renders an empty row in Excel.
+    cell.value = col.header
     cell.fill = headerFill
     cell.font = headerFont
-    cell.alignment = { vertical: 'middle', horizontal: col.align ?? 'left', wrapText: true }
+    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
     cell.border = thinBorder
   }
-  excelHeader.height = 22
+  excelHeader.height = 30
 
-  const dataStartRow = headerRowNumber + 1
-  let dataRowNumber = dataStartRow
+  const firstDataRow = headerRowNumber + 1
+  let dataRowNumber = firstDataRow
 
   for (const record of input.rows) {
-    dataRowNumber += 1
     const excelRow = ws.getRow(dataRowNumber)
-    const excelRowNumber = excelRow.number
     for (const col of SALES_EXPORT_COLUMNS) {
       const cell = excelRow.getCell(col.key as string)
       cell.value = cellValue(record, col.key) as string | number | null
       cell.border = thinBorder
       cell.alignment = { horizontal: col.align ?? 'left' }
-      if (col.format) cell.numFmt = col.format
+      if (col.key === 'quantity') {
+        // Chosen per cell: a whole quantity gets no
+        // decimal point, a fractional one keeps its
+        // decimals without trailing zeros.
+        cell.numFmt = quantityNumFmt(record.quantity)
+      } else if (col.format) {
+        cell.numFmt = col.format
+      }
     }
     // Dates are stored as real Date objects so Excel can sort/filter them.
-    ws.getCell(excelRowNumber, 1).value = new Date(record.saleDate)
-    ws.getCell(excelRowNumber, 1).numFmt = DATE_FMT
-    ws.getCell(excelRowNumber, 1).alignment = { horizontal: 'left' }
+    const dateColumn = SALES_EXPORT_COLUMNS.findIndex((c) => c.key === 'saleDate') + 1
+    ws.getCell(dataRowNumber, dateColumn).value = new Date(record.saleDate)
+    ws.getCell(dataRowNumber, dateColumn).numFmt = DATE_FMT
+    ws.getCell(dataRowNumber, dateColumn).alignment = { horizontal: 'left' }
+    const paymentDateColumn = SALES_EXPORT_COLUMNS.findIndex((c) => c.key === 'paymentDate') + 1
     if (record.paymentDate) {
-      ws.getCell(excelRowNumber, 19).value = new Date(record.paymentDate)
-      ws.getCell(excelRowNumber, 19).numFmt = DATE_FMT
+      ws.getCell(dataRowNumber, paymentDateColumn).value = new Date(record.paymentDate)
+      ws.getCell(dataRowNumber, paymentDateColumn).numFmt = DATE_FMT
     }
 
     const statusCell = excelRow.getCell('paymentStatus')
     statusCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: PAYMENT_FILL[record.paymentStatus] } }
 
-    if ((dataRowNumber - dataStartRow) % 2 === 0) {
+    if ((dataRowNumber - firstDataRow) % 2 === 1) {
       for (const col of SALES_EXPORT_COLUMNS) {
         if (col.key === 'paymentStatus') continue
         const cell = excelRow.getCell(col.key as string)
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } }
       }
     }
+    dataRowNumber += 1
   }
+  const lastDataRow = dataRowNumber - 1
 
-  if (dataRowNumber >= dataStartRow) {
-    // Totals row using real SUM formulas so the recipient can re-check.
-    // Unit price is deliberately NOT summed: a total of prices means nothing.
-    const totalsRow = ws.getRow(dataRowNumber + 1)
+  if (input.rows.length > 0) {
+    // Totals row. Every SUM formula carries a CACHED RESULT (the
+    // `result` field, summed here from the rows with the Decimal
+    // helpers): Excel, Protected View, previewers and importers all
+    // show the number, while the recipient can still re-check the
+    // formula. Unit price is deliberately NOT summed: a total of
+    // prices means nothing.
+    const totalsRow = ws.getRow(lastDataRow + 1)
     totalsRow.getCell('productName').value = 'TOTAL'
-    totalsRow.getCell('productName').font = { bold: true }
-    const sums: Array<[ColumnKey, string]> = [
-      ['quantity', 'F'],
-      ['totalAmount', 'I'],
-      ['gstAmount', 'K'],
-      ['freightAmount', 'L'],
-      ['invoiceAmount', 'M'],
-      ['advanceAmount', 'N'],
-      ['amountPaid', 'O'],
-      ['pdcAmount', 'P'],
-      ['balanceAmount', 'Q'],
+    totalsRow.getCell('salespersonName').value = `${input.rows.length} rows`
+
+    const totalValues: Array<[ColumnKey, number | null]> = [
+      // The quantity total is left blank when the rows
+      // mix units — kg and pcs cannot be added into one
+      // figure. The Summary block reports each unit
+      // separately instead.
+      ['quantity', singleUnitOrNull(input.rows) ? sumQuantity(input.rows.map((r) => r.quantity)).toNumber() : null],
+      ['totalAmount', sumMoney(input.rows.map((r) => r.totalAmount)).toNumber()],
+      ['gstAmount', sumMoney(input.rows.map((r) => r.gstAmount)).toNumber()],
+      ['freightAmount', sumMoney(input.rows.map((r) => r.freightAmount)).toNumber()],
+      ['invoiceAmount', sumMoney(input.rows.map((r) => r.invoiceAmount)).toNumber()],
+      ['advanceAmount', sumMoney(input.rows.map((r) => r.advanceAmount)).toNumber()],
+      ['amountPaid', sumMoney(input.rows.map((r) => r.amountPaid)).toNumber()],
+      ['pdcAmount', sumMoney(input.rows.map((r) => r.pdcAmount)).toNumber()],
+      ['balanceAmount', sumMoney(input.rows.map((r) => r.balanceAmount)).toNumber()],
     ]
-    for (const [key, colLetter] of sums) {
+    for (const [key, result] of totalValues) {
+      if (result === null) continue
       const colIndex = SALES_EXPORT_COLUMNS.findIndex((c) => c.key === key) + 1
+      const letter = columnLetter(colIndex)
       const cell = totalsRow.getCell(colIndex)
-      cell.value = { formula: `SUM(${colLetter}${dataStartRow}:${colLetter}${dataRowNumber})` }
-      cell.font = { bold: true }
-      cell.numFmt = key === 'quantity' ? QTY_FMT : MONEY_FMT
+      cell.value = { formula: `SUM(${letter}${firstDataRow}:${letter}${lastDataRow})`, result }
+      cell.numFmt = key === 'quantity' ? quantityNumFmt(result) : MONEY_FMT
       cell.alignment = { horizontal: 'right' }
     }
-    const rowCountCell = totalsRow.getCell(2)
-    rowCountCell.value = { formula: `COUNTA(C${dataStartRow}:C${dataRowNumber})&" rows"` }
-    rowCountCell.font = { bold: true }
+
+    for (const col of SALES_EXPORT_COLUMNS) {
+      const cell = totalsRow.getCell(col.key as string)
+      cell.font = { bold: true }
+      cell.border = TOTAL_BORDER
+      cell.fill = TOTAL_FILL
+    }
 
     ws.autoFilter = {
       from: { row: headerRowNumber, column: 1 },
-      to: { row: dataRowNumber, column: SALES_EXPORT_COLUMNS.length },
+      to: { row: lastDataRow, column: SALES_EXPORT_COLUMNS.length },
     }
-    ws.views = [{ state: 'frozen', xSplit: 0, ySplit: headerRowNumber }]
+    // Freeze the header row and the first three columns (date,
+    // salesperson, customer) so the row stays identifiable when
+    // scrolling right.
+    ws.views = [{ state: 'frozen', xSplit: 3, ySplit: headerRowNumber }]
     ws.pageSetup = {
       paperSize: 9,
       orientation: 'landscape',
@@ -338,7 +440,7 @@ export async function buildSalesWorkbook(input: {
     { header: 'Product', key: 'productName', width: 32 },
     { header: 'Type', key: 'kind', width: 10 },
     { header: 'Unit', key: 'unit', width: 8 },
-    { header: 'Quantity', key: 'quantity', width: 14, style: { numFmt: QTY_FMT } },
+    { header: 'Quantity', key: 'quantity', width: 14 },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
@@ -358,13 +460,49 @@ export async function buildSalesWorkbook(input: {
       transactionCount: product.transactionCount,
       share: product.share / 100,
     })
+    // Per-cell quantity format: no dangling decimal
+    // point on whole numbers, up to three decimals
+    // otherwise.
+    added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
     added.getCell('share').numFmt = '0.00%'
     added.eachCell((cell) => {
       cell.border = thinBorder
     })
   }
+  // The quantity grand total is only meaningful when
+  // every product sells in the same unit.
+  const productQuantityTotal = singleUnitOrNull(input.products)
+    ? sumQuantity(input.products.map((p) => p.quantity)).toNumber()
+    : null
+  if (input.products.length > 0) {
+    // Grand total across products. Plain values (like the GST
+    // Summary grand total) so the figures are visible everywhere,
+    // not only after Excel recalculates.
+    const productTotalRow = productWs.addRow({
+      productName: 'TOTAL',
+      quantity: productQuantityTotal,
+      totalValue: sumMoney(input.products.map((p) => p.totalValue)).toNumber(),
+      amountPaid: sumMoney(input.products.map((p) => p.amountPaid)).toNumber(),
+      pendingAmount: sumMoney(input.products.map((p) => p.pendingAmount)).toNumber(),
+      transactionCount: input.products.reduce((count, p) => count + p.transactionCount, 0),
+      share: 1,
+    })
+    styleTotalRow(
+      productTotalRow,
+      {
+        ...(productQuantityTotal !== null ? { quantity: quantityNumFmt(productQuantityTotal) } : {}),
+        totalValue: MONEY_FMT,
+        amountPaid: MONEY_FMT,
+        pendingAmount: MONEY_FMT,
+        share: '0.00%',
+      }
+    )
+  }
   productWs.views = [{ state: 'frozen', ySplit: productHeaderRow }]
-  productWs.autoFilter = { from: { row: productHeaderRow, column: 1 }, to: { row: productWs.rowCount, column: productWs.columnCount } }
+  productWs.autoFilter = {
+    from: { row: productHeaderRow, column: 1 },
+    to: { row: productHeaderRow + input.products.length, column: productWs.columnCount },
+  }
   productWs.pageSetup = {
     paperSize: 9,
     orientation: 'landscape',
@@ -380,7 +518,7 @@ export async function buildSalesWorkbook(input: {
     { header: 'Salesperson', key: 'salespersonName', width: 22 },
     { header: 'Product', key: 'productName', width: 32 },
     { header: 'Unit', key: 'unit', width: 8 },
-    { header: 'Quantity', key: 'quantity', width: 14, style: { numFmt: QTY_FMT } },
+    { header: 'Quantity', key: 'quantity', width: 14 },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
@@ -399,14 +537,44 @@ export async function buildSalesWorkbook(input: {
         pendingAmount: product.pendingAmount,
         share: product.share / 100,
       })
+      added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
       added.getCell('share').numFmt = '0.00%'
       added.eachCell((cell) => {
         cell.border = thinBorder
       })
     }
   }
+  const matrixRows = input.salespeople.flatMap((seller) => seller.products)
+  // Same rule as the other sheets: no single quantity
+  // total across mixed units.
+  const matrixQuantityTotal = singleUnitOrNull(matrixRows)
+    ? sumQuantity(matrixRows.map((p) => p.quantity)).toNumber()
+    : null
+  if (matrixRows.length > 0) {
+    const matrixTotalRow = matrixWs.addRow({
+      salespersonName: 'TOTAL',
+      quantity: matrixQuantityTotal,
+      totalValue: sumMoney(matrixRows.map((p) => p.totalValue)).toNumber(),
+      amountPaid: sumMoney(matrixRows.map((p) => p.amountPaid)).toNumber(),
+      pendingAmount: sumMoney(matrixRows.map((p) => p.pendingAmount)).toNumber(),
+      share: 1,
+    })
+    styleTotalRow(
+      matrixTotalRow,
+      {
+        ...(matrixQuantityTotal !== null ? { quantity: quantityNumFmt(matrixQuantityTotal) } : {}),
+        totalValue: MONEY_FMT,
+        amountPaid: MONEY_FMT,
+        pendingAmount: MONEY_FMT,
+        share: '0.00%',
+      }
+    )
+  }
   matrixWs.views = [{ state: 'frozen', ySplit: matrixHeaderRow }]
-  matrixWs.autoFilter = { from: { row: matrixHeaderRow, column: 1 }, to: { row: matrixWs.rowCount, column: matrixWs.columnCount } }
+  matrixWs.autoFilter = {
+    from: { row: matrixHeaderRow, column: 1 },
+    to: { row: matrixHeaderRow + matrixRows.length, column: matrixWs.columnCount },
+  }
   matrixWs.pageSetup = {
     paperSize: 9,
     orientation: 'landscape',
@@ -577,7 +745,9 @@ export function buildSalesPdf(input: {
 
   // KPI summary block.
   const quantityText =
-    input.kpis.quantityByUnit.map((q) => `${q.quantity} ${q.unit}`).join(', ') || '0'
+    input.kpis.quantityByUnit
+      .map((q) => `${formatQuantityLabel(q.quantity)} ${q.unit}`)
+      .join(', ') || '0'
   const kpiLines: Array<[string, string]> = [
     ['Total Sales', String(input.kpis.totalSales)],
     ['Total Quantity', quantityText],
@@ -609,7 +779,7 @@ export function buildSalesPdf(input: {
     row.customerName,
     row.productName,
     row.invoiceNumber,
-    String(row.quantity),
+    formatQuantity(row.quantity),
     row.unit,
     row.unitPrice.toFixed(2),
     row.totalAmount.toFixed(2),
@@ -696,7 +866,15 @@ export function buildSalesCsv(rows: SalesTransactionRow[]): string {
     const out: SalesCsvRow = {}
     for (const col of SALES_EXPORT_COLUMNS) {
       const value = cellValue(row, col.key)
-      out[col.key] = value === null ? '' : escapeFormulaInjection(String(value))
+      out[col.key] =
+        value === null
+          ? ''
+          : col.key === 'quantity'
+            // Quantities print without a trailing
+            // decimal point and without trailing
+            // zeros: 500, 1800, 12.5.
+            ? formatQuantity(Number(value))
+            : escapeFormulaInjection(String(value))
     }
     return out
   })

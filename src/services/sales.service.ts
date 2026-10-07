@@ -73,7 +73,9 @@ export function mapSaleRow(row: SaleWithRelations): SalesTransactionRow {
     ? productOptionLabel({ name: row.product.name, variant: row.product.variant })
     : isStandardized
       ? STANDARD_PRODUCTS[Number((row.productId as string).replace('std-', ''))] ?? (row.productId as string)
-      : (otherName ?? 'Other')
+      : // `||`, not `??`: an empty-string otherProductName (the zod default)
+        // must fall through to the label, never render as a blank product.
+        (otherName || 'Other product')
 
   return {
     id: row.id,
@@ -90,7 +92,11 @@ export function mapSaleRow(row: SaleWithRelations): SalesTransactionRow {
     productName,
     otherProductName: row.otherProductName,
     isOtherProduct: isOther,
-    unit: row.product?.unit ?? 'unit',
+    // Unit resolution: the sale line's own stored unit first
+    // (set for "Other" products), then the catalog product's
+    // unit, then "kg" — the default unit of measure. The
+    // literal string "unit" is never a valid fallback.
+    unit: row.unit || row.product?.unit || 'kg',
     quantity: toQuantity(row.quantity).toNumber(),
     unitPrice: toMoney(row.unitPrice).toNumber(),
     totalAmount: toMoney(row.totalAmount).toNumber(),
@@ -235,7 +241,10 @@ export function computeProductBreakdown(rows: SalesTransactionRow[]): ProductBre
   let grandTotal = new PrismaNS.Decimal(0)
 
   for (const row of rows) {
-    const otherName = (row.otherProductName ?? row.productName).trim()
+    // `||`, not `??`: a blank otherProductName falls back to the name
+    // mapSaleRow already resolved (the typed name, or "Other product"),
+    // so typed "Other" lines group by their name, never a blank bucket.
+    const otherName = (row.otherProductName || row.productName).trim()
     const key = row.isOtherProduct
       ? `other:${otherName.toLowerCase()}`
       : (row.productId ?? otherName.toLowerCase())

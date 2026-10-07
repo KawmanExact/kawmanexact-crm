@@ -10,8 +10,15 @@ import {
   buildSalesWorkbook,
   escapeFormulaInjection,
   salesExportFilename,
+  SALES_EXPORT_COLUMNS,
   type SalesExportMeta,
 } from './sales-export'
+import {
+  computeProductBreakdown,
+  computeSalesKpis,
+  computeSalespersonBreakdown,
+  mapSaleRow,
+} from '@/services/sales.service'
 import type { ProductBreakdownRow, SalesTransactionRow } from '@/types/sales'
 
 function row(overrides: Partial<SalesTransactionRow> = {}): SalesTransactionRow {
@@ -202,13 +209,34 @@ describe('buildSalesPdf', () => {
   })
 })
 
-describe('buildSalesWorkbook', () => {
-  async function load(buffer: Buffer) {
-    const wb = new ExcelJS.Workbook()
-    await wb.xlsx.load(buffer as unknown as ArrayBuffer)
-    return wb
-  }
+/** Read a generated workbook back with the real exceljs. */
+async function load(buffer: Buffer) {
+  const wb = new ExcelJS.Workbook()
+  await wb.xlsx.load(buffer as unknown as ArrayBuffer)
+  return wb
+}
 
+/** 1-based row number of the first row matching the predicate. */
+function rowWhere(
+  sheet: ExcelJS.Worksheet,
+  predicate: (row: ExcelJS.Row) => boolean
+): number {
+  let found = 0
+  sheet.eachRow((row, rowNumber) => {
+    if (!found && predicate(row)) found = rowNumber
+  })
+  return found
+}
+
+/** The styled column-header row of the detail sheet. */
+function detailHeaderRow(sheet: ExcelJS.Worksheet): number {
+  return rowWhere(
+    sheet,
+    (row) => row.getCell(1).value === 'Date' && row.getCell(8).value === 'Unit Price'
+  )
+}
+
+describe('buildSalesWorkbook', () => {
   it('produces a readable .xlsx workbook', async () => {
     const wb = await load(
       await buildSalesWorkbook({ rows: [row()], products, salespeople, kpis, meta })
@@ -298,6 +326,508 @@ describe('buildSalesWorkbook', () => {
       })
     )
     expect(wb.worksheets.length).toBe(4)
+  })
+})
+
+// ============================================================
+// Sales Tracking workbook layout. The six-invoice sample below
+// pins the layout a previewer or an Excel Protected View session
+// sees WITHOUT recalculating anything: a real header row, no
+// blank row under it, and TOTAL cells that already carry values.
+// ============================================================
+
+/** A sale line as it comes out of Prisma (relations included). */
+interface DbSaleLine {
+  id: string
+  groupId: string
+  organizationId: string
+  salespersonId: string
+  salesperson: { id: string; name: string; email: string }
+  customerId: string
+  customer: { id: string; name: string }
+  productId: string | null
+  product: { id: string; name: string; variant: string | null; unit: string } | null
+  otherProductName: string | null
+  unit: string | null
+  saleDate: Date
+  invoiceNumber: string
+  invoiceKey: string
+  hsnCode: string | null
+  quantity: number
+  unitPrice: number
+  totalAmount: number
+  gstRate: number
+  gstAmount: number
+  freightAmount: number
+  invoiceAmount: number
+  advanceAmount: number
+  pdcAmount: number
+  amountPaid: number
+  balanceAmount: number
+  paymentStatus: 'PAID' | 'PARTIALLY_PAID' | 'PENDING'
+  paymentDate: Date | null
+  paymentMode: string | null
+  purchaseOrderNo: string | null
+  leadTimeDays: number | null
+  remarks: string | null
+  lineNumber: number
+}
+
+function dbLine(overrides: Partial<DbSaleLine> = {}): DbSaleLine {
+  return {
+    id: 'st_1',
+    groupId: 'grp_1',
+    organizationId: 'org_1',
+    salespersonId: 'u1',
+    salesperson: { id: 'u1', name: 'Priya Sharma', email: 'priya@example.com' },
+    customerId: 'c1',
+    customer: { id: 'c1', name: 'Acme Nutrition' },
+    productId: null,
+    product: null,
+    otherProductName: null,
+    unit: null,
+    saleDate: new Date('2026-03-01T00:00:00.000Z'),
+    invoiceNumber: 'INV-176095',
+    invoiceKey: 'inv-176095',
+    hsnCode: null,
+    quantity: 0,
+    unitPrice: 0,
+    totalAmount: 0,
+    gstRate: 0,
+    gstAmount: 0,
+    freightAmount: 0,
+    invoiceAmount: 0,
+    advanceAmount: 0,
+    pdcAmount: 0,
+    amountPaid: 0,
+    balanceAmount: 0,
+    paymentStatus: 'PAID',
+    paymentDate: null,
+    paymentMode: null,
+    purchaseOrderNo: null,
+    leadTimeDays: null,
+    remarks: null,
+    lineNumber: 1,
+    ...overrides,
+  }
+}
+
+function catalogProduct(id: string, name: string): NonNullable<DbSaleLine['product']> {
+  return { id, name, variant: null, unit: 'kg' }
+}
+
+/**
+ * Six invoices: one typed "Other" product (Spray Dried Powder),
+ * one 0%-GST catalog line (NacExAct), and one partially paid
+ * invoice (INV-176100: 176100 invoiced, 100000 paid, 76100
+ * outstanding). Column sums — invoice 212591, paid 136491,
+ * balance 76100 — are the figures the summary block must keep.
+ */
+const SAMPLE_LINES: DbSaleLine[] = [
+  dbLine({
+    id: 'st_a',
+    groupId: 'grp_a',
+    productId: 'p1',
+    product: catalogProduct('p1', 'CarniExAct'),
+    quantity: 5,
+    unitPrice: 1500,
+    totalAmount: 7500,
+    gstRate: 18,
+    gstAmount: 1350,
+    freightAmount: 100,
+    invoiceAmount: 8950,
+    amountPaid: 8950,
+    paymentDate: new Date('2026-03-05T00:00:00.000Z'),
+  }),
+  dbLine({
+    id: 'st_b',
+    groupId: 'grp_b',
+    otherProductName: 'Spray Dried Powder',
+    unit: 'kg',
+    quantity: 20,
+    unitPrice: 250,
+    totalAmount: 5000,
+    gstRate: 5,
+    gstAmount: 250,
+    freightAmount: 0,
+    invoiceAmount: 5250,
+    amountPaid: 5250,
+    paymentDate: new Date('2026-03-06T00:00:00.000Z'),
+  }),
+  dbLine({
+    id: 'st_c',
+    groupId: 'grp_c',
+    productId: 'p2',
+    product: catalogProduct('p2', 'NacExAct'),
+    quantity: 2,
+    unitPrice: 3000,
+    totalAmount: 6000,
+    gstRate: 0,
+    gstAmount: 0,
+    freightAmount: 200,
+    invoiceAmount: 6200,
+    amountPaid: 6200,
+    paymentDate: new Date('2026-03-07T00:00:00.000Z'),
+  }),
+  dbLine({
+    id: 'st_d',
+    groupId: 'grp_d',
+    invoiceNumber: 'INV-176100',
+    invoiceKey: 'inv-176100',
+    productId: 'p3',
+    product: catalogProduct('p3', 'MetExAct'),
+    quantity: 100,
+    unitPrice: 1480,
+    totalAmount: 148000,
+    gstRate: 18,
+    gstAmount: 26640,
+    freightAmount: 1460,
+    invoiceAmount: 176100,
+    amountPaid: 100000,
+    balanceAmount: 76100,
+    paymentStatus: 'PARTIALLY_PAID',
+    paymentDate: new Date('2026-03-08T00:00:00.000Z'),
+  }),
+  dbLine({
+    id: 'st_e',
+    groupId: 'grp_e',
+    invoiceNumber: 'INV-176101',
+    invoiceKey: 'inv-176101',
+    productId: 'p4',
+    product: catalogProduct('p4', 'AlphaExAct™ 75%'),
+    quantity: 4,
+    unitPrice: 950,
+    totalAmount: 3800,
+    gstRate: 18,
+    gstAmount: 684,
+    freightAmount: 15,
+    invoiceAmount: 4499,
+    amountPaid: 4499,
+    paymentDate: new Date('2026-03-09T00:00:00.000Z'),
+  }),
+  dbLine({
+    id: 'st_f',
+    groupId: 'grp_f',
+    invoiceNumber: 'INV-176102',
+    invoiceKey: 'inv-176102',
+    productId: 'p5',
+    product: catalogProduct('p5', 'ArginExAct™'),
+    quantity: 6,
+    unitPrice: 1800,
+    totalAmount: 10800,
+    gstRate: 5,
+    gstAmount: 540,
+    freightAmount: 252,
+    invoiceAmount: 11592,
+    amountPaid: 11592,
+    paymentDate: new Date('2026-03-10T00:00:00.000Z'),
+  }),
+]
+
+describe('buildSalesWorkbook — Sales Tracking layout', () => {
+  const sampleRows = SAMPLE_LINES.map(mapSaleRow)
+  const sampleKpis = computeSalesKpis(sampleRows)
+  const sampleProducts = computeProductBreakdown(sampleRows)
+  const sampleSalespeople = computeSalespersonBreakdown(sampleRows)
+
+  async function buildSample() {
+    return load(
+      await buildSalesWorkbook({
+        rows: sampleRows,
+        products: sampleProducts,
+        salespeople: sampleSalespeople,
+        kpis: sampleKpis,
+        meta,
+      })
+    )
+  }
+
+  it('keeps the sample totals the report is known for', () => {
+    // Guards against the sample drifting from the figures the
+    // summary block (and every other format) must keep showing.
+    expect(sampleKpis.totalSalesValue).toBe(212591)
+    expect(sampleKpis.totalAmountPaid).toBe(136491)
+    expect(sampleKpis.totalPendingAmount).toBe(76100)
+  })
+
+  it('writes every column header as text on the styled header row', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    expect(headerRow).toBeGreaterThan(0)
+
+    const headers: string[] = []
+    for (let col = 1; col <= SALES_EXPORT_COLUMNS.length; col += 1) {
+      const value = sheet.getRow(headerRow).getCell(col).value
+      expect(typeof value).toBe('string')
+      expect(String(value).trim().length).toBeGreaterThan(0)
+      headers.push(String(value))
+    }
+    expect(headers).toContain('Unit Price')
+    expect(headers).toEqual(SALES_EXPORT_COLUMNS.map((col) => col.header))
+  })
+
+  it('puts the first data row immediately under the header (no blank row)', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const firstDataRow = sheet.getRow(headerRow + 1)
+    expect(firstDataRow.getCell(1).value).toBeInstanceOf(Date)
+    expect(firstDataRow.getCell(4).value).toBe('CarniExAct')
+    expect(firstDataRow.getCell(5).value).toBe('INV-176095')
+  })
+
+  it('freezes the header row and first three columns, and filters header..last data row', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const lastDataRow = headerRow + sampleRows.length
+    expect(sheet.autoFilter).toBe(`A${headerRow}:U${lastDataRow}`)
+
+    const view = sheet.views[0]
+    expect(view.state).toBe('frozen')
+    expect(view.ySplit).toBe(headerRow)
+    expect(view.xSplit).toBe(3)
+    expect(view.topLeftCell).toBe(`D${headerRow + 1}`)
+  })
+
+  it('formats Unit Price as a right-aligned number taken from the line price', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const unitPriceCell = sheet.getRow(headerRow + 1).getCell(8)
+    expect(typeof unitPriceCell.value).toBe('number')
+    expect(unitPriceCell.value).toBe(1500)
+    expect(unitPriceCell.numFmt).toBe('#,##0.00')
+    expect(unitPriceCell.alignment?.horizontal).toBe('right')
+  })
+
+  it('fills the Product cell of every row, including the typed "Other" name', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const products: string[] = []
+    for (let r = headerRow + 1; r <= headerRow + sampleRows.length; r += 1) {
+      const value = sheet.getRow(r).getCell(4).value
+      expect(typeof value).toBe('string')
+      expect(String(value).trim().length).toBeGreaterThan(0)
+      products.push(String(value))
+    }
+    expect(products).toContain('Spray Dried Powder')
+    expect(products).toContain('NacExAct')
+  })
+
+  it('writes the TOTAL row with cached formula results', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const lastDataRow = headerRow + sampleRows.length
+    const totalsRow = sheet.getRow(lastDataRow + 1)
+
+    expect(totalsRow.getCell(4).value).toBe('TOTAL')
+    // The row count is a plain string, not a formula.
+    expect(totalsRow.getCell(2).value).toBe('6 rows')
+
+    // [column, range letter, expected cached result]
+    const expectations: Array<[number, string, number]> = [
+      [6, 'F', 137], // Quantity
+      [9, 'I', 181100], // Taxable Value
+      [11, 'K', 29464], // GST Amount
+      [12, 'L', 2027], // Freight
+      [13, 'M', 212591], // Invoice Amount
+      [14, 'N', 0], // Advance Received
+      [15, 'O', 136491], // Amount Paid
+      [16, 'P', 0], // PDC Amount
+      [17, 'Q', 76100], // Pending / Balance
+    ]
+    for (const [col, letter, expected] of expectations) {
+      const value = totalsRow.getCell(col).value as ExcelJS.CellFormulaValue
+      expect(typeof value).toBe('object')
+      expect(value.formula).toBe(`SUM(${letter}${headerRow + 1}:${letter}${lastDataRow})`)
+      // exceljs drops a cached 0 on read-back, but the file itself
+      // carries <v>0</v> — undefined and 0 both mean a cached zero.
+      expect(value.result ?? 0).toBe(expected)
+    }
+  })
+
+  it('ends the Product-wise sheet with a TOTAL row and no blank product names', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[1]
+    const headerRow = rowWhere(
+      sheet,
+      (row) => row.getCell(1).value === 'Product' && row.getCell(2).value === 'Type'
+    )
+    expect(headerRow).toBeGreaterThan(0)
+
+    const products: string[] = []
+    for (let r = headerRow + 1; r <= headerRow + sampleProducts.length; r += 1) {
+      const row = sheet.getRow(r)
+      const value = row.getCell(1).value
+      expect(typeof value).toBe('string')
+      expect(String(value).trim().length).toBeGreaterThan(0)
+      products.push(String(value))
+    }
+    expect(products).toContain('Spray Dried Powder')
+    // The typed "Other" line keeps its Type badge.
+    const otherRow = sheet
+      .getRow(headerRow + 1 + products.indexOf('Spray Dried Powder'))
+    expect(otherRow.getCell(2).value).toBe('Other')
+
+    // The sheet ends with a TOTAL row carrying the grand totals.
+    const totalRow = sheet.getRow(headerRow + sampleProducts.length + 1)
+    expect(totalRow.getCell(1).value).toBe('TOTAL')
+    expect(totalRow.getCell(4).value).toBe(137) // Quantity
+    expect(totalRow.getCell(5).value).toBe(212591) // Sales Value
+    expect(totalRow.getCell(6).value).toBe(136491) // Amount Paid
+    expect(totalRow.getCell(7).value).toBe(76100) // Pending
+    expect(totalRow.getCell(9).value).toBe(1) // % of Sales = 100%
+  })
+
+  it('ends the Salesperson x Product sheet with a TOTAL row', async () => {
+    const wb = await buildSample()
+    const sheet = wb.worksheets[2]
+    const headerRow = rowWhere(
+      sheet,
+      (row) => row.getCell(1).value === 'Salesperson' && row.getCell(2).value === 'Product'
+    )
+    expect(headerRow).toBeGreaterThan(0)
+
+    const dataRows = sampleSalespeople.reduce((count, seller) => count + seller.products.length, 0)
+    const totalRow = sheet.getRow(headerRow + dataRows + 1)
+    expect(totalRow.getCell(1).value).toBe('TOTAL')
+    expect(totalRow.getCell(4).value).toBe(137)
+    expect(totalRow.getCell(5).value).toBe(212591)
+    expect(totalRow.getCell(6).value).toBe(136491)
+    expect(totalRow.getCell(7).value).toBe(76100)
+    expect(totalRow.getCell(8).value).toBe(1) // % of Salesperson = 100%
+  })
+})
+
+describe('buildSalesWorkbook — quantity and unit display', () => {
+  async function buildRows(rows: SalesTransactionRow[]) {
+    return load(
+      await buildSalesWorkbook({
+        rows,
+        products: computeProductBreakdown(rows),
+        salespeople: computeSalespersonBreakdown(rows),
+        kpis: computeSalesKpis(rows),
+        meta,
+      })
+    )
+  }
+
+  it('formats a whole-number quantity with no trailing decimal point', async () => {
+    const wb = await buildRows([row({ quantity: 500 })])
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const qtyCell = sheet.getRow(headerRow + 1).getCell(6)
+    // Stays a number, not text.
+    expect(typeof qtyCell.value).toBe('number')
+    expect(qtyCell.value).toBe(500)
+    expect(qtyCell.numFmt).toBe('#,##0')
+  })
+
+  it('keeps the decimals of a fractional quantity, without trailing zeros', async () => {
+    const wb = await buildRows([row({ quantity: 12.5 })])
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const qtyCell = sheet.getRow(headerRow + 1).getCell(6)
+    expect(qtyCell.value).toBe(12.5)
+    expect(qtyCell.numFmt).toBe('#,##0.0##')
+  })
+
+  it('totals a uniform-unit quantity with the matching format', async () => {
+    const wb = await buildRows([
+      row({ quantity: 12.5 }),
+      row({ id: 'st_2', groupId: 'grp_2', invoiceNumber: 'INV-2', invoiceKey: 'inv-2', quantity: 25.25 }),
+    ])
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const totalQty = sheet.getRow(headerRow + 3).getCell(6)
+    expect((totalQty.value as ExcelJS.CellFormulaValue).result).toBe(37.75)
+    expect(totalQty.numFmt).toBe('#,##0.0##')
+  })
+
+  it('leaves the Quantity TOTAL blank when the rows mix units', async () => {
+    const rows = [
+      row({ quantity: 1200, unit: 'kg' }),
+      row({
+        id: 'st_2',
+        groupId: 'grp_2',
+        invoiceNumber: 'INV-2',
+        invoiceKey: 'inv-2',
+        productId: 'p2',
+        productName: 'NacExAct',
+        quantity: 600,
+        unit: 'pcs',
+      }),
+    ]
+    const wb = await buildRows(rows)
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    const totalQty = sheet.getRow(headerRow + rows.length + 1).getCell(6)
+    expect(totalQty.value).toBeNull()
+
+    // The Summary reports each unit separately instead.
+    const summaryRow = rowWhere(
+      sheet,
+      (r) => r.getCell(1).value === 'Total Quantity Sold'
+    )
+    expect(summaryRow).toBeGreaterThan(0)
+    expect(sheet.getRow(summaryRow).getCell(2).value).toBe('1,200 kg, 600 pcs')
+
+    // Product-wise leaves its Quantity TOTAL blank too.
+    const productSheet = wb.worksheets[1]
+    const productHeaderRow = rowWhere(
+      productSheet,
+      (r) => r.getCell(1).value === 'Product' && r.getCell(2).value === 'Type'
+    )
+    const productTotalRow = productSheet.getRow(
+      productHeaderRow + 2 + 1
+    )
+    expect(productTotalRow.getCell(1).value).toBe('TOTAL')
+    expect(productTotalRow.getCell(4).value).toBeNull()
+  })
+
+  it('never prints the literal "unit" in the Unit column', async () => {
+    // An "Other" line with no stored unit resolves to kg,
+    // not the placeholder word "unit".
+    const rows = [
+      row({
+        productId: null,
+        productName: 'Spray Dried Powder',
+        otherProductName: 'Spray Dried Powder',
+        isOtherProduct: true,
+        unit: 'kg',
+      }),
+    ]
+    const wb = await buildRows(rows)
+    const sheet = wb.worksheets[0]
+    const headerRow = detailHeaderRow(sheet)
+    for (let r = headerRow + 1; r <= headerRow + rows.length; r += 1) {
+      expect(sheet.getRow(r).getCell(7).value).not.toBe('unit')
+    }
+
+    // Same for the CSV: the 7th column is Unit.
+    const csv = buildSalesCsv(rows)
+    for (const line of csv.slice(1).trim().split('\n')) {
+      const cells = line.split(',')
+      expect(cells[6]).not.toBe('unit')
+    }
+  })
+
+  it('prints CSV quantities without a trailing decimal point', () => {
+    const csv = buildSalesCsv([
+      row({ quantity: 500 }),
+      row({ id: 'st_2', groupId: 'grp_2', invoiceNumber: 'INV-2', invoiceKey: 'inv-2', quantity: 12.5 }),
+    ])
+    const quantities = csv
+      .slice(1)
+      .trim()
+      .split('\n')
+      .slice(1)
+      .map((line) => line.split(',')[5])
+    expect(quantities).toEqual(['500', '12.5'])
   })
 })
 
