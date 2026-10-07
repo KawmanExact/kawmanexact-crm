@@ -439,42 +439,47 @@ export async function buildSalesWorkbook(input: {
   productWs.columns = [
     { header: 'Product', key: 'productName', width: 32 },
     { header: 'Type', key: 'kind', width: 10 },
-    { header: 'Unit', key: 'unit', width: 8 },
+    { header: 'Transactions', key: 'transactionCount', width: 14 },
     { header: 'Quantity', key: 'quantity', width: 14 },
+    { header: 'Unit', key: 'unit', width: 8 },
     { header: 'Avg Unit Price', key: 'avgUnitPrice', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
+    { header: '% of Sales', key: 'share', width: 12 },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
-    { header: 'Transactions', key: 'transactionCount', width: 14 },
-    { header: '% of Sales', key: 'share', width: 12 },
   ]
   const productHeaderRow = prepareExtraSheet(productWs, 'Product-wise Summary', input.meta, headerFill, headerFont, thinBorder)
   for (const product of input.products) {
     const added = productWs.addRow({
       productName: product.productName,
       kind: product.isOther ? 'Other' : 'Catalog',
-      unit: product.unit,
+      transactionCount: product.transactionCount,
       quantity: product.quantity,
+      unit: product.unit,
       avgUnitPrice: product.avgUnitPrice,
       totalValue: product.totalValue,
+      share: product.share / 100,
       amountPaid: product.amountPaid,
       pendingAmount: product.pendingAmount,
-      transactionCount: product.transactionCount,
-      share: product.share / 100,
     })
     // Per-cell quantity format: no dangling decimal
     // point on whole numbers, up to three decimals
-    // otherwise.
+    // otherwise. Quantity is a number (right-aligned);
+    // Unit is text (left-aligned).
     added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
+    added.getCell('quantity').alignment = { horizontal: 'right' }
+    added.getCell('unit').alignment = { horizontal: 'left' }
     added.getCell('share').numFmt = '0.00%'
     added.getCell('avgUnitPrice').alignment = { horizontal: 'right' }
     added.eachCell((cell) => {
       cell.border = thinBorder
     })
   }
-  // The quantity grand total is only meaningful when
-  // every product sells in the same unit.
-  const productQuantityTotal = singleUnitOrNull(input.products)
+  // The quantity grand total and the TOTAL row's unit
+  // are only meaningful when every product sells in the
+  // same unit — adding kg to pcs would be meaningless.
+  const productUnit = singleUnitOrNull(input.products)
+  const productQuantityTotal = productUnit
     ? sumQuantity(input.products.map((p) => p.quantity)).toNumber()
     : null
   if (input.products.length > 0) {
@@ -483,15 +488,19 @@ export async function buildSalesWorkbook(input: {
     // not only after Excel recalculates.
     const productTotalRow = productWs.addRow({
       productName: 'TOTAL',
+      transactionCount: input.products.reduce((count, p) => count + p.transactionCount, 0),
       quantity: productQuantityTotal,
+      // The unit only when every row sells in the same
+      // unit; empty when units are mixed (and then the
+      // quantity total is empty too).
+      unit: productUnit,
       // No overall average price: every product is
       // priced differently, so the cell stays empty.
       avgUnitPrice: null,
       totalValue: sumMoney(input.products.map((p) => p.totalValue)).toNumber(),
+      share: 1,
       amountPaid: sumMoney(input.products.map((p) => p.amountPaid)).toNumber(),
       pendingAmount: sumMoney(input.products.map((p) => p.pendingAmount)).toNumber(),
-      transactionCount: input.products.reduce((count, p) => count + p.transactionCount, 0),
-      share: 1,
     })
     styleTotalRow(
       productTotalRow,
@@ -504,7 +513,7 @@ export async function buildSalesWorkbook(input: {
       }
     )
   }
-  productWs.views = [{ state: 'frozen', ySplit: productHeaderRow }]
+  productWs.views = [{ state: 'frozen', xSplit: 1, ySplit: productHeaderRow }]
   productWs.autoFilter = {
     from: { row: productHeaderRow, column: 1 },
     to: { row: productHeaderRow + input.products.length, column: productWs.columnCount },
@@ -523,13 +532,13 @@ export async function buildSalesWorkbook(input: {
   matrixWs.columns = [
     { header: 'Salesperson', key: 'salespersonName', width: 22 },
     { header: 'Product', key: 'productName', width: 32 },
-    { header: 'Unit', key: 'unit', width: 8 },
     { header: 'Quantity', key: 'quantity', width: 14 },
+    { header: 'Unit', key: 'unit', width: 8 },
     { header: 'Avg Unit Price', key: 'avgUnitPrice', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Sales Value', key: 'totalValue', width: 16, style: { numFmt: MONEY_FMT } },
+    { header: '% of Salesperson', key: 'share', width: 18 },
     { header: 'Amount Paid', key: 'amountPaid', width: 16, style: { numFmt: MONEY_FMT } },
     { header: 'Pending', key: 'pendingAmount', width: 16, style: { numFmt: MONEY_FMT } },
-    { header: '% of Salesperson', key: 'share', width: 18 },
   ]
   const matrixHeaderRow = prepareExtraSheet(matrixWs, 'Salesperson x Product', input.meta, headerFill, headerFont, thinBorder)
   for (const seller of input.salespeople) {
@@ -537,15 +546,19 @@ export async function buildSalesWorkbook(input: {
       const added = matrixWs.addRow({
         salespersonName: seller.salespersonName,
         productName: product.productName,
-        unit: product.unit,
         quantity: product.quantity,
+        unit: product.unit,
         avgUnitPrice: product.avgUnitPrice,
         totalValue: product.totalValue,
+        share: product.share / 100,
         amountPaid: product.amountPaid,
         pendingAmount: product.pendingAmount,
-        share: product.share / 100,
       })
+      // Quantity is a number (right-aligned);
+      // Unit is text (left-aligned).
       added.getCell('quantity').numFmt = quantityNumFmt(product.quantity)
+      added.getCell('quantity').alignment = { horizontal: 'right' }
+      added.getCell('unit').alignment = { horizontal: 'left' }
       added.getCell('share').numFmt = '0.00%'
       added.getCell('avgUnitPrice').alignment = { horizontal: 'right' }
       added.eachCell((cell) => {
@@ -554,22 +567,27 @@ export async function buildSalesWorkbook(input: {
     }
   }
   const matrixRows = input.salespeople.flatMap((seller) => seller.products)
-  // Same rule as the other sheets: no single quantity
-  // total across mixed units.
-  const matrixQuantityTotal = singleUnitOrNull(matrixRows)
+  // Same rule as the other sheets: the quantity
+  // total and the TOTAL row's unit only make sense
+  // when every row sells in the same unit.
+  const matrixUnit = singleUnitOrNull(matrixRows)
+  const matrixQuantityTotal = matrixUnit
     ? sumQuantity(matrixRows.map((p) => p.quantity)).toNumber()
     : null
   if (matrixRows.length > 0) {
     const matrixTotalRow = matrixWs.addRow({
       salespersonName: 'TOTAL',
       quantity: matrixQuantityTotal,
+      // The unit only when every row sells in the
+      // same unit; empty when units are mixed.
+      unit: matrixUnit,
       // No overall average price: every product is
       // priced differently, so the cell stays empty.
       avgUnitPrice: null,
       totalValue: sumMoney(matrixRows.map((p) => p.totalValue)).toNumber(),
+      share: 1,
       amountPaid: sumMoney(matrixRows.map((p) => p.amountPaid)).toNumber(),
       pendingAmount: sumMoney(matrixRows.map((p) => p.pendingAmount)).toNumber(),
-      share: 1,
     })
     styleTotalRow(
       matrixTotalRow,
@@ -582,7 +600,7 @@ export async function buildSalesWorkbook(input: {
       }
     )
   }
-  matrixWs.views = [{ state: 'frozen', ySplit: matrixHeaderRow }]
+  matrixWs.views = [{ state: 'frozen', xSplit: 2, ySplit: matrixHeaderRow }]
   matrixWs.autoFilter = {
     from: { row: matrixHeaderRow, column: 1 },
     to: { row: matrixHeaderRow + matrixRows.length, column: matrixWs.columnCount },
