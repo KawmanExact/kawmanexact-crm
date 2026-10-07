@@ -157,25 +157,30 @@ export function LiveMapCard({ markers }: { markers: LiveVisitMarker[] }) {
           View full map
         </Link>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-[1.3fr_1fr] gap-4">
-           <div
-             ref={mapContainerRef}
-             className="relative h-48 rounded-xl border border-white/[0.06] overflow-hidden"
-             style={{ backgroundColor: '#07101b' }}
-           />
-
-          <div className="space-y-2">
+      <CardContent className="p-0">
+        <div className="relative w-full">
+          <div
+            ref={mapContainerRef}
+            className="w-full h-[280px] sm:h-[320px] rounded-none border-0 overflow-hidden"
+            style={{ backgroundColor: '#07101b' }}
+          />
+          {markers.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-[#0d1622]/90 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-2 text-sm text-white/60">
+                No active visits today.
+              </div>
+            </div>
+          )}
+          <div className="absolute top-3 left-3 z-10 space-y-2 max-h-[200px] overflow-y-auto">
             {markers.map((marker) => (
-              <div key={marker.id} className="flex items-center gap-2">
+              <div key={marker.id} className="flex items-center gap-2 bg-[#0d1622]/90 backdrop-blur-sm border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white">
                 <span className={cn('h-2 w-2 rounded-full shrink-0', STATUS_COLOR[marker.status])} />
                 <div className="min-w-0">
-                  <p className="text-sm text-white truncate">{marker.name}</p>
-                  <p className="text-xs text-white/45">{marker.status}</p>
+                  <p className="text-white truncate">{marker.name}</p>
+                  <p className="text-xs text-white/50">{marker.status}</p>
                 </div>
               </div>
             ))}
-            {markers.length === 0 && <p className="text-sm text-white/40">No active visits today.</p>}
           </div>
         </div>
       </CardContent>

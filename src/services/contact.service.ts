@@ -188,6 +188,7 @@ export async function findOrCreateContactByName(input: {
   email?: string | null
   phone?: string | null
   mobile?: string | null
+  address?: string | null
 }): Promise<{ id: string; name: string } | null> {
   const trimmedName = input.name?.trim()
   if (!trimmedName) return null
@@ -209,18 +210,20 @@ export async function findOrCreateContactByName(input: {
   // --- Normal path: look up by name ---
   const existing = await prisma.contact.findFirst({
     where: { organizationId: input.organizationId, name: { equals: trimmedName, mode: 'insensitive' as const } },
-    select: { id: true, name: true, email: true, mobile: true },
+    select: { id: true, name: true, email: true, mobile: true, phone: true, address: true },
   })
 
   if (existing) {
-    // Backfill: fill only blank email / mobile fields
-    const updates: { email?: string | null; mobile?: string | null; lastActivityAt: Date } = {
+    // Backfill: fill only blank email / mobile / phone / address fields
+    const updates: { email?: string | null; mobile?: string | null; phone?: string | null; address?: string | null; lastActivityAt: Date } = {
       lastActivityAt: new Date(),
     }
     if (input.email && !existing.email) updates.email = input.email
     if (input.mobile && !existing.mobile) updates.mobile = input.mobile
+    if (input.phone && !existing.phone) updates.phone = input.phone
+    if (input.address && !existing.address) updates.address = input.address
 
-    if ((input.email && !existing.email) || (input.mobile && !existing.mobile)) {
+    if ((input.email && !existing.email) || (input.mobile && !existing.mobile) || (input.phone && !existing.phone) || (input.address && !existing.address)) {
       await prisma.contact.update({
         where: { id: existing.id },
         data: {
@@ -242,6 +245,7 @@ export async function findOrCreateContactByName(input: {
       email: input.email ?? null,
       phone: input.phone ?? null,
       mobile: input.mobile ?? null,
+      address: input.address ?? null,
       emailKey: buildContactEmailKey(input.email ?? null),
       lastActivityAt: new Date(),
     },

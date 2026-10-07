@@ -153,12 +153,12 @@ export function Header() {
         'left-0'
       )}
     >
-      <div className="flex w-full items-center gap-2 sm:gap-4 px-3 sm:px-4 h-full">
+      <div className="flex w-full items-center gap-2 sm:gap-4 px-3 sm:px-4 h-full min-w-0">
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleMobileDrawer}
-          className="lg:hidden text-white/60 hover:text-white shrink-0"
+          className="lg:hidden text-white/60 hover:text-white shrink-0 min-h-[40px] touch-target"
           aria-label="Toggle menu"
         >
           <Menu className="h-5 w-5" />
@@ -167,34 +167,34 @@ export function Header() {
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          className="hidden lg:inline-flex text-white/50 hover:text-white shrink-0"
+          className="hidden lg:inline-flex text-white/50 hover:text-white shrink-0 min-h-[40px] touch-target"
           aria-label={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
           title={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
         >
           {sidebarCollapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
         </Button>
 
-        {/* Desktop search pill */}
+        {/* Desktop search pill - hidden on very small screens */}
         <button
           onClick={toggleCommandPalette}
-          className="hidden sm:flex flex-1 max-w-xl items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2 text-left transition-colors hover:border-white/[0.14]"
+          className="hidden sm:flex flex-1 max-w-xl min-w-0 items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2 text-left transition-colors hover:border-white/[0.14] min-h-[40px] touch-target"
           aria-label="Open global search"
         >
           <Search className="h-4 w-4 text-white/40 shrink-0" />
-          <span className="text-sm text-white/40 flex-1 truncate">
+          <span className="text-sm text-white/40 flex-1 truncate min-w-0">
             Search documents, leads, companies...
           </span>
-          <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/40 font-medium">
+          <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-white/10 bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/40 font-medium shrink-0">
             ⌘K
           </kbd>
         </button>
 
-        {/* Mobile search icon — same action, visible only below sm */}
+        {/* Mobile search icon — visible only below sm */}
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleCommandPalette}
-          className="sm:hidden text-white/60 hover:text-white shrink-0"
+          className="sm:hidden text-white/60 hover:text-white shrink-0 min-h-[40px] touch-target"
           aria-label="Search"
         >
           <Search className="h-5 w-5" />
@@ -203,7 +203,7 @@ export function Header() {
         <div className="flex items-center gap-1 sm:gap-1.5 ml-auto shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative text-white/60 hover:text-white">
+              <Button variant="ghost" size="icon" className="relative text-white/60 hover:text-white min-h-[40px] touch-target">
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center px-1 leading-none">
@@ -218,7 +218,7 @@ export function Header() {
                 {unreadCount > 0 && (
                   <button
                     onClick={(e) => { e.preventDefault(); markAllRead() }}
-                    className="text-xs text-purple-300 hover:text-purple-200 font-medium"
+                    className="text-xs text-purple-300 hover:text-purple-200 font-medium min-h-[40px] touch-target"
                   >
                     Clear all
                   </button>
@@ -230,12 +230,12 @@ export function Header() {
               )}
               {notifications.slice(0, 6).map((notification) => (
                 <DropdownMenuItem key={notification.id} asChild className="p-0 focus:bg-white/5 data-[highlighted]:bg-white/5">
-                  <Link href={notifHref(notification)} onClick={() => markRead(notification.id)} className="flex items-start gap-3 px-2 py-2.5 w-full text-left hover:bg-white/5 rounded-sm">
+                  <Link href={notifHref(notification)} onClick={() => markRead(notification.id)} className="flex items-start gap-3 px-2 py-2.5 w-full text-left hover:bg-white/5 rounded-sm min-h-[40px] touch-target">
                     <div className={cn('h-8 w-8 shrink-0 rounded-full flex items-center justify-center', NOTIF_COLOR[notification.type] ?? 'bg-white/10 text-white/60')}>
                       <Bell className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white">{notification.title}</p>
+                      <p className="text-sm font-medium text-white truncate">{notification.title}</p>
                       <p className="text-xs text-white/50 line-clamp-2">{notification.message}</p>
                       <p className="text-xs text-white/35 mt-0.5">{formatRelativeTime(notification.createdAt)}</p>
                     </div>
@@ -244,21 +244,20 @@ export function Header() {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator className="border-white/10" />
-              <DropdownMenuItem asChild className="justify-center text-purple-400 hover:bg-white/5 focus:bg-white/5">
+              <DropdownMenuItem asChild className="justify-center text-purple-400 hover:bg-white/5 focus:bg-white/5 min-h-[40px] touch-target">
                 <Link href="/notifications">View all notifications</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Help and Settings moved into user menu on mobile, shown as icons on desktop */}
           <Link href="/help" aria-label="Help">
-            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hidden sm:inline-flex" aria-label="Help">
+            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hidden sm:inline-flex min-h-[40px] touch-target" aria-label="Help">
               <HelpCircle className="h-5 w-5" />
             </Button>
           </Link>
-          {/* Mobile help — still accessible, just via icon row overflow is tight so keep hidden sm only like before */}
-
           <Link href="/settings" aria-label="Settings">
-            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hidden sm:inline-flex" aria-label="Settings">
+            <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hidden sm:inline-flex min-h-[40px] touch-target" aria-label="Settings">
               <Settings className="h-5 w-5" />
             </Button>
           </Link>
@@ -269,7 +268,7 @@ export function Header() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2.5 rounded-lg pl-1 pr-2 py-1 hover:bg-white/5 transition-colors">
+              <button className="flex items-center gap-2.5 rounded-lg pl-1 pr-2 py-1 hover:bg-white/5 transition-colors min-h-[40px] touch-target">
                 {user?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element -- Cloudinary URL, not a local optimizable asset
                   <img src={user.image} alt={user?.name ?? 'Avatar'} className="h-8 w-8 rounded-full object-cover border border-white/10 shrink-0" />
@@ -280,29 +279,29 @@ export function Header() {
                     </span>
                   </div>
                 )}
-                <div className="hidden md:block text-left leading-tight">
-                  <p className="text-sm font-medium text-white">{user?.name ?? 'Account'}</p>
-                  <p className="text-xs text-white/40">{user?.email ?? ''}</p>
+                <div className="hidden md:block text-left leading-tight min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Account'}</p>
+                  <p className="text-xs text-white/40 truncate">{user?.email ?? ''}</p>
                 </div>
                 <ChevronDown className="h-4 w-4 text-white/40 hidden md:block" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#0d1622] border-white/10">
+            <DropdownMenuContent align="end" className="bg-[#0d1622] border-white/10 min-w-[180px]">
               <DropdownMenuLabel className="text-white">Account</DropdownMenuLabel>
               <DropdownMenuSeparator className="border-white/10" />
-              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5">
+              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5 min-h-[40px] touch-target">
                 <Link href="/settings/profile" className="flex items-center gap-2 w-full">
                   <User className="h-4 w-4" />
                   Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5">
+              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5 min-h-[40px] touch-target">
                 <Link href="/settings" className="flex items-center gap-2 w-full">
                   <Settings className="h-4 w-4" />
                   Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5">
+              <DropdownMenuItem asChild className="text-white/70 hover:bg-white/5 focus:bg-white/5 min-h-[40px] touch-target">
                 <Link href="/help" className="flex items-center gap-2 w-full">
                   <HelpCircle className="h-4 w-4" />
                   Help
@@ -311,7 +310,7 @@ export function Header() {
               <DropdownMenuSeparator className="border-white/10" />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-red-400 hover:bg-white/5 focus:bg-white/5 flex items-center gap-2 w-full"
+                className="text-red-400 hover:bg-white/5 focus:bg-white/5 flex items-center gap-2 w-full min-h-[40px] touch-target"
               >
                 <LogOut className="h-4 w-4" />
                 Sign out

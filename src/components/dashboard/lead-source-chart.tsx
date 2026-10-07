@@ -12,8 +12,8 @@ export function LeadSourceChart({ sources, total }: { sources: LeadSource[]; tot
         <span className="text-xs text-white/40">This Month</span>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] items-center gap-4">
-          <div className="relative h-40 w-40 mx-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-4 flex-wrap min-w-0">
+          <div className="relative h-40 w-40 mx-auto sm:mx-0 flex-shrink-0" style={{ maxWidth: '160px', maxHeight: '160px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -47,14 +47,14 @@ export function LeadSourceChart({ sources, total }: { sources: LeadSource[]; tot
             </div>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="flex-1 min-w-0 space-y-2.5">
             {sources.map((source) => (
-              <div key={source.id} className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 min-w-0">
+              <div key={source.id} className="flex items-center justify-between text-sm min-w-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: source.color }} />
                   <span className="text-white/75 truncate">{source.name}</span>
                 </div>
-                <span className="text-white/60 whitespace-nowrap ml-3">
+                <span className="text-white/60 whitespace-nowrap ml-3 shrink-0">
                   {source.count} ({source.percentage}%)
                 </span>
               </div>

@@ -185,7 +185,7 @@ function NavLink({
       href={item.href}
       onClick={onNavigate}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[40px]',
+        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[40px] touch-target',
         active
           ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
           : 'text-white/65 hover:bg-white/5 hover:text-white active:bg-white/10'
@@ -318,7 +318,7 @@ export function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={closeDrawer}
-          className="lg:hidden text-white/60 hover:text-white h-9 w-9 shrink-0"
+          className="lg:hidden text-white/60 hover:text-white h-9 w-9 shrink-0 min-h-[40px] touch-target"
           aria-label="Close menu"
         >
           <X className="h-5 w-5" />
@@ -329,7 +329,7 @@ export function Sidebar() {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="hidden lg:inline-flex text-white/50 hover:text-white h-7 w-7"
+            className="hidden lg:inline-flex text-white/50 hover:text-white h-7 w-7 min-h-[40px] touch-target"
             aria-label="Collapse sidebar"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -340,7 +340,7 @@ export function Sidebar() {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="hidden lg:inline-flex text-white/50 hover:text-white h-7 w-7 mx-auto"
+            className="hidden lg:inline-flex text-white/50 hover:text-white h-7 w-7 mx-auto min-h-[40px] touch-target"
             aria-label="Expand sidebar"
           >
             <ChevronRight className="h-4 w-4" />
@@ -354,7 +354,7 @@ export function Sidebar() {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="text-white/50 hover:text-white h-7 w-7"
+            className="text-white/50 hover:text-white h-7 w-7 min-h-[40px] touch-target"
             aria-label="Expand sidebar"
           >
             <ChevronRight className="h-4 w-4" />
@@ -363,14 +363,14 @@ export function Sidebar() {
       )}
 
       <nav
-        className="flex-1 overflow-y-auto scrollbar-hide px-3 py-4 space-y-5 overscroll-contain"
+        className="flex-1 overflow-y-auto scrollbar-hide px-3 py-4 space-y-5 overscroll-contain min-h-0"
         role="navigation"
         aria-label="Main navigation"
       >
         {visibleGroups.map((group, idx) => (
           <div key={group.label ?? `group-${idx}`}>
             {group.label && !sidebarCollapsed && (
-              <div className="flex items-center px-3 mb-1.5">
+              <div className="flex items-center px-3 mb-1.5 shrink-0">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-white/35">
                   {group.label}
                 </span>
@@ -405,7 +405,7 @@ export function Sidebar() {
             <Link
               href="/admin/storage"
               onClick={closeDrawer}
-              className="block mt-3 text-center text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-md py-2 transition-colors"
+              className="block mt-3 text-center text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-md py-2 transition-colors min-h-[40px] touch-target"
             >
               Manage Storage
             </Link>

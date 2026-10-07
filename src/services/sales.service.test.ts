@@ -159,6 +159,16 @@ describe('computeProductBreakdown', () => {
     expect(rows[1].isOther).toBe(true)
   })
 
+  it('groups a blank "Other" name under the fallback label, not a blank bucket', () => {
+    const rows = computeProductBreakdown([
+      row({ productId: null, productName: 'Other product', otherProductName: '', isOtherProduct: true }),
+      row({ id: 'b', productId: null, productName: 'Other product', otherProductName: '', isOtherProduct: true }),
+    ])
+    expect(rows).toHaveLength(1)
+    expect(rows[0].productName).toBe('Other product')
+    expect(rows[0].key).toBe('other:other product')
+  })
+
   it('is 0% share, not NaN, when the filtered set is empty', () => {
     expect(computeProductBreakdown([])).toEqual([])
   })
@@ -319,5 +329,163 @@ describe('mapSaleRow', () => {
     })
     expect(mapped.isOtherProduct).toBe(true)
     expect(mapped.productName).toBe('Custom XYZ')
+  })
+
+  it('falls back to "Other product" when the typed name is blank, never a blank cell', () => {
+    // The zod default for otherProductName is ''. `??` would let
+    // that empty string through as the product name; `||` must
+    // turn it into the label so no export ever shows a blank
+    // Product cell with Type "Other".
+    const mapped = mapSaleRow({
+      id: 'st_3',
+      groupId: 'grp_3',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-3',
+      invoiceKey: 'inv-3',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: null,
+      product: null,
+      otherProductName: '',
+      quantity: '1',
+      unitPrice: '50',
+      totalAmount: '50',
+      gstAmount: '0',
+      freightAmount: '0',
+      invoiceAmount: '50',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '50',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.isOtherProduct).toBe(true)
+    expect(mapped.productName).toBe('Other product')
+  })
+
+  it('resolves a missing stored unit from the catalog product', () => {
+    const mapped = mapSaleRow({
+      id: 'st_4',
+      groupId: 'grp_4',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-4',
+      invoiceKey: 'inv-4',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: 'p1',
+      product: { id: 'p1', name: 'CarniExAct', variant: null, unit: 'kg' },
+      otherProductName: null,
+      unit: null,
+      quantity: '2',
+      unitPrice: '100',
+      totalAmount: '200',
+      gstAmount: '18',
+      freightAmount: '0',
+      invoiceAmount: '218',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '218',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.unit).toBe('kg')
+  })
+
+  it('prefers the sale line’s stored unit over the product unit', () => {
+    const mapped = mapSaleRow({
+      id: 'st_5',
+      groupId: 'grp_5',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-5',
+      invoiceKey: 'inv-5',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: 'p1',
+      product: { id: 'p1', name: 'CarniExAct', variant: null, unit: 'kg' },
+      otherProductName: null,
+      unit: 'pcs',
+      quantity: '2',
+      unitPrice: '100',
+      totalAmount: '200',
+      gstAmount: '18',
+      freightAmount: '0',
+      invoiceAmount: '218',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '218',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.unit).toBe('pcs')
+  })
+
+  it('resolves an "Other" product with no stored unit to kg, never "unit"', () => {
+    const mapped = mapSaleRow({
+      id: 'st_6',
+      groupId: 'grp_6',
+      lineNumber: 1,
+      saleDate: new Date('2026-03-01'),
+      invoiceNumber: 'INV-6',
+      invoiceKey: 'inv-6',
+      salespersonId: 'u1',
+      salesperson: { id: 'u1', name: 'Priya', email: 'priya@example.com' },
+      customerId: 'c1',
+      customer: { id: 'c1', name: 'Acme' },
+      productId: null,
+      product: null,
+      otherProductName: 'Spray Dried Powder',
+      unit: null,
+      quantity: '20',
+      unitPrice: '250',
+      totalAmount: '5000',
+      gstAmount: '250',
+      freightAmount: '0',
+      invoiceAmount: '5250',
+      advanceAmount: '0',
+      pdcAmount: '0',
+      amountPaid: '5250',
+      balanceAmount: '0',
+      paymentStatus: 'PAID',
+      paymentDate: null,
+      purchaseOrderNo: null,
+      leadTimeDays: null,
+      remarks: null,
+      hsnCode: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    expect(mapped.isOtherProduct).toBe(true)
+    expect(mapped.unit).toBe('kg')
+    expect(mapped.unit).not.toBe('unit')
   })
 })

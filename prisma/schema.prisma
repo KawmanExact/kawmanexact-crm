@@ -769,6 +769,8 @@ model SalesTransaction {
   productId        String?
   /// Typed by the user when the sale is not for a catalog product.
   otherProductName String?
+  /// Unit of measure for "Other" products (catalog products use Product.unit).
+  unit             String?
   saleDate         DateTime
   invoiceNumber    String
   /// Trimmed + lower-cased copy of `invoiceNumber`, the case-insensitive

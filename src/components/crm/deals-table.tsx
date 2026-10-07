@@ -246,7 +246,7 @@ export function DealsTable({
                   )}
                 </td>
                 <td className="px-4 py-3 text-white/55 truncate max-w-[14rem]">{deal.purposeOfVisit || '—'}</td>
-                <td className="px-4 py-3 text-white/55 truncate max-w-[12rem]">{deal.meetingAt || '—'}</td>
+                <td className="px-4 py-3 text-white/55 truncate max-w-[12rem]">{deal.meetingDate || '—'}</td>
                 <td className="px-4 py-3 text-white/55 truncate max-w-[10rem]">{deal.meetingMode || '—'}</td>
                 <td className="px-4 py-3 text-white/55 truncate max-w-[14rem]">{deal.keyDiscussion || '—'}</td>
                 <td className="px-4 py-3 text-white/55 truncate max-w-[14rem]">{deal.requirement || '—'}</td>
@@ -318,7 +318,7 @@ export function DealsTable({
                 )}
               </span>
               <span className="text-white/35">Purpose of Visit</span><span className="text-white/55 truncate text-right">{deal.purposeOfVisit || '—'}</span>
-              <span className="text-white/35">Meeting At</span><span className="text-white/55 truncate text-right">{deal.meetingAt || '—'}</span>
+              <span className="text-white/35">Meeting At</span><span className="text-white/55 truncate text-right">{deal.meetingDate || '—'}</span>
               <span className="text-white/35">Meeting Mode</span><span className="text-white/55 truncate text-right">{deal.meetingMode || '—'}</span>
               <span className="text-white/35">Key Discussion</span><span className="text-white/55 truncate text-right">{deal.keyDiscussion || '—'}</span>
               <span className="text-white/35">Customer Requirement</span><span className="text-white/55 truncate text-right">{deal.requirement || '—'}</span>

@@ -42748,6 +42748,7 @@ export namespace Prisma {
     customerId: string | null
     productId: string | null
     otherProductName: string | null
+    unit: string | null
     saleDate: Date | null
     invoiceNumber: string | null
     invoiceKey: string | null
@@ -42782,6 +42783,7 @@ export namespace Prisma {
     customerId: string | null
     productId: string | null
     otherProductName: string | null
+    unit: string | null
     saleDate: Date | null
     invoiceNumber: string | null
     invoiceKey: string | null
@@ -42816,6 +42818,7 @@ export namespace Prisma {
     customerId: number
     productId: number
     otherProductName: number
+    unit: number
     saleDate: number
     invoiceNumber: number
     invoiceKey: number
@@ -42884,6 +42887,7 @@ export namespace Prisma {
     customerId?: true
     productId?: true
     otherProductName?: true
+    unit?: true
     saleDate?: true
     invoiceNumber?: true
     invoiceKey?: true
@@ -42918,6 +42922,7 @@ export namespace Prisma {
     customerId?: true
     productId?: true
     otherProductName?: true
+    unit?: true
     saleDate?: true
     invoiceNumber?: true
     invoiceKey?: true
@@ -42952,6 +42957,7 @@ export namespace Prisma {
     customerId?: true
     productId?: true
     otherProductName?: true
+    unit?: true
     saleDate?: true
     invoiceNumber?: true
     invoiceKey?: true
@@ -43073,6 +43079,7 @@ export namespace Prisma {
     customerId: string
     productId: string | null
     otherProductName: string | null
+    unit: string | null
     saleDate: Date
     invoiceNumber: string
     invoiceKey: string
@@ -43126,6 +43133,7 @@ export namespace Prisma {
     customerId?: boolean
     productId?: boolean
     otherProductName?: boolean
+    unit?: boolean
     saleDate?: boolean
     invoiceNumber?: boolean
     invoiceKey?: boolean
@@ -43164,6 +43172,7 @@ export namespace Prisma {
     customerId?: boolean
     productId?: boolean
     otherProductName?: boolean
+    unit?: boolean
     saleDate?: boolean
     invoiceNumber?: boolean
     invoiceKey?: boolean
@@ -43202,6 +43211,7 @@ export namespace Prisma {
     customerId?: boolean
     productId?: boolean
     otherProductName?: boolean
+    unit?: boolean
     saleDate?: boolean
     invoiceNumber?: boolean
     invoiceKey?: boolean
@@ -43240,6 +43250,7 @@ export namespace Prisma {
     customerId?: boolean
     productId?: boolean
     otherProductName?: boolean
+    unit?: boolean
     saleDate?: boolean
     invoiceNumber?: boolean
     invoiceKey?: boolean
@@ -43267,7 +43278,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SalesTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "salespersonId" | "customerId" | "productId" | "otherProductName" | "saleDate" | "invoiceNumber" | "invoiceKey" | "groupId" | "lineNumber" | "quantity" | "unitPrice" | "totalAmount" | "gstAmount" | "hsnCode" | "gstRate" | "freightAmount" | "invoiceAmount" | "amountPaid" | "balanceAmount" | "paymentStatus" | "paymentDate" | "remarks" | "leadTimeDays" | "advanceAmount" | "pdcAmount" | "paymentMode" | "purchaseOrderNo" | "createdAt" | "updatedAt", ExtArgs["result"]["salesTransaction"]>
+  export type SalesTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "salespersonId" | "customerId" | "productId" | "otherProductName" | "unit" | "saleDate" | "invoiceNumber" | "invoiceKey" | "groupId" | "lineNumber" | "quantity" | "unitPrice" | "totalAmount" | "gstAmount" | "hsnCode" | "gstRate" | "freightAmount" | "invoiceAmount" | "amountPaid" | "balanceAmount" | "paymentStatus" | "paymentDate" | "remarks" | "leadTimeDays" | "advanceAmount" | "pdcAmount" | "paymentMode" | "purchaseOrderNo" | "createdAt" | "updatedAt", ExtArgs["result"]["salesTransaction"]>
   export type SalesTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | CompanyDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -43305,6 +43316,10 @@ export namespace Prisma {
        * Typed by the user when the sale is not for a catalog product.
        */
       otherProductName: string | null
+      /**
+       * Unit of measure for "Other" products (catalog products use Product.unit).
+       */
+      unit: string | null
       saleDate: Date
       invoiceNumber: string
       /**
@@ -43798,6 +43813,7 @@ export namespace Prisma {
     readonly customerId: FieldRef<"SalesTransaction", 'String'>
     readonly productId: FieldRef<"SalesTransaction", 'String'>
     readonly otherProductName: FieldRef<"SalesTransaction", 'String'>
+    readonly unit: FieldRef<"SalesTransaction", 'String'>
     readonly saleDate: FieldRef<"SalesTransaction", 'DateTime'>
     readonly invoiceNumber: FieldRef<"SalesTransaction", 'String'>
     readonly invoiceKey: FieldRef<"SalesTransaction", 'String'>
@@ -64835,6 +64851,7 @@ export namespace Prisma {
     customerId: 'customerId',
     productId: 'productId',
     otherProductName: 'otherProductName',
+    unit: 'unit',
     saleDate: 'saleDate',
     invoiceNumber: 'invoiceNumber',
     invoiceKey: 'invoiceKey',
@@ -68466,6 +68483,7 @@ export namespace Prisma {
     customerId?: StringFilter<"SalesTransaction"> | string
     productId?: StringNullableFilter<"SalesTransaction"> | string | null
     otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    unit?: StringNullableFilter<"SalesTransaction"> | string | null
     saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
     invoiceNumber?: StringFilter<"SalesTransaction"> | string
     invoiceKey?: StringFilter<"SalesTransaction"> | string
@@ -68504,6 +68522,7 @@ export namespace Prisma {
     customerId?: SortOrder
     productId?: SortOrderInput | SortOrder
     otherProductName?: SortOrderInput | SortOrder
+    unit?: SortOrderInput | SortOrder
     saleDate?: SortOrder
     invoiceNumber?: SortOrder
     invoiceKey?: SortOrder
@@ -68546,6 +68565,7 @@ export namespace Prisma {
     customerId?: StringFilter<"SalesTransaction"> | string
     productId?: StringNullableFilter<"SalesTransaction"> | string | null
     otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    unit?: StringNullableFilter<"SalesTransaction"> | string | null
     saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
     invoiceNumber?: StringFilter<"SalesTransaction"> | string
     invoiceKey?: StringFilter<"SalesTransaction"> | string
@@ -68584,6 +68604,7 @@ export namespace Prisma {
     customerId?: SortOrder
     productId?: SortOrderInput | SortOrder
     otherProductName?: SortOrderInput | SortOrder
+    unit?: SortOrderInput | SortOrder
     saleDate?: SortOrder
     invoiceNumber?: SortOrder
     invoiceKey?: SortOrder
@@ -68626,6 +68647,7 @@ export namespace Prisma {
     customerId?: StringWithAggregatesFilter<"SalesTransaction"> | string
     productId?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
     otherProductName?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
+    unit?: StringNullableWithAggregatesFilter<"SalesTransaction"> | string | null
     saleDate?: DateTimeWithAggregatesFilter<"SalesTransaction"> | Date | string
     invoiceNumber?: StringWithAggregatesFilter<"SalesTransaction"> | string
     invoiceKey?: StringWithAggregatesFilter<"SalesTransaction"> | string
@@ -73467,6 +73489,7 @@ export namespace Prisma {
   export type SalesTransactionCreateInput = {
     id?: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -73505,6 +73528,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -73535,6 +73559,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -73573,6 +73598,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -73607,6 +73633,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -73637,6 +73664,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -73671,6 +73699,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -77661,6 +77690,7 @@ export namespace Prisma {
     customerId?: SortOrder
     productId?: SortOrder
     otherProductName?: SortOrder
+    unit?: SortOrder
     saleDate?: SortOrder
     invoiceNumber?: SortOrder
     invoiceKey?: SortOrder
@@ -77711,6 +77741,7 @@ export namespace Prisma {
     customerId?: SortOrder
     productId?: SortOrder
     otherProductName?: SortOrder
+    unit?: SortOrder
     saleDate?: SortOrder
     invoiceNumber?: SortOrder
     invoiceKey?: SortOrder
@@ -77745,6 +77776,7 @@ export namespace Prisma {
     customerId?: SortOrder
     productId?: SortOrder
     otherProductName?: SortOrder
+    unit?: SortOrder
     saleDate?: SortOrder
     invoiceNumber?: SortOrder
     invoiceKey?: SortOrder
@@ -86590,6 +86622,7 @@ export namespace Prisma {
   export type SalesTransactionCreateWithoutOrganizationInput = {
     id?: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -86626,6 +86659,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -87763,6 +87797,7 @@ export namespace Prisma {
     customerId?: StringFilter<"SalesTransaction"> | string
     productId?: StringNullableFilter<"SalesTransaction"> | string | null
     otherProductName?: StringNullableFilter<"SalesTransaction"> | string | null
+    unit?: StringNullableFilter<"SalesTransaction"> | string | null
     saleDate?: DateTimeFilter<"SalesTransaction"> | Date | string
     invoiceNumber?: StringFilter<"SalesTransaction"> | string
     invoiceKey?: StringFilter<"SalesTransaction"> | string
@@ -89049,6 +89084,7 @@ export namespace Prisma {
   export type SalesTransactionCreateWithoutSalespersonInput = {
     id?: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -89085,6 +89121,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -99520,6 +99557,7 @@ export namespace Prisma {
   export type SalesTransactionCreateWithoutCustomerInput = {
     id?: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -99556,6 +99594,7 @@ export namespace Prisma {
     salespersonId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -103295,6 +103334,7 @@ export namespace Prisma {
   export type SalesTransactionCreateWithoutProductInput = {
     id?: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -103331,6 +103371,7 @@ export namespace Prisma {
     salespersonId: string
     customerId: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -112132,6 +112173,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -113424,6 +113466,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -113460,6 +113503,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -113493,6 +113537,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -114151,6 +114196,7 @@ export namespace Prisma {
     customerId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -115513,6 +115559,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateWithoutSalespersonInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -115549,6 +115596,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -115582,6 +115630,7 @@ export namespace Prisma {
     customerId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -117290,6 +117339,7 @@ export namespace Prisma {
     salespersonId: string
     productId?: string | null
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -117846,6 +117896,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -117882,6 +117933,7 @@ export namespace Prisma {
     salespersonId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -117915,6 +117967,7 @@ export namespace Prisma {
     salespersonId?: StringFieldUpdateOperationsInput | string
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -118743,6 +118796,7 @@ export namespace Prisma {
     salespersonId: string
     customerId: string
     otherProductName?: string | null
+    unit?: string | null
     saleDate: Date | string
     invoiceNumber: string
     invoiceKey: string
@@ -118806,6 +118860,7 @@ export namespace Prisma {
   export type SalesTransactionUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -118842,6 +118897,7 @@ export namespace Prisma {
     salespersonId?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string
@@ -118875,6 +118931,7 @@ export namespace Prisma {
     salespersonId?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     otherProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    unit?: NullableStringFieldUpdateOperationsInput | string | null
     saleDate?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNumber?: StringFieldUpdateOperationsInput | string
     invoiceKey?: StringFieldUpdateOperationsInput | string

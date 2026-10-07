@@ -181,6 +181,8 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
     ? await findOrCreateContactByName({
         email: data.contactEmail || null,
         mobile: data.contactMobile || null,
+        phone: data.phone || null,
+        address: null,
         name: data.contactName.trim(),
         organizationId: session.user.organizationId,
         ownerId: data.ownerId || session.user.id,
@@ -291,6 +293,8 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
     ? await findOrCreateContactByName({
         email: data.contactEmail || null,
         mobile: data.contactMobile || null,
+        phone: data.phone || null,
+        address: null,
         name: data.contactName.trim(),
         organizationId: session.user.organizationId,
         ownerId: data.ownerId || existing.ownerId,
