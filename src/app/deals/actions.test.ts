@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@/lib/db', () => ({
   prisma: {
-    deal: { create: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
+    $transaction: vi.fn(),
+    deal: { create: vi.fn(), findFirst: vi.fn(), update: vi.fn(), findMany: vi.fn() },
     dealItem: { createMany: vi.fn(), deleteMany: vi.fn() },
     product: { findMany: vi.fn(), count: vi.fn() },
     activity: { create: vi.fn() },
     contact: { findFirst: vi.fn(), create: vi.fn() },
+    user: { findMany: vi.fn() },
   },
 }))
 
@@ -26,6 +28,10 @@ vi.mock('@/lib/record-scope', () => ({
   canManageAssignments: vi.fn(),
   contactOwnerScopeWhere: vi.fn(),
   ownerScopeWhere: vi.fn(),
+}))
+
+vi.mock('@/lib/lead-import', () => ({
+  importLeadsFromFile: vi.fn(),
 }))
 
 vi.mock('@/services/company.service', () => ({
@@ -48,13 +54,20 @@ import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 import { validateCsrf } from '@/lib/csrf'
 import { canManageAssignments } from '@/lib/record-scope'
+import { importLeadsFromFile } from '@/lib/lead-import'
 import { findOrCreateCompanyByName } from '@/services/company.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
-import { createDealAction, updateDealAction, getDealLineItemOptions, type DealFormState } from '@/app/deals/actions'
+import { createDealAction, updateDealAction, importDealsAction, getDealLineItemOptions, type DealFormState } from '@/app/deals/actions'
+
+import type { Mock } from 'vitest'
 
 const mockDealCreate = vi.mocked(prisma.deal.create)
 const mockDealFindFirst = vi.mocked(prisma.deal.findFirst)
 const mockDealUpdate = vi.mocked(prisma.deal.update)
+const mockDealFindMany = vi.mocked(prisma.deal.findMany)
+const mockUserFindMany = vi.mocked(prisma.user.findMany)
+const mockImportLeadsFromFile = vi.mocked(importLeadsFromFile)
+const mockTransaction = prisma.$transaction as unknown as Mock<(promises: unknown[]) => Promise<unknown[]>>
 const mockDealItemCreateMany = vi.mocked(prisma.dealItem.createMany)
 const mockDealItemDeleteMany = vi.mocked(prisma.dealItem.deleteMany)
 const mockProductFindMany = vi.mocked(prisma.product.findMany)
@@ -338,5 +351,106 @@ describe('getDealLineItemOptions', () => {
       { id: 'p1', label: 'AlphaExAct - 1% WD', unit: 'kg', defaultUnitPrice: 1200, unitPrice: 1100, unitCost: 500 },
       { id: 'p2', label: 'BetaPure', unit: 'kg', defaultUnitPrice: null, unitPrice: 300, unitCost: 120 },
     ])
+  })
+})
+
+describe('importDealsAction', () => {
+  const importSession = {
+    user: {
+      id: 'user-1',
+      email: 'creator@test.com',
+      name: 'Test Creator',
+      organizationId: 'org-A',
+      permissions: ['deals.create'],
+    },
+  }
+
+  function importFormData(): FormData {
+    const fd = new FormData()
+    fd.append('file', new File(['name\nAcme\n'], 'deals.csv', { type: 'text/csv' }))
+    return fd
+  }
+
+  function importRows(count: number) {
+    return Array.from({ length: count }, (_, i) => ({
+      name: `Deal ${i}`,
+      email: `deal${i}@acme.com`,
+      company: 'Acme Corp',
+      stage: 'SUSPECT' as const,
+    }))
+  }
+
+  beforeEach(() => {
+    mockRequireApiSession.mockResolvedValue(importSession)
+    mockDealFindMany.mockResolvedValue([] as never)
+    mockUserFindMany.mockResolvedValue([] as never)
+    mockFindOrCreateCompanyByName.mockResolvedValue(null)
+    mockTransaction.mockImplementation(async (promises: unknown[]) =>
+      promises.map(() => ({ id: 'deal-mock' }))
+    )
+  })
+
+  it('chunks a large import into transactions of at most 100 rows', async () => {
+    mockImportLeadsFromFile.mockResolvedValue({
+      created: 250,
+      skipped: 0,
+      rowErrors: [],
+      warnings: [],
+      notes: [],
+      rows: importRows(250),
+    })
+
+    const result = await importDealsAction(importFormData())
+
+    // 250 rows must never share one transaction: each chunk is its
+    // own short transaction, so none can outlive Prisma's 5s
+    // default timeout the way a single 250-round-trip one did.
+    const chunkSizes = mockTransaction.mock.calls.map((call) => (call[0] as unknown[]).length)
+    expect(chunkSizes).toEqual([100, 100, 50])
+    expect(mockTransaction).toHaveBeenCalledTimes(3)
+    expect(result.created).toBe(250)
+    expect(result.error).toBeUndefined()
+  })
+
+  it('imports a small sheet in a single transaction', async () => {
+    mockImportLeadsFromFile.mockResolvedValue({
+      created: 3,
+      skipped: 0,
+      rowErrors: [],
+      warnings: [],
+      notes: [],
+      rows: importRows(3),
+    })
+
+    const result = await importDealsAction(importFormData())
+
+    expect(mockTransaction).toHaveBeenCalledTimes(1)
+    expect((mockTransaction.mock.calls[0][0] as unknown[]).length).toBe(3)
+    expect(result.created).toBe(3)
+  })
+
+  it('re-queries existing deals on every request so a retry dedupes instead of duplicating', async () => {
+    mockImportLeadsFromFile.mockResolvedValue({
+      created: 1,
+      skipped: 0,
+      rowErrors: [],
+      warnings: [],
+      notes: [],
+      rows: importRows(1),
+    })
+
+    await importDealsAction(importFormData())
+    await importDealsAction(importFormData())
+
+    // The dedupe pre-flight runs per request, so rows that already
+    // landed in the first (chunk-committed) import are visible to
+    // the retry and get skipped rather than created twice.
+    expect(mockDealFindMany).toHaveBeenCalledTimes(2)
+    expect(mockDealFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ organizationId: 'org-A' }),
+        select: expect.objectContaining({ email: true, name: true }),
+      })
+    )
   })
 })

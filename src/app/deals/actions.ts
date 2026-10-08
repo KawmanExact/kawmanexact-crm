@@ -571,64 +571,79 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
     }
   }
 
-  const created = await prisma.$transaction(
-    parsed.rows.map((data) => {
-      const ownerId = data.email
-        ? (ownerIdByEmail.get(data.email.toLowerCase()) ?? session.user.id)
-        : session.user.id
-      const stage = data.stage ?? 'SUSPECT'
-      return prisma.deal.create({
-        data: {
-          name: data.name,
-          // A sheet that carries no figure must not invent one — it would
-          // inflate pipeline value in every report.
-          value: toMoney(data.value ?? 0),
-          stage,
-          probability: getStageProbability(stage),
-          organizationId: session.user.organizationId,
-          ownerId,
-          segment: data.segment || null,
-          source: data.source || 'Import',
-          score: data.score ?? 0,
-          notes: data.notes || null,
-          lastActivityAt: new Date(),
-          companyId: data.company
-            ? (companyIdByName.get(data.company) ?? companyIdByName.get(data.company.toLowerCase()) ?? null)
-            : null,
-          contactPerson: data.contactPerson || null,
-          designation: data.designation || null,
-          email: data.email || null,
-          phone: data.phone || null,
-          meetingDate: data.meetingDate ?? null,
-          meetingAt: data.meetingAt ?? null,
-          productsDiscussed: data.productsDiscussed ?? [],
-          customProductNames: data.customProductNames ?? [],
-          keyDiscussionPoints: data.keyDiscussion || null,
-          customerRequirement: data.requirement || null,
-          grade: data.grade || null,
-          cdaStatus: data.cdaStatus || null,
-          samplingStatus: data.samplingStatus || null,
-          rndFeedback: data.rdFeedback || null,
-          remark: data.remark || null,
-          nextFollowUp: data.nextFollowUp ?? null,
-          loaStatus: data.loaStatus || null,
-          city: data.city || null,
-          country: data.country || null,
-          pinCode: data.pinCode || null,
-          purposeOfVisit: data.purposeOfVisit || null,
-          application: data.application || null,
-          applicationOther: data.applicationOther || null,
-          closedAt: stage === 'LOST' || stage === 'PAYMENT' ? new Date() : null,
-          lostAt: stage === 'LOST' ? new Date() : null,
-        },
+  // One transaction over the whole sheet can outlive Prisma's 5s
+  // default timeout: every row is its own round-trip, so a few
+  // hundred rows push the interactive transaction past 5000ms and
+  // the database expires it (the rollback itself then fails, which
+  // is the "rollback cannot be executed on an expired transaction"
+  // error). Create in chunks so each transaction stays short.
+  // Chunks commit independently, and the dedupe sets above are
+  // re-queried on every request, so a retried import skips rows
+  // that already landed instead of creating duplicates.
+  const IMPORT_CHUNK_SIZE = 100
+  let created = 0
+  for (let start = 0; start < parsed.rows.length; start += IMPORT_CHUNK_SIZE) {
+    const chunk = parsed.rows.slice(start, start + IMPORT_CHUNK_SIZE)
+    const chunkCreated = await prisma.$transaction(
+      chunk.map((data) => {
+        const ownerId = data.email
+          ? (ownerIdByEmail.get(data.email.toLowerCase()) ?? session.user.id)
+          : session.user.id
+        const stage = data.stage ?? 'SUSPECT'
+        return prisma.deal.create({
+          data: {
+            name: data.name,
+            // A sheet that carries no figure must not invent one — it would
+            // inflate pipeline value in every report.
+            value: toMoney(data.value ?? 0),
+            stage,
+            probability: getStageProbability(stage),
+            organizationId: session.user.organizationId,
+            ownerId,
+            segment: data.segment || null,
+            source: data.source || 'Import',
+            score: data.score ?? 0,
+            notes: data.notes || null,
+            lastActivityAt: new Date(),
+            companyId: data.company
+              ? (companyIdByName.get(data.company) ?? companyIdByName.get(data.company.toLowerCase()) ?? null)
+              : null,
+            contactPerson: data.contactPerson || null,
+            designation: data.designation || null,
+            email: data.email || null,
+            phone: data.phone || null,
+            meetingDate: data.meetingDate ?? null,
+            meetingAt: data.meetingAt ?? null,
+            productsDiscussed: data.productsDiscussed ?? [],
+            customProductNames: data.customProductNames ?? [],
+            keyDiscussionPoints: data.keyDiscussion || null,
+            customerRequirement: data.requirement || null,
+            grade: data.grade || null,
+            cdaStatus: data.cdaStatus || null,
+            samplingStatus: data.samplingStatus || null,
+            rndFeedback: data.rdFeedback || null,
+            remark: data.remark || null,
+            nextFollowUp: data.nextFollowUp ?? null,
+            loaStatus: data.loaStatus || null,
+            city: data.city || null,
+            country: data.country || null,
+            pinCode: data.pinCode || null,
+            purposeOfVisit: data.purposeOfVisit || null,
+            application: data.application || null,
+            applicationOther: data.applicationOther || null,
+            closedAt: stage === 'LOST' || stage === 'PAYMENT' ? new Date() : null,
+            lostAt: stage === 'LOST' ? new Date() : null,
+          },
+        })
       })
-    })
-  )
+    )
+    created += chunkCreated.length
+  }
 
   await prisma.activity.create({
     data: {
       type: 'DEAL_CREATED',
-      description: `${session.user.name} imported ${created.length} deal(s)`,
+      description: `${session.user.name} imported ${created} deal(s)`,
       organizationId: session.user.organizationId,
       actorId: session.user.id,
     },
@@ -639,14 +654,14 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
     actorId: session.user.id,
     action: 'CREATE',
     resource: 'Deal',
-    metadata: { count: created.length, source: 'sheet-import' },
+    metadata: { count: created, source: 'sheet-import' },
   })
 
   revalidatePath('/deals')
   revalidatePath('/dashboard')
 
   return {
-    created: created.length,
+    created,
     skipped: parsed.skipped,
     rowErrors: parsed.rowErrors,
     warnings: parsed.warnings,
