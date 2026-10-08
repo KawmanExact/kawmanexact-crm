@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import { FileX, ArrowLeft, LayoutDashboard } from 'lucide-react'
+import { FileX, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { GoBackButton } from '@/components/ui/go-back-button'
 
 export default function NotFound() {
   return (
@@ -16,10 +17,7 @@ export default function NotFound() {
           </p>
         </div>
         <div className="flex items-center justify-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => history.back()} className="inline-flex items-center gap-1.5">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Go back
-          </Button>
+          <GoBackButton />
           <Button asChild size="sm">
             <Link href="/dashboard" className="inline-flex items-center gap-1.5">
               <LayoutDashboard className="h-3.5 w-3.5" />
