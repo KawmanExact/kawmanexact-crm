@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import type { ContactDetail } from '@/services/contact.service'
 import type { UserOption } from '@/services/user.service'
 import { SEGMENTS, SEGMENT_LABEL } from '@/types/crm'
+import { CompanySelect } from '@/components/crm/company-select'
 import { updateContactAction, deleteContactAction, type ContactFormState } from '../actions'
 
 const initialState: ContactFormState = {}
@@ -19,11 +20,13 @@ export function ContactDetailForm({
   owners,
   canAssign,
   currentUser,
+  companies = [],
 }: {
   contact: ContactDetail
   owners: UserOption[]
   canAssign: boolean
   currentUser: UserOption
+  companies?: { id: string; name: string }[]
 }) {
   const router = useRouter()
   const [deleting, startDelete] = useTransition()
@@ -53,7 +56,7 @@ export function ContactDetailForm({
           <Input name="name" defaultValue={contact.name} required />
         </Field>
         <Field label="Company" error={state.fieldErrors?.company}>
-          <Input name="company" defaultValue={contact.company === '—' ? '' : contact.company} placeholder="Acme Nutraceuticals" />
+          <CompanySelect companies={companies} defaultValue={contact.company === '—' ? '' : contact.company} />
         </Field>
         <Field label="Designation" error={state.fieldErrors?.designation}>
           <Input name="designation" defaultValue={contact.designation === '—' ? '' : contact.designation} />

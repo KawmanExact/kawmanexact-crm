@@ -582,6 +582,7 @@ model Contact {
   deals          Deal[]
   visits         FieldVisit[]
   leads          Lead[]
+  followUps      FollowUp[]
 
   @@unique([organizationId, emailKey])
   @@index([organizationId])
@@ -896,11 +897,13 @@ model FollowUp {
   ownerId        String
   leadId         String?
   companyId      String?
+  contactId      String?
   dealId         String?
   completedAt    DateTime?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   company        Company?       @relation(fields: [companyId], references: [id])
+  contact        Contact?       @relation(fields: [contactId], references: [id])
   deal           Deal?          @relation(fields: [dealId], references: [id])
   lead           Lead?          @relation(fields: [leadId], references: [id])
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -910,6 +913,7 @@ model FollowUp {
   @@index([ownerId])
   @@index([leadId])
   @@index([companyId])
+  @@index([contactId])
   @@index([dealId])
   @@index([status])
   @@index([dueDate])

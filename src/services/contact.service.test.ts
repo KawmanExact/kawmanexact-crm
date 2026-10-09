@@ -151,6 +151,8 @@ describe('findOrCreateContactByName — new contact creation', () => {
         email: 'new@test.com',
         phone: null,
         mobile: '+91 99999 99999',
+        address: null,
+        designation: null,
         emailKey: 'new@test.com',
         lastActivityAt: expect.any(Date),
       },

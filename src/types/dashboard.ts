@@ -54,6 +54,39 @@ export interface LeadSource {
   count: number
   percentage: number
   color: string
+  /** Populated only on the folded "Other" slice, for a hover tooltip. */
+  foldedSources?: Array<{ name: string; count: number }>
+}
+
+export interface CountryDealSlice {
+  name: string
+  iso2: string | null
+  count: number
+  value: number
+  formatted: string
+  color: string
+  percentage: number
+  isOther: boolean
+  isNotSpecified: boolean
+}
+
+export interface CountryDealMarker {
+  name: string
+  iso2: string | null
+  lat: number
+  lng: number
+  count: number
+  value: number
+  formatted: string
+  color: string
+}
+
+export interface CountryDealsData {
+  slices: CountryDealSlice[]
+  markers: CountryDealMarker[]
+  totalDeals: number
+  totalValue: number
+  unlocatedDeals: number
 }
 
 export interface FollowUp {
@@ -86,6 +119,7 @@ export interface DashboardMetrics {
   liveVisits: LiveVisitMarker[]
   leadSources: LeadSource[]
   totalLeads: number
+  countryDeals?: CountryDealsData
   upcomingFollowUps: FollowUp[]
   recentActivities: RecentActivity[]
   storage: { usedGb: number; totalGb: number }

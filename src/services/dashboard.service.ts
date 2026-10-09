@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db'
 import { requireSession } from '@/lib/session'
 import type { DashboardMetrics, RecentActivity, LiveVisitMarker, ProductSalesMetric } from '@/types/dashboard'
 import { logger } from '@/lib/logger'
+import { formatCompactCurrency } from '@/lib/currency'
+import { buildCountryDeals } from '@/lib/country-deals'
+import { buildLeadSources } from '@/lib/lead-sources'
 import type { Prisma } from '@/generated/prisma'
 
 const SPARKLINE_DAYS = 12
@@ -26,7 +29,6 @@ const PIPELINE_LABELS: Record<string, string> = {
   PAYMENT: 'Payment',
   LOST: 'Lost',
 }
-const LEAD_SOURCE_COLORS = ['#818cf8', '#38bdf8', '#34d399', '#fb923c', '#f472b6', '#facc15', '#f87171']
 const ACTIVITY_ICON: Record<string, RecentActivity['icon']> = {
   CHECK_IN: 'checkin',
   MEETING_COMPLETED: 'meeting',
@@ -139,6 +141,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     followUpDates,
     dealsByStage,
     leadsBySourceUnused,
+    countryDealRows,
   ] = await Promise.all([
     safe(prisma.deal.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
     safe(prisma.deal.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
@@ -146,6 +149,10 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     safe(prisma.followUp.findMany({ where: { organizationId, createdAt: { gte: windowStart } }, select: { createdAt: true } }), [] as { createdAt: Date }[]),
     safe(prisma.deal.groupBy({ by: ['stage'], where: { organizationId }, _count: { _all: true }, _sum: { value: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>),
     safe(prisma.deal.groupBy({ by: ['source'], where: { organizationId }, _count: { _all: true } }), [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>),
+    safe(
+      prisma.deal.groupBy({ by: ['country'], where: { organizationId }, _count: { _all: true }, _sum: { value: true } }),
+      [] as unknown as Awaited<ReturnType<typeof prisma.deal.groupBy>>,
+    ),
   ])
   void leadsBySourceUnused
 
@@ -239,8 +246,6 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       pendingAmount: formatCompactCurrency(data.balanceAmount),
       rawPending: data.balanceAmount,
     }))
-
-  const totalLeadSources = leadSourceRows.reduce((sum, r) => sum + r._count._all, 0) || 1
 
   // --- Live visits: normalize today's field-visit coordinates into a 0-100
   // percentage box for the illustrative map card (no real map tiles yet).
@@ -381,16 +386,15 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 
     liveVisits,
 
+    countryDeals: buildCountryDeals(
+      countryDealRows.map((r) => ({ country: r.country, count: r._count._all, value: Number(r._sum.value ?? 0) })),
+      formatCompactCurrency,
+    ),
+
     totalLeads: totalLeadsCount,
-    leadSources: leadSourceRows
-      .sort((a, b) => b._count._all - a._count._all)
-      .map((row, i) => ({
-        id: (row.source ?? 'other').toLowerCase().replace(/\s+/g, '-'),
-        name: row.source ?? 'Other',
-        count: row._count._all,
-        percentage: Math.round((row._count._all / totalLeadSources) * 100),
-        color: LEAD_SOURCE_COLORS[i % LEAD_SOURCE_COLORS.length],
-      })),
+    leadSources: buildLeadSources(
+      leadSourceRows.map((r) => ({ source: r.source ?? null, count: r._count._all })),
+    ).sources,
 
     upcomingFollowUps: upcomingFollowUps.map((f) => ({
       id: f.id,
@@ -417,13 +421,6 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 
     topProducts,
   }
-}
-
-function formatCompactCurrency(amount: number): string {
-  if (amount >= 10_000_000) return '₹' + (amount / 10_000_000).toFixed(1) + 'Cr'
-  if (amount >= 100_000) return '₹' + (amount / 100_000).toFixed(1) + 'L'
-  if (amount >= 1_000) return '₹' + (amount / 1_000).toFixed(1) + 'K'
-  return '₹' + amount
 }
 
 function formatDueDateLabel(date: Date): string {

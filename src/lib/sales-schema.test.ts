@@ -12,6 +12,7 @@ function line(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     productId: 'prod_1',
     otherProductName: '',
+    unit: '',
     quantity: 2,
     unitPrice: 100,
     amountPaid: 0,
@@ -32,6 +33,7 @@ function clientLine(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     productId: 'prod_1',
     otherProductName: '',
+    unit: '',
     quantity: '2',
     unitPrice: '100',
     amountPaid: '0',
@@ -116,7 +118,7 @@ describe('salesFormSchema (server)', () => {
         form({
           // A payment was recorded, so the payment date is now required too.
           paymentDate: '2026-03-02',
-          lines: [line({ productId: '', otherProductName: 'Curcumin', quantity: 2, unitPrice: 10, amountPaid: 20, paymentStatus: 'PAID' })],
+          lines: [line({ productId: '', otherProductName: 'Curcumin', unit: 'pcs', quantity: 2, unitPrice: 10, amountPaid: 20, paymentStatus: 'PAID' })],
         })
       ).success
     ).toBe(true)

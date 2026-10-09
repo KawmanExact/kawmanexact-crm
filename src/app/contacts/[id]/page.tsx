@@ -1,9 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { getContactById } from '@/services/contact.service'
 import { getOrgUserOptions } from '@/services/user.service'
+import { getCompanyOptions } from '@/services/company.service'
 import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
 import { canManageAssignments } from '@/lib/record-scope'
@@ -26,7 +30,8 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
   const session = await requireApiSession()
   const canAssign = canManageAssignments(session.user)
   const currentUser: UserOption = { id: session.user.id, name: session.user.name ?? 'Me' }
-  const [deals, activities] = await Promise.all([
+  const [companyOptions, deals, activities, followUps] = await Promise.all([
+    getCompanyOptions(),
     prisma.deal.findMany({
       where: { contactId: id, organizationId: session.user.organizationId },
       orderBy: { createdAt: 'desc' },
@@ -38,6 +43,18 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
       orderBy: { createdAt: 'desc' },
       take: 10,
       include: { actor: { select: { name: true } } },
+    }),
+    prisma.followUp.findMany({
+      where: {
+        organizationId: session.user.organizationId,
+        OR: [
+          { contactId: id },
+          { deal: { contactId: id } },
+        ],
+      },
+      orderBy: { dueDate: 'asc' },
+      take: 10,
+      include: { deal: { select: { id: true, name: true } } },
     }),
   ])
 
@@ -56,7 +73,7 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
             )
           }
         />
-        <ContactDetailForm contact={contact} owners={owners} canAssign={canAssign} currentUser={currentUser} />
+        <ContactDetailForm contact={contact} owners={owners} canAssign={canAssign} currentUser={currentUser} companies={companyOptions} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
@@ -85,6 +102,41 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
               ))}
             </ul>
           </div>
+        </div>
+
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-white">Follow-ups</h3>
+            <Button size="sm" variant="ghost" className="gap-1.5" asChild>
+              <a href={`/follow-ups?contactId=${id}`}>
+                <Plus className="h-3.5 w-3.5" /> New follow-up
+              </a>
+            </Button>
+          </div>
+          {followUps.length === 0 && <p className="text-sm text-white/40">No follow-ups scheduled.</p>}
+          <ul className="space-y-2">
+            {followUps.map((f) => (
+              <li key={f.id} className="flex justify-between text-sm">
+                <span className="text-white/70">{f.title}</span>
+                <span className="flex items-center gap-2 text-white/40">
+                  <Badge
+                    variant={
+                      f.status === 'COMPLETED'
+                        ? 'success'
+                        : f.status === 'CANCELLED'
+                          ? 'neutral'
+                          : f.status === 'OVERDUE'
+                            ? 'danger'
+                            : 'info'
+                    }
+                  >
+                    {f.status}
+                  </Badge>
+                  {new Date(f.dueDate).toLocaleDateString('en-IN')}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </MainLayout>

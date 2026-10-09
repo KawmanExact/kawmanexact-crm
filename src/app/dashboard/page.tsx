@@ -7,6 +7,7 @@ import { PipelineCard } from '@/components/dashboard/pipeline-card'
 import { AIInsightCard } from '@/components/dashboard/ai-insight-card'
 import { FieldActivityCard } from '@/components/dashboard/field-activity-card'
 import { LiveMapCard } from '@/components/dashboard/live-map-card'
+import { CountryDealsCard } from '@/components/dashboard/country-deals-card'
 import { LeadSourceChart } from '@/components/dashboard/lead-source-chart'
 import { FollowUpList } from '@/components/dashboard/follow-up-list'
 import { RecentActivities } from '@/components/dashboard/recent-activities'
@@ -96,8 +97,11 @@ export default async function DashboardPage() {
         {/* Live map */}
         <LiveMapCard markers={metrics.liveVisits} />
 
+        {/* Deals by country */}
+        <CountryDealsCard countryDeals={metrics.countryDeals} />
+
         {/* Leads by source / Upcoming follow-ups / Top Products */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
           <LeadSourceChart sources={metrics.leadSources} total={metrics.totalLeads} />
           <FollowUpList items={metrics.upcomingFollowUps} />
           <TopProductsCard items={metrics.topProducts} />

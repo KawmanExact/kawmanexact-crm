@@ -18,7 +18,7 @@ const STATUS_COLOR: Record<LiveVisitMarker['status'], string> = {
 // MapLibre raster style — OpenStreetMap tiles, no token needed.
 // Using raster tiles as the primary style to avoid vector tile loading issues
 // that can result in a black/blank map in restricted network environments.
-const MAP_STYLE = {
+export const MAP_STYLE = {
   version: 8 as const,
   sources: {
     osm: {
