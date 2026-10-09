@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { createContactAction, type ContactFormState } from '../actions'
 import type { UserOption } from '@/services/user.service'
 import { SEGMENTS, SEGMENT_LABEL } from '@/types/crm'
+import { CompanySelect } from '@/components/crm/company-select'
 
 const initialState: ContactFormState = {}
 
@@ -22,7 +23,7 @@ export interface ContactInitialValues {
   address?: string
 }
 
-export function ContactForm({ owners, canAssign, currentUser, initialValues }: { owners: UserOption[]; canAssign: boolean; currentUser: UserOption; initialValues?: ContactInitialValues }) {
+export function ContactForm({ owners, canAssign, currentUser, companies, initialValues }: { owners: UserOption[]; canAssign: boolean; currentUser: UserOption; companies?: { id: string; name: string }[]; initialValues?: ContactInitialValues }) {
   const [state, formAction, pending] = useActionState(createContactAction, initialState)
   const router = useRouter()
 
@@ -43,7 +44,7 @@ export function ContactForm({ owners, canAssign, currentUser, initialValues }: {
           <Input name="name" placeholder="Anjali Mehta" required defaultValue={values.name || undefined} />
         </Field>
         <Field label="Company" error={state.fieldErrors?.company}>
-          <Input name="company" placeholder="Acme Nutraceuticals" defaultValue={values.company || undefined} />
+          <CompanySelect companies={companies ?? []} defaultValue={values.company} />
         </Field>
         <Field label="Designation" error={state.fieldErrors?.designation}>
           <Input name="designation" placeholder="Procurement Head" defaultValue={values.designation || undefined} />

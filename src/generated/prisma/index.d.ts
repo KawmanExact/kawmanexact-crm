@@ -6236,6 +6236,7 @@ export namespace Prisma {
     deals: number
     visits: number
     leads: number
+    followUps: number
   }
 
   export type ContactCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6243,6 +6244,7 @@ export namespace Prisma {
     deals?: boolean | ContactCountOutputTypeCountDealsArgs
     visits?: boolean | ContactCountOutputTypeCountVisitsArgs
     leads?: boolean | ContactCountOutputTypeCountLeadsArgs
+    followUps?: boolean | ContactCountOutputTypeCountFollowUpsArgs
   }
 
   // Custom InputTypes
@@ -6282,6 +6284,13 @@ export namespace Prisma {
    */
   export type ContactCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LeadWhereInput
+  }
+
+  /**
+   * ContactCountOutputType without action
+   */
+  export type ContactCountOutputTypeCountFollowUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowUpWhereInput
   }
 
 
@@ -36017,6 +36026,7 @@ export namespace Prisma {
     deals?: boolean | Contact$dealsArgs<ExtArgs>
     visits?: boolean | Contact$visitsArgs<ExtArgs>
     leads?: boolean | Contact$leadsArgs<ExtArgs>
+    followUps?: boolean | Contact$followUpsArgs<ExtArgs>
     _count?: boolean | ContactCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["contact"]>
 
@@ -36092,6 +36102,7 @@ export namespace Prisma {
     deals?: boolean | Contact$dealsArgs<ExtArgs>
     visits?: boolean | Contact$visitsArgs<ExtArgs>
     leads?: boolean | Contact$leadsArgs<ExtArgs>
+    followUps?: boolean | Contact$followUpsArgs<ExtArgs>
     _count?: boolean | ContactCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ContactIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36115,6 +36126,7 @@ export namespace Prisma {
       deals: Prisma.$DealPayload<ExtArgs>[]
       visits: Prisma.$FieldVisitPayload<ExtArgs>[]
       leads: Prisma.$LeadPayload<ExtArgs>[]
+      followUps: Prisma.$FollowUpPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36534,6 +36546,7 @@ export namespace Prisma {
     deals<T extends Contact$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Contact$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     visits<T extends Contact$visitsArgs<ExtArgs> = {}>(args?: Subset<T, Contact$visitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FieldVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leads<T extends Contact$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Contact$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    followUps<T extends Contact$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, Contact$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37092,6 +37105,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * Contact.followUps
+   */
+  export type Contact$followUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUp
+     */
+    select?: FollowUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUp
+     */
+    omit?: FollowUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpInclude<ExtArgs> | null
+    where?: FollowUpWhereInput
+    orderBy?: FollowUpOrderByWithRelationInput | FollowUpOrderByWithRelationInput[]
+    cursor?: FollowUpWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FollowUpScalarFieldEnum | FollowUpScalarFieldEnum[]
   }
 
   /**
@@ -46851,6 +46888,7 @@ export namespace Prisma {
     ownerId: string | null
     leadId: string | null
     companyId: string | null
+    contactId: string | null
     dealId: string | null
     completedAt: Date | null
     createdAt: Date | null
@@ -46868,6 +46906,7 @@ export namespace Prisma {
     ownerId: string | null
     leadId: string | null
     companyId: string | null
+    contactId: string | null
     dealId: string | null
     completedAt: Date | null
     createdAt: Date | null
@@ -46885,6 +46924,7 @@ export namespace Prisma {
     ownerId: number
     leadId: number
     companyId: number
+    contactId: number
     dealId: number
     completedAt: number
     createdAt: number
@@ -46904,6 +46944,7 @@ export namespace Prisma {
     ownerId?: true
     leadId?: true
     companyId?: true
+    contactId?: true
     dealId?: true
     completedAt?: true
     createdAt?: true
@@ -46921,6 +46962,7 @@ export namespace Prisma {
     ownerId?: true
     leadId?: true
     companyId?: true
+    contactId?: true
     dealId?: true
     completedAt?: true
     createdAt?: true
@@ -46938,6 +46980,7 @@ export namespace Prisma {
     ownerId?: true
     leadId?: true
     companyId?: true
+    contactId?: true
     dealId?: true
     completedAt?: true
     createdAt?: true
@@ -47028,6 +47071,7 @@ export namespace Prisma {
     ownerId: string
     leadId: string | null
     companyId: string | null
+    contactId: string | null
     dealId: string | null
     completedAt: Date | null
     createdAt: Date
@@ -47062,11 +47106,13 @@ export namespace Prisma {
     ownerId?: boolean
     leadId?: boolean
     companyId?: boolean
+    contactId?: boolean
     dealId?: boolean
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47084,11 +47130,13 @@ export namespace Prisma {
     ownerId?: boolean
     leadId?: boolean
     companyId?: boolean
+    contactId?: boolean
     dealId?: boolean
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47106,11 +47154,13 @@ export namespace Prisma {
     ownerId?: boolean
     leadId?: boolean
     companyId?: boolean
+    contactId?: boolean
     dealId?: boolean
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47128,15 +47178,17 @@ export namespace Prisma {
     ownerId?: boolean
     leadId?: boolean
     companyId?: boolean
+    contactId?: boolean
     dealId?: boolean
     completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type FollowUpOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "dueDate" | "priority" | "status" | "organizationId" | "ownerId" | "leadId" | "companyId" | "dealId" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["followUp"]>
+  export type FollowUpOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "dueDate" | "priority" | "status" | "organizationId" | "ownerId" | "leadId" | "companyId" | "contactId" | "dealId" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["followUp"]>
   export type FollowUpInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47144,6 +47196,7 @@ export namespace Prisma {
   }
   export type FollowUpIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47151,6 +47204,7 @@ export namespace Prisma {
   }
   export type FollowUpIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | FollowUp$companyArgs<ExtArgs>
+    contact?: boolean | FollowUp$contactArgs<ExtArgs>
     deal?: boolean | FollowUp$dealArgs<ExtArgs>
     lead?: boolean | FollowUp$leadArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -47161,6 +47215,7 @@ export namespace Prisma {
     name: "FollowUp"
     objects: {
       company: Prisma.$CompanyPayload<ExtArgs> | null
+      contact: Prisma.$ContactPayload<ExtArgs> | null
       deal: Prisma.$DealPayload<ExtArgs> | null
       lead: Prisma.$LeadPayload<ExtArgs> | null
       organization: Prisma.$OrganizationPayload<ExtArgs>
@@ -47177,6 +47232,7 @@ export namespace Prisma {
       ownerId: string
       leadId: string | null
       companyId: string | null
+      contactId: string | null
       dealId: string | null
       completedAt: Date | null
       createdAt: Date
@@ -47576,6 +47632,7 @@ export namespace Prisma {
   export interface Prisma__FollowUpClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     company<T extends FollowUp$companyArgs<ExtArgs> = {}>(args?: Subset<T, FollowUp$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    contact<T extends FollowUp$contactArgs<ExtArgs> = {}>(args?: Subset<T, FollowUp$contactArgs<ExtArgs>>): Prisma__ContactClient<$Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     deal<T extends FollowUp$dealArgs<ExtArgs> = {}>(args?: Subset<T, FollowUp$dealArgs<ExtArgs>>): Prisma__DealClient<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lead<T extends FollowUp$leadArgs<ExtArgs> = {}>(args?: Subset<T, FollowUp$leadArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -47619,6 +47676,7 @@ export namespace Prisma {
     readonly ownerId: FieldRef<"FollowUp", 'String'>
     readonly leadId: FieldRef<"FollowUp", 'String'>
     readonly companyId: FieldRef<"FollowUp", 'String'>
+    readonly contactId: FieldRef<"FollowUp", 'String'>
     readonly dealId: FieldRef<"FollowUp", 'String'>
     readonly completedAt: FieldRef<"FollowUp", 'DateTime'>
     readonly createdAt: FieldRef<"FollowUp", 'DateTime'>
@@ -48040,6 +48098,25 @@ export namespace Prisma {
      */
     include?: CompanyInclude<ExtArgs> | null
     where?: CompanyWhereInput
+  }
+
+  /**
+   * FollowUp.contact
+   */
+  export type FollowUp$contactArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Contact
+     */
+    omit?: ContactOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContactInclude<ExtArgs> | null
+    where?: ContactWhereInput
   }
 
   /**
@@ -64933,6 +65010,7 @@ export namespace Prisma {
     ownerId: 'ownerId',
     leadId: 'leadId',
     companyId: 'companyId',
+    contactId: 'contactId',
     dealId: 'dealId',
     completedAt: 'completedAt',
     createdAt: 'createdAt',
@@ -67787,6 +67865,7 @@ export namespace Prisma {
     deals?: DealListRelationFilter
     visits?: FieldVisitListRelationFilter
     leads?: LeadListRelationFilter
+    followUps?: FollowUpListRelationFilter
   }
 
   export type ContactOrderByWithRelationInput = {
@@ -67813,6 +67892,7 @@ export namespace Prisma {
     deals?: DealOrderByRelationAggregateInput
     visits?: FieldVisitOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
+    followUps?: FollowUpOrderByRelationAggregateInput
   }
 
   export type ContactWhereUniqueInput = Prisma.AtLeast<{
@@ -67843,6 +67923,7 @@ export namespace Prisma {
     deals?: DealListRelationFilter
     visits?: FieldVisitListRelationFilter
     leads?: LeadListRelationFilter
+    followUps?: FollowUpListRelationFilter
   }, "id" | "organizationId_emailKey">
 
   export type ContactOrderByWithAggregationInput = {
@@ -68913,11 +68994,13 @@ export namespace Prisma {
     ownerId?: StringFilter<"FollowUp"> | string
     leadId?: StringNullableFilter<"FollowUp"> | string | null
     companyId?: StringNullableFilter<"FollowUp"> | string | null
+    contactId?: StringNullableFilter<"FollowUp"> | string | null
     dealId?: StringNullableFilter<"FollowUp"> | string | null
     completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeFilter<"FollowUp"> | Date | string
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
+    contact?: XOR<ContactNullableScalarRelationFilter, ContactWhereInput> | null
     deal?: XOR<DealNullableScalarRelationFilter, DealWhereInput> | null
     lead?: XOR<LeadNullableScalarRelationFilter, LeadWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -68935,11 +69018,13 @@ export namespace Prisma {
     ownerId?: SortOrder
     leadId?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
+    contactId?: SortOrderInput | SortOrder
     dealId?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     company?: CompanyOrderByWithRelationInput
+    contact?: ContactOrderByWithRelationInput
     deal?: DealOrderByWithRelationInput
     lead?: LeadOrderByWithRelationInput
     organization?: OrganizationOrderByWithRelationInput
@@ -68960,11 +69045,13 @@ export namespace Prisma {
     ownerId?: StringFilter<"FollowUp"> | string
     leadId?: StringNullableFilter<"FollowUp"> | string | null
     companyId?: StringNullableFilter<"FollowUp"> | string | null
+    contactId?: StringNullableFilter<"FollowUp"> | string | null
     dealId?: StringNullableFilter<"FollowUp"> | string | null
     completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
     updatedAt?: DateTimeFilter<"FollowUp"> | Date | string
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
+    contact?: XOR<ContactNullableScalarRelationFilter, ContactWhereInput> | null
     deal?: XOR<DealNullableScalarRelationFilter, DealWhereInput> | null
     lead?: XOR<LeadNullableScalarRelationFilter, LeadWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -68982,6 +69069,7 @@ export namespace Prisma {
     ownerId?: SortOrder
     leadId?: SortOrderInput | SortOrder
     companyId?: SortOrderInput | SortOrder
+    contactId?: SortOrderInput | SortOrder
     dealId?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -69005,6 +69093,7 @@ export namespace Prisma {
     ownerId?: StringWithAggregatesFilter<"FollowUp"> | string
     leadId?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
     companyId?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
+    contactId?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
     dealId?: StringNullableWithAggregatesFilter<"FollowUp"> | string | null
     completedAt?: DateTimeNullableWithAggregatesFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
@@ -72687,6 +72776,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateInput = {
@@ -72710,6 +72800,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactUpdateInput = {
@@ -72733,6 +72824,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateInput = {
@@ -72756,6 +72848,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type ContactCreateManyInput = {
@@ -73972,6 +74065,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     deal?: DealCreateNestedOneWithoutFollowUpsInput
     lead?: LeadCreateNestedOneWithoutFollowUpsInput
     organization: OrganizationCreateNestedOneWithoutFollowUpsInput
@@ -73989,6 +74083,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -74006,6 +74101,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     deal?: DealUpdateOneWithoutFollowUpsNestedInput
     lead?: LeadUpdateOneWithoutFollowUpsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
@@ -74023,6 +74119,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74040,6 +74137,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -74069,6 +74167,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77986,6 +78085,7 @@ export namespace Prisma {
     ownerId?: SortOrder
     leadId?: SortOrder
     companyId?: SortOrder
+    contactId?: SortOrder
     dealId?: SortOrder
     completedAt?: SortOrder
     createdAt?: SortOrder
@@ -78003,6 +78103,7 @@ export namespace Prisma {
     ownerId?: SortOrder
     leadId?: SortOrder
     companyId?: SortOrder
+    contactId?: SortOrder
     dealId?: SortOrder
     completedAt?: SortOrder
     createdAt?: SortOrder
@@ -78020,6 +78121,7 @@ export namespace Prisma {
     ownerId?: SortOrder
     leadId?: SortOrder
     companyId?: SortOrder
+    contactId?: SortOrder
     dealId?: SortOrder
     completedAt?: SortOrder
     createdAt?: SortOrder
@@ -83388,6 +83490,13 @@ export namespace Prisma {
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
+  export type FollowUpCreateNestedManyWithoutContactInput = {
+    create?: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput> | FollowUpCreateWithoutContactInput[] | FollowUpUncheckedCreateWithoutContactInput[]
+    connectOrCreate?: FollowUpCreateOrConnectWithoutContactInput | FollowUpCreateOrConnectWithoutContactInput[]
+    createMany?: FollowUpCreateManyContactInputEnvelope
+    connect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+  }
+
   export type ActivityUncheckedCreateNestedManyWithoutContactInput = {
     create?: XOR<ActivityCreateWithoutContactInput, ActivityUncheckedCreateWithoutContactInput> | ActivityCreateWithoutContactInput[] | ActivityUncheckedCreateWithoutContactInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutContactInput | ActivityCreateOrConnectWithoutContactInput[]
@@ -83414,6 +83523,13 @@ export namespace Prisma {
     connectOrCreate?: LeadCreateOrConnectWithoutContactInput | LeadCreateOrConnectWithoutContactInput[]
     createMany?: LeadCreateManyContactInputEnvelope
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
+  export type FollowUpUncheckedCreateNestedManyWithoutContactInput = {
+    create?: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput> | FollowUpCreateWithoutContactInput[] | FollowUpUncheckedCreateWithoutContactInput[]
+    connectOrCreate?: FollowUpCreateOrConnectWithoutContactInput | FollowUpCreateOrConnectWithoutContactInput[]
+    createMany?: FollowUpCreateManyContactInputEnvelope
+    connect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
   }
 
   export type ActivityUpdateManyWithoutContactNestedInput = {
@@ -83498,6 +83614,20 @@ export namespace Prisma {
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
+  export type FollowUpUpdateManyWithoutContactNestedInput = {
+    create?: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput> | FollowUpCreateWithoutContactInput[] | FollowUpUncheckedCreateWithoutContactInput[]
+    connectOrCreate?: FollowUpCreateOrConnectWithoutContactInput | FollowUpCreateOrConnectWithoutContactInput[]
+    upsert?: FollowUpUpsertWithWhereUniqueWithoutContactInput | FollowUpUpsertWithWhereUniqueWithoutContactInput[]
+    createMany?: FollowUpCreateManyContactInputEnvelope
+    set?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    disconnect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    delete?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    connect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    update?: FollowUpUpdateWithWhereUniqueWithoutContactInput | FollowUpUpdateWithWhereUniqueWithoutContactInput[]
+    updateMany?: FollowUpUpdateManyWithWhereWithoutContactInput | FollowUpUpdateManyWithWhereWithoutContactInput[]
+    deleteMany?: FollowUpScalarWhereInput | FollowUpScalarWhereInput[]
+  }
+
   export type ActivityUncheckedUpdateManyWithoutContactNestedInput = {
     create?: XOR<ActivityCreateWithoutContactInput, ActivityUncheckedCreateWithoutContactInput> | ActivityCreateWithoutContactInput[] | ActivityUncheckedCreateWithoutContactInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutContactInput | ActivityCreateOrConnectWithoutContactInput[]
@@ -83552,6 +83682,20 @@ export namespace Prisma {
     update?: LeadUpdateWithWhereUniqueWithoutContactInput | LeadUpdateWithWhereUniqueWithoutContactInput[]
     updateMany?: LeadUpdateManyWithWhereWithoutContactInput | LeadUpdateManyWithWhereWithoutContactInput[]
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
+  export type FollowUpUncheckedUpdateManyWithoutContactNestedInput = {
+    create?: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput> | FollowUpCreateWithoutContactInput[] | FollowUpUncheckedCreateWithoutContactInput[]
+    connectOrCreate?: FollowUpCreateOrConnectWithoutContactInput | FollowUpCreateOrConnectWithoutContactInput[]
+    upsert?: FollowUpUpsertWithWhereUniqueWithoutContactInput | FollowUpUpsertWithWhereUniqueWithoutContactInput[]
+    createMany?: FollowUpCreateManyContactInputEnvelope
+    set?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    disconnect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    delete?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    connect?: FollowUpWhereUniqueInput | FollowUpWhereUniqueInput[]
+    update?: FollowUpUpdateWithWhereUniqueWithoutContactInput | FollowUpUpdateWithWhereUniqueWithoutContactInput[]
+    updateMany?: FollowUpUpdateManyWithWhereWithoutContactInput | FollowUpUpdateManyWithWhereWithoutContactInput[]
+    deleteMany?: FollowUpScalarWhereInput | FollowUpScalarWhereInput[]
   }
 
   export type DealCreateproductsDiscussedInput = {
@@ -84276,6 +84420,12 @@ export namespace Prisma {
     connect?: CompanyWhereUniqueInput
   }
 
+  export type ContactCreateNestedOneWithoutFollowUpsInput = {
+    create?: XOR<ContactCreateWithoutFollowUpsInput, ContactUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: ContactCreateOrConnectWithoutFollowUpsInput
+    connect?: ContactWhereUniqueInput
+  }
+
   export type DealCreateNestedOneWithoutFollowUpsInput = {
     create?: XOR<DealCreateWithoutFollowUpsInput, DealUncheckedCreateWithoutFollowUpsInput>
     connectOrCreate?: DealCreateOrConnectWithoutFollowUpsInput
@@ -84312,6 +84462,16 @@ export namespace Prisma {
     delete?: CompanyWhereInput | boolean
     connect?: CompanyWhereUniqueInput
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutFollowUpsInput, CompanyUpdateWithoutFollowUpsInput>, CompanyUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type ContactUpdateOneWithoutFollowUpsNestedInput = {
+    create?: XOR<ContactCreateWithoutFollowUpsInput, ContactUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: ContactCreateOrConnectWithoutFollowUpsInput
+    upsert?: ContactUpsertWithoutFollowUpsInput
+    disconnect?: ContactWhereInput | boolean
+    delete?: ContactWhereInput | boolean
+    connect?: ContactWhereUniqueInput
+    update?: XOR<XOR<ContactUpdateToOneWithWhereWithoutFollowUpsInput, ContactUpdateWithoutFollowUpsInput>, ContactUncheckedUpdateWithoutFollowUpsInput>
   }
 
   export type DealUpdateOneWithoutFollowUpsNestedInput = {
@@ -85827,6 +85987,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutOrganizationInput = {
@@ -85849,6 +86010,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutOrganizationInput = {
@@ -86310,6 +86472,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     deal?: DealCreateNestedOneWithoutFollowUpsInput
     lead?: LeadCreateNestedOneWithoutFollowUpsInput
     owner: UserCreateNestedOneWithoutOwnedFollowUpsInput
@@ -86325,6 +86488,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -87542,6 +87706,7 @@ export namespace Prisma {
     ownerId?: StringFilter<"FollowUp"> | string
     leadId?: StringNullableFilter<"FollowUp"> | string | null
     companyId?: StringNullableFilter<"FollowUp"> | string | null
+    contactId?: StringNullableFilter<"FollowUp"> | string | null
     dealId?: StringNullableFilter<"FollowUp"> | string | null
     completedAt?: DateTimeNullableFilter<"FollowUp"> | Date | string | null
     createdAt?: DateTimeFilter<"FollowUp"> | Date | string
@@ -88283,6 +88448,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutOwnerInput = {
@@ -88305,6 +88471,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutOwnerInput = {
@@ -88888,6 +89055,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     deal?: DealCreateNestedOneWithoutFollowUpsInput
     lead?: LeadCreateNestedOneWithoutFollowUpsInput
     organization: OrganizationCreateNestedOneWithoutFollowUpsInput
@@ -88903,6 +89071,7 @@ export namespace Prisma {
     organizationId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -98181,6 +98350,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     deal?: DealCreateNestedOneWithoutFollowUpsInput
     organization: OrganizationCreateNestedOneWithoutFollowUpsInput
     owner: UserCreateNestedOneWithoutOwnedFollowUpsInput
@@ -98196,6 +98366,7 @@ export namespace Prisma {
     organizationId: string
     ownerId: string
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -98291,6 +98462,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedContactsInput
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutLeadsInput = {
@@ -98313,6 +98485,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutContactInput
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutLeadsInput = {
@@ -98672,6 +98845,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedContactsNestedInput
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutLeadsInput = {
@@ -98694,6 +98868,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutContactNestedInput
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type OrganizationUpsertWithoutLeadsInput = {
@@ -99180,6 +99355,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutCompanyInput = {
@@ -99202,6 +99378,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutCompanyInput = {
@@ -99392,6 +99569,7 @@ export namespace Prisma {
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     deal?: DealCreateNestedOneWithoutFollowUpsInput
     lead?: LeadCreateNestedOneWithoutFollowUpsInput
     organization: OrganizationCreateNestedOneWithoutFollowUpsInput
@@ -99408,6 +99586,7 @@ export namespace Prisma {
     organizationId: string
     ownerId: string
     leadId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -100547,6 +100726,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FollowUpCreateWithoutContactInput = {
+    id?: string
+    title: string
+    description?: string | null
+    dueDate: Date | string
+    priority?: string
+    status?: $Enums.FollowUpStatus
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    deal?: DealCreateNestedOneWithoutFollowUpsInput
+    lead?: LeadCreateNestedOneWithoutFollowUpsInput
+    organization: OrganizationCreateNestedOneWithoutFollowUpsInput
+    owner: UserCreateNestedOneWithoutOwnedFollowUpsInput
+  }
+
+  export type FollowUpUncheckedCreateWithoutContactInput = {
+    id?: string
+    title: string
+    description?: string | null
+    dueDate: Date | string
+    priority?: string
+    status?: $Enums.FollowUpStatus
+    organizationId: string
+    ownerId: string
+    leadId?: string | null
+    companyId?: string | null
+    dealId?: string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FollowUpCreateOrConnectWithoutContactInput = {
+    where: FollowUpWhereUniqueInput
+    create: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput>
+  }
+
+  export type FollowUpCreateManyContactInputEnvelope = {
+    data: FollowUpCreateManyContactInput | FollowUpCreateManyContactInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ActivityUpsertWithWhereUniqueWithoutContactInput = {
     where: ActivityWhereUniqueInput
     update: XOR<ActivityUpdateWithoutContactInput, ActivityUncheckedUpdateWithoutContactInput>
@@ -100896,6 +101119,22 @@ export namespace Prisma {
     data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutContactInput>
   }
 
+  export type FollowUpUpsertWithWhereUniqueWithoutContactInput = {
+    where: FollowUpWhereUniqueInput
+    update: XOR<FollowUpUpdateWithoutContactInput, FollowUpUncheckedUpdateWithoutContactInput>
+    create: XOR<FollowUpCreateWithoutContactInput, FollowUpUncheckedCreateWithoutContactInput>
+  }
+
+  export type FollowUpUpdateWithWhereUniqueWithoutContactInput = {
+    where: FollowUpWhereUniqueInput
+    data: XOR<FollowUpUpdateWithoutContactInput, FollowUpUncheckedUpdateWithoutContactInput>
+  }
+
+  export type FollowUpUpdateManyWithWhereWithoutContactInput = {
+    where: FollowUpScalarWhereInput
+    data: XOR<FollowUpUpdateManyMutationInput, FollowUpUncheckedUpdateManyWithoutContactInput>
+  }
+
   export type ActivityCreateWithoutDealInput = {
     id?: string
     type: string
@@ -101011,6 +101250,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedContactsInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutDealsInput = {
@@ -101033,6 +101273,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutDealsInput = {
@@ -101466,6 +101707,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company?: CompanyCreateNestedOneWithoutFollowUpsInput
+    contact?: ContactCreateNestedOneWithoutFollowUpsInput
     lead?: LeadCreateNestedOneWithoutFollowUpsInput
     organization: OrganizationCreateNestedOneWithoutFollowUpsInput
     owner: UserCreateNestedOneWithoutOwnedFollowUpsInput
@@ -101482,6 +101724,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -101609,6 +101852,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedContactsNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutDealsInput = {
@@ -101631,6 +101875,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type LeadUpsertWithoutDealsInput = {
@@ -104382,6 +104627,7 @@ export namespace Prisma {
     deals?: DealCreateNestedManyWithoutContactInput
     visits?: FieldVisitCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutActivitiesInput = {
@@ -104404,6 +104650,7 @@ export namespace Prisma {
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutActivitiesInput = {
@@ -104925,6 +105172,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutActivitiesInput = {
@@ -104947,6 +105195,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type DealUpsertWithoutActivitiesInput = {
@@ -105815,6 +106064,57 @@ export namespace Prisma {
     create: XOR<CompanyCreateWithoutFollowUpsInput, CompanyUncheckedCreateWithoutFollowUpsInput>
   }
 
+  export type ContactCreateWithoutFollowUpsInput = {
+    id?: string
+    name: string
+    designation?: string | null
+    email?: string | null
+    phone?: string | null
+    mobile?: string | null
+    status?: string
+    emailKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastActivityAt?: Date | string | null
+    address?: string | null
+    segment?: string | null
+    activities?: ActivityCreateNestedManyWithoutContactInput
+    company?: CompanyCreateNestedOneWithoutContactsInput
+    organization: OrganizationCreateNestedOneWithoutContactsInput
+    owner: UserCreateNestedOneWithoutOwnedContactsInput
+    deals?: DealCreateNestedManyWithoutContactInput
+    visits?: FieldVisitCreateNestedManyWithoutContactInput
+    leads?: LeadCreateNestedManyWithoutContactInput
+  }
+
+  export type ContactUncheckedCreateWithoutFollowUpsInput = {
+    id?: string
+    name: string
+    designation?: string | null
+    email?: string | null
+    phone?: string | null
+    mobile?: string | null
+    status?: string
+    organizationId: string
+    companyId?: string | null
+    ownerId: string
+    emailKey?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastActivityAt?: Date | string | null
+    address?: string | null
+    segment?: string | null
+    activities?: ActivityUncheckedCreateNestedManyWithoutContactInput
+    deals?: DealUncheckedCreateNestedManyWithoutContactInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutContactInput
+    leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+  }
+
+  export type ContactCreateOrConnectWithoutFollowUpsInput = {
+    where: ContactWhereUniqueInput
+    create: XOR<ContactCreateWithoutFollowUpsInput, ContactUncheckedCreateWithoutFollowUpsInput>
+  }
+
   export type DealCreateWithoutFollowUpsInput = {
     id?: string
     name: string
@@ -106290,6 +106590,63 @@ export namespace Prisma {
     geoFences?: GeoFenceUncheckedUpdateManyWithoutCompanyNestedInput
     leads?: LeadUncheckedUpdateManyWithoutCompanyRefNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type ContactUpsertWithoutFollowUpsInput = {
+    update: XOR<ContactUpdateWithoutFollowUpsInput, ContactUncheckedUpdateWithoutFollowUpsInput>
+    create: XOR<ContactCreateWithoutFollowUpsInput, ContactUncheckedCreateWithoutFollowUpsInput>
+    where?: ContactWhereInput
+  }
+
+  export type ContactUpdateToOneWithWhereWithoutFollowUpsInput = {
+    where?: ContactWhereInput
+    data: XOR<ContactUpdateWithoutFollowUpsInput, ContactUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type ContactUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    emailKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    segment?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: ActivityUpdateManyWithoutContactNestedInput
+    company?: CompanyUpdateOneWithoutContactsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutContactsNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedContactsNestedInput
+    deals?: DealUpdateManyWithoutContactNestedInput
+    visits?: FieldVisitUpdateManyWithoutContactNestedInput
+    leads?: LeadUpdateManyWithoutContactNestedInput
+  }
+
+  export type ContactUncheckedUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    emailKey?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    segment?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: ActivityUncheckedUpdateManyWithoutContactNestedInput
+    deals?: DealUncheckedUpdateManyWithoutContactNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type DealUpsertWithoutFollowUpsInput = {
@@ -106954,6 +107311,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedContactsInput
     deals?: DealCreateNestedManyWithoutContactInput
     leads?: LeadCreateNestedManyWithoutContactInput
+    followUps?: FollowUpCreateNestedManyWithoutContactInput
   }
 
   export type ContactUncheckedCreateWithoutVisitsInput = {
@@ -106976,6 +107334,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutContactInput
     deals?: DealUncheckedCreateNestedManyWithoutContactInput
     leads?: LeadUncheckedCreateNestedManyWithoutContactInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutContactInput
   }
 
   export type ContactCreateOrConnectWithoutVisitsInput = {
@@ -107462,6 +107821,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedContactsNestedInput
     deals?: DealUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutVisitsInput = {
@@ -107484,6 +107844,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutContactNestedInput
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type DealUpsertWithoutVisitsInput = {
@@ -112058,6 +112419,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -112549,6 +112911,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutOrganizationInput = {
@@ -112571,6 +112934,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateManyWithoutOrganizationInput = {
@@ -113105,6 +113469,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     deal?: DealUpdateOneWithoutFollowUpsNestedInput
     lead?: LeadUpdateOneWithoutFollowUpsNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedFollowUpsNestedInput
@@ -113120,6 +113485,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113136,6 +113502,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -114121,6 +114488,7 @@ export namespace Prisma {
     organizationId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -114645,6 +115013,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutOwnerInput = {
@@ -114667,6 +115036,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateManyWithoutOwnerInput = {
@@ -115324,6 +115694,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     deal?: DealUpdateOneWithoutFollowUpsNestedInput
     lead?: LeadUpdateOneWithoutFollowUpsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
@@ -115339,6 +115710,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115355,6 +115727,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116917,6 +117290,7 @@ export namespace Prisma {
     organizationId: string
     ownerId: string
     companyId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -117130,6 +117504,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     deal?: DealUpdateOneWithoutFollowUpsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedFollowUpsNestedInput
@@ -117145,6 +117520,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117161,6 +117537,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117275,6 +117652,7 @@ export namespace Prisma {
     organizationId: string
     ownerId: string
     leadId?: string | null
+    contactId?: string | null
     dealId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
@@ -117426,6 +117804,7 @@ export namespace Prisma {
     deals?: DealUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUpdateManyWithoutContactNestedInput
     leads?: LeadUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateWithoutCompanyInput = {
@@ -117448,6 +117827,7 @@ export namespace Prisma {
     deals?: DealUncheckedUpdateManyWithoutContactNestedInput
     visits?: FieldVisitUncheckedUpdateManyWithoutContactNestedInput
     leads?: LeadUncheckedUpdateManyWithoutContactNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutContactNestedInput
   }
 
   export type ContactUncheckedUpdateManyWithoutCompanyInput = {
@@ -117693,6 +118073,7 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     deal?: DealUpdateOneWithoutFollowUpsNestedInput
     lead?: LeadUpdateOneWithoutFollowUpsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
@@ -117709,6 +118090,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117725,6 +118107,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118115,6 +118498,23 @@ export namespace Prisma {
     customProductNames?: LeadCreatecustomProductNamesInput | string[]
   }
 
+  export type FollowUpCreateManyContactInput = {
+    id?: string
+    title: string
+    description?: string | null
+    dueDate: Date | string
+    priority?: string
+    status?: $Enums.FollowUpStatus
+    organizationId: string
+    ownerId: string
+    leadId?: string | null
+    companyId?: string | null
+    dealId?: string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ActivityUpdateWithoutContactInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
@@ -118495,6 +118895,57 @@ export namespace Prisma {
     customProductNames?: LeadUpdatecustomProductNamesInput | string[]
   }
 
+  export type FollowUpUpdateWithoutContactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    deal?: DealUpdateOneWithoutFollowUpsNestedInput
+    lead?: LeadUpdateOneWithoutFollowUpsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
+    owner?: UserUpdateOneRequiredWithoutOwnedFollowUpsNestedInput
+  }
+
+  export type FollowUpUncheckedUpdateWithoutContactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
+    organizationId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FollowUpUncheckedUpdateManyWithoutContactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    priority?: StringFieldUpdateOperationsInput | string
+    status?: EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
+    organizationId?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ActivityCreateManyDealInput = {
     id?: string
     type: string
@@ -118560,6 +119011,7 @@ export namespace Prisma {
     ownerId: string
     leadId?: string | null
     companyId?: string | null
+    contactId?: string | null
     completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -118742,6 +119194,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneWithoutFollowUpsNestedInput
+    contact?: ContactUpdateOneWithoutFollowUpsNestedInput
     lead?: LeadUpdateOneWithoutFollowUpsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFollowUpsNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedFollowUpsNestedInput
@@ -118758,6 +119211,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118774,6 +119228,7 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     leadId?: NullableStringFieldUpdateOperationsInput | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

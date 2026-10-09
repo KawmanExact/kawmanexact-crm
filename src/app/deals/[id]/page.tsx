@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
+import { Plus } from 'lucide-react'
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
+import { Badge } from '@/components/ui/badge'
 import { getDealById } from '@/services/deal.service'
 import { getOrgUserOptions } from '@/services/user.service'
 import { prisma } from '@/lib/db'
@@ -46,13 +48,33 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-            <h3 className="text-sm font-medium text-white mb-3">Follow-ups</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-white">Follow-ups</h3>
+              <a href={`/follow-ups?dealId=${id}`} className="text-xs text-purple-300 hover:underline flex items-center gap-1">
+                <Plus className="h-3.5 w-3.5" /> New follow-up
+              </a>
+            </div>
             {followUps.length === 0 && <p className="text-sm text-white/40">No follow-ups scheduled.</p>}
             <ul className="space-y-2">
               {followUps.map((f) => (
-                <li key={f.id} className="text-sm text-white/70 flex justify-between">
-                  <span>{f.title}</span>
-                  <span className="text-white/40">{f.dueDate.toLocaleDateString('en-IN')}</span>
+                <li key={f.id} className="flex justify-between text-sm">
+                  <span className="text-white/70">{f.title}</span>
+                  <span className="flex items-center gap-2 text-white/40">
+                    <Badge
+                      variant={
+                        f.status === 'COMPLETED'
+                          ? 'success'
+                          : f.status === 'CANCELLED'
+                            ? 'neutral'
+                            : f.status === 'OVERDUE'
+                              ? 'danger'
+                              : 'info'
+                      }
+                    >
+                      {f.status}
+                    </Badge>
+                    {new Date(f.dueDate).toLocaleDateString('en-IN')}
+                  </span>
                 </li>
               ))}
             </ul>

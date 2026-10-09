@@ -1,6 +1,7 @@
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
 import { getOrgUserOptions } from '@/services/user.service'
+import { getCompanyOptions } from '@/services/company.service'
 import { DealForm } from './deal-form'
 import { isOk } from '@/lib/result'
 import { requireApiSession } from '@/lib/session'
@@ -10,7 +11,10 @@ import type { UserOption } from '@/services/user.service'
 export const metadata = { title: 'New Deal | Kawman ExAct' }
 
 export default async function NewDealPage() {
-  const ownersResult = await getOrgUserOptions()
+  const [ownersResult, companyOptions] = await Promise.all([
+    getOrgUserOptions(),
+    getCompanyOptions(),
+  ])
   const owners = isOk(ownersResult) ? ownersResult.data : []
   const session = await requireApiSession()
   const canAssign = canManageAssignments(session.user)
@@ -19,7 +23,7 @@ export default async function NewDealPage() {
     <MainLayout>
       <div className="space-y-6 max-w-3xl">
         <PageHeader title="New Deal" subtitle="Add an opportunity to your pipeline" />
-        <DealForm owners={owners} canAssign={canAssign} currentUser={currentUser} />
+        <DealForm owners={owners} canAssign={canAssign} currentUser={currentUser} companies={companyOptions} />
       </div>
     </MainLayout>
   )

@@ -43,6 +43,20 @@ export function buildDashboardReport(opts: {
         xKey: 'source',
         series: [{ key: 'count', label: 'Leads' }],
       },
+      {
+        title: 'Deals by Country',
+        type: 'donut',
+        data: (m.countryDeals?.slices ?? []).map((s) => ({
+          country: s.name,
+          count: s.count,
+          value: s.value,
+          color: s.color,
+          isOther: s.isOther,
+          isNotSpecified: s.isNotSpecified,
+        })) as unknown as Record<string, unknown>[],
+        xKey: 'country',
+        series: [{ key: 'count', label: 'Deals' }],
+      },
     ],
     insights: m.aiInsights.map((ins) => ({
       title: ins.title,

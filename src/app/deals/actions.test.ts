@@ -3,12 +3,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/db', () => ({
   prisma: {
     $transaction: vi.fn(),
-    deal: { create: vi.fn(), findFirst: vi.fn(), update: vi.fn(), findMany: vi.fn() },
+    deal: { create: vi.fn(), findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn(), findMany: vi.fn() },
     dealItem: { createMany: vi.fn(), deleteMany: vi.fn() },
     product: { findMany: vi.fn(), count: vi.fn() },
     activity: { create: vi.fn() },
     contact: { findFirst: vi.fn(), create: vi.fn() },
     user: { findMany: vi.fn() },
+    followUp: { create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), updateMany: vi.fn(), findUnique: vi.fn() },
   },
 }))
 
@@ -28,6 +29,10 @@ vi.mock('@/lib/record-scope', () => ({
   canManageAssignments: vi.fn(),
   contactOwnerScopeWhere: vi.fn(),
   ownerScopeWhere: vi.fn(),
+}))
+
+vi.mock('@/app/follow-ups/actions', () => ({
+  recomputeDealNextFollowUp: vi.fn(),
 }))
 
 vi.mock('@/lib/lead-import', () => ({
@@ -132,6 +137,9 @@ describe('createDealAction', () => {
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: null,
+      address: null,
+      phone: null,
+      designation: null,
     })
     expect(mockDealCreate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -159,6 +167,9 @@ describe('createDealAction', () => {
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: null,
+      address: null,
+      phone: null,
+      designation: null,
     })
     expect(mockDealCreate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -215,6 +226,9 @@ describe('updateDealAction', () => {
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: undefined,
+      address: null,
+      phone: null,
+      designation: null,
     })
     expect(mockDealUpdate).toHaveBeenCalledWith(
       expect.objectContaining({

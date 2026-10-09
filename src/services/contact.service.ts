@@ -189,6 +189,7 @@ export async function findOrCreateContactByName(input: {
   phone?: string | null
   mobile?: string | null
   address?: string | null
+  designation?: string | null
 }): Promise<{ id: string; name: string } | null> {
   const trimmedName = input.name?.trim()
   if (!trimmedName) return null
@@ -210,20 +211,21 @@ export async function findOrCreateContactByName(input: {
   // --- Normal path: look up by name ---
   const existing = await prisma.contact.findFirst({
     where: { organizationId: input.organizationId, name: { equals: trimmedName, mode: 'insensitive' as const } },
-    select: { id: true, name: true, email: true, mobile: true, phone: true, address: true },
+    select: { id: true, name: true, email: true, mobile: true, phone: true, address: true, designation: true },
   })
 
   if (existing) {
-    // Backfill: fill only blank email / mobile / phone / address fields
-    const updates: { email?: string | null; mobile?: string | null; phone?: string | null; address?: string | null; lastActivityAt: Date } = {
+    // Backfill: fill only blank email / mobile / phone / address / designation fields
+    const updates: { email?: string | null; mobile?: string | null; phone?: string | null; address?: string | null; designation?: string | null; lastActivityAt: Date } = {
       lastActivityAt: new Date(),
     }
     if (input.email && !existing.email) updates.email = input.email
     if (input.mobile && !existing.mobile) updates.mobile = input.mobile
     if (input.phone && !existing.phone) updates.phone = input.phone
     if (input.address && !existing.address) updates.address = input.address
+    if (input.designation && !existing.designation) updates.designation = input.designation
 
-    if ((input.email && !existing.email) || (input.mobile && !existing.mobile) || (input.phone && !existing.phone) || (input.address && !existing.address)) {
+    if ((input.email && !existing.email) || (input.mobile && !existing.mobile) || (input.phone && !existing.phone) || (input.address && !existing.address) || (input.designation && !existing.designation)) {
       await prisma.contact.update({
         where: { id: existing.id },
         data: {
@@ -246,6 +248,7 @@ export async function findOrCreateContactByName(input: {
       phone: input.phone ?? null,
       mobile: input.mobile ?? null,
       address: input.address ?? null,
+      designation: input.designation ?? null,
       emailKey: buildContactEmailKey(input.email ?? null),
       lastActivityAt: new Date(),
     },

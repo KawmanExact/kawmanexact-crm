@@ -10,6 +10,7 @@ import { Badge, type BadgeVariant } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import type { FollowUpRow, LinkOption } from '@/services/followup.service'
 import { createFollowUpAction, completeFollowUpAction, reopenFollowUpAction, deleteFollowUpAction } from './actions'
+import type { FollowUpFormState } from './actions'
 
 const STATUS_VARIANT: Record<string, BadgeVariant> = {
   PENDING: 'info',
@@ -18,20 +19,23 @@ const STATUS_VARIANT: Record<string, BadgeVariant> = {
   CANCELLED: 'neutral',
 }
 
-const LINK_HREF: Record<'lead' | 'company' | 'deal', string> = {
-  lead: '/deals?view=leads',
-  company: '/companies',
-  deal: '/deals',
-}
-
 type StatusFilter = 'ACTIVE' | 'PENDING' | 'COMPLETED' | 'CANCELLED'
+
+const INPUT_CLASS =
+  'h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50'
+const SELECT_CLASS =
+  'h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50'
+const TEXTAREA_CLASS =
+  'w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-purple-500/50'
 
 export function FollowUpsView({
   followUps,
   linkOptions,
+  preSelectedDealId,
 }: {
   followUps: FollowUpRow[]
-  linkOptions: { leads: LinkOption[]; companies: LinkOption[]; deals: LinkOption[] }
+  linkOptions: { companies: LinkOption[]; contacts: LinkOption[]; deals: LinkOption[] }
+  preSelectedDealId?: string
 }) {
   const [showForm, setShowForm] = useState(false)
   const [status, setStatus] = useState<StatusFilter>('ACTIVE')
@@ -65,7 +69,13 @@ export function FollowUpsView({
         </Button>
       </div>
 
-      {showForm && <NewFollowUpForm linkOptions={linkOptions} onDone={() => setShowForm(false)} />}
+      {showForm && (
+        <NewFollowUpForm
+          linkOptions={linkOptions}
+          onDone={() => setShowForm(false)}
+          preSelectedDealId={preSelectedDealId}
+        />
+      )}
 
       <Card className="bg-[#0a111c]/80 border-white/[0.08] divide-y divide-white/[0.05]">
         {filtered.length === 0 && <p className="text-sm text-white/40 p-6 text-center">No follow-ups here.</p>}
@@ -81,49 +91,69 @@ function FollowUpRowItem({ followUp }: { followUp: FollowUpRow }) {
   const [pending, startTransition] = useTransition()
   const [confirmOpen, setConfirmOpen] = useState(false)
 
+  const handleToggle = () => {
+    startTransition(async () => {
+      if (followUp.status === 'COMPLETED' || followUp.status === 'CANCELLED') await reopenFollowUpAction(followUp.id)
+      else await completeFollowUpAction(followUp.id)
+    })
+  }
+
   return (
     <div className="flex items-start gap-3 p-4">
       <button
-        onClick={() =>
-          startTransition(() => {
-            if (followUp.status === 'COMPLETED') reopenFollowUpAction(followUp.id)
-            else completeFollowUpAction(followUp.id)
-          })
-        }
+        onClick={handleToggle}
         disabled={pending}
-        title={followUp.status === 'COMPLETED' ? 'Mark as pending' : 'Mark as complete'}
+        title={
+          followUp.status === 'COMPLETED' || followUp.status === 'CANCELLED' ? 'Mark as pending' : 'Mark as complete'
+        }
         className={`mt-0.5 h-5 w-5 shrink-0 rounded-full border flex items-center justify-center transition-colors ${
-          followUp.status === 'COMPLETED'
+          followUp.status === 'COMPLETED' || followUp.status === 'CANCELLED'
             ? 'bg-emerald-500 border-emerald-500 text-white'
             : 'border-white/25 text-transparent hover:border-emerald-400'
         }`}
       >
-        <Check className="h-3 w-3" />
+        {followUp.status === 'COMPLETED' || followUp.status === 'CANCELLED' ? (
+          <X className="h-3 w-3" />
+        ) : (
+          <Check className="h-3 w-3" />
+        )}
       </button>
 
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <p className={`text-sm font-medium ${followUp.status === 'COMPLETED' ? 'text-white/40 line-through' : 'text-white'}`}>
+          <p
+            className={`text-sm font-medium ${
+              followUp.status === 'COMPLETED' || followUp.status === 'CANCELLED'
+                ? 'text-white/40 line-through'
+                : 'text-white'
+            }`}
+          >
             {followUp.title}
           </p>
           <Badge variant={followUp.isOverdue ? 'danger' : STATUS_VARIANT[followUp.status]}>
             {followUp.isOverdue ? 'Overdue' : followUp.status.charAt(0) + followUp.status.slice(1).toLowerCase()}
           </Badge>
+
           {followUp.linkedTo && (
-            <Link
-              href={`${LINK_HREF[followUp.linkedTo.type]}/${followUp.linkedTo.id}`}
-              className="text-xs text-purple-400 hover:underline"
-            >
-              {followUp.linkedTo.label}
-            </Link>
+            <span className="flex flex-wrap items-center gap-0.5 text-xs text-white/50">
+              {followUp.linkedTo.chain?.map((item, i) => (
+                <>
+                  <Link key={`chain-${i}-${item.id}`} href={item.href} className="text-purple-400 hover:underline">
+                    {item.label}
+                  </Link>
+                  <span className="text-white/30">/</span>
+                </>
+              ))}
+              <Link href={followUp.linkedTo.href} className="text-purple-400 hover:underline">
+                {followUp.linkedTo.label}
+              </Link>
+            </span>
           )}
         </div>
         {followUp.description && <p className="text-xs text-white/40 mt-1">{followUp.description}</p>}
         <div className="flex items-center gap-3 mt-1.5 text-xs text-white/40">
-          <span className="flex items-center gap-1">
-            {followUp.isOverdue && <AlertTriangle className="h-3 w-3 text-red-400" />}
-            Due {formatDate(followUp.dueDate)}
-          </span>
+          {followUp.isOverdue && <AlertTriangle className="h-3 w-3 text-red-400" />}
+          <span>Due {formatDate(followUp.dueDate)}</span>
           <span>·</span>
           <span>{followUp.ownerName}</span>
         </div>
@@ -154,64 +184,80 @@ function FollowUpRowItem({ followUp }: { followUp: FollowUpRow }) {
 function NewFollowUpForm({
   linkOptions,
   onDone,
+  preSelectedDealId,
 }: {
-  linkOptions: { leads: LinkOption[]; companies: LinkOption[]; deals: LinkOption[] }
+  linkOptions: { companies: LinkOption[]; contacts: LinkOption[]; deals: LinkOption[] }
   onDone: () => void
+  preSelectedDealId?: string
 }) {
-  const [linkType, setLinkType] = useState<'none' | 'lead' | 'company' | 'deal'>('none')
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  const options =
-    linkType === 'lead'
-      ? linkOptions.leads
-      : linkType === 'company'
-        ? linkOptions.companies
-        : linkType === 'deal'
-          ? linkOptions.deals
-          : []
+  // Derive company / contact from the pre-selected deal so the cascade
+  // dropdowns reflect the correct state on open.
+  const preDeal = useMemo(() => {
+    if (!preSelectedDealId) return undefined
+    return linkOptions.deals.find((d) => d.id === preSelectedDealId)
+  }, [preSelectedDealId, linkOptions.deals])
+
+  const preContactId = preDeal?.contactId ?? ''
+  const preCompanyId = useMemo(() => {
+    if (preSelectedDealId && preContactId) {
+      const contact = linkOptions.contacts.find((c) => c.id === preContactId)
+      return contact?.companyId ?? ''
+    }
+    return ''
+  }, [preSelectedDealId, preContactId, linkOptions.contacts])
+
+  const [companyId, setCompanyId] = useState(preCompanyId)
+  const [contactId, setContactId] = useState(preContactId)
+  const [dealId, setDealId] = useState(preSelectedDealId ?? '')
+
+  const filteredContacts = useMemo(() => {
+    if (!companyId) return linkOptions.contacts
+    return linkOptions.contacts.filter((c) => c.companyId === companyId)
+  }, [companyId, linkOptions.contacts])
+
+  const filteredDeals = useMemo(() => {
+    if (contactId) return linkOptions.deals.filter((d) => d.contactId === contactId)
+    if (companyId) return linkOptions.deals.filter((d) => d.companyId === companyId)
+    return linkOptions.deals
+  }, [companyId, contactId, linkOptions.deals])
+
+  function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      setError(null)
+      const result = await createFollowUpAction({} as FollowUpFormState, formData)
+      if (result.fieldErrors || result.error) {
+        setError(result.error || Object.values(result.fieldErrors || {})[0] || 'Failed to create follow-up')
+      } else {
+        onDone()
+      }
+    })
+  }
 
   return (
-    <Card className="bg-[#0a111c]/80 border-white/[0.08] p-4">
-      <form
-        action={(formData) => {
-          setError(null)
-          startTransition(async () => {
-            const result = await createFollowUpAction({}, formData)
-            if (result.error) setError(result.error)
-            else if (result.fieldErrors) setError(Object.values(result.fieldErrors)[0])
-            else onDone()
-          })
-        }}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-      >
-        <div className="sm:col-span-2 space-y-1.5">
+    <Card className="bg-[#0a111c]/80 border-white/[0.08] p-5 space-y-4">
+      <h3 className="text-lg font-medium text-white">New follow-up</h3>
+      <form action={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
           <label className="text-sm text-white/70">Title *</label>
           <input
             name="title"
             required
-            className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+            className={INPUT_CLASS}
             placeholder="Call about renewal terms"
           />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm text-white/70">Due date *</label>
-          <input
-            name="dueDate"
-            type="datetime-local"
-            required
-            className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-          />
+          <input name="dueDate" type="datetime-local" required className={INPUT_CLASS} />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm text-white/70">Priority</label>
-          <select
-            name="priority"
-            defaultValue="MEDIUM"
-            className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-          >
+          <select name="priority" defaultValue="MEDIUM" className={SELECT_CLASS}>
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
             <option value="HIGH">High</option>
@@ -219,43 +265,68 @@ function NewFollowUpForm({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm text-white/70">Link to</label>
+          <label className="text-sm text-white/70">Company</label>
           <select
-            name="linkType"
-            value={linkType}
-            onChange={(e) => setLinkType(e.target.value as typeof linkType)}
-            className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+            name="companyId"
+            value={companyId}
+            onChange={(e) => {
+              setCompanyId(e.target.value)
+              setContactId('')
+              setDealId('')
+            }}
+            className={SELECT_CLASS}
           >
-            <option value="none">Nothing</option>
-            <option value="lead">A lead</option>
-            <option value="company">A company</option>
-            <option value="deal">A deal</option>
+            <option value="">— Select company (optional) —</option>
+            {linkOptions.companies.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.label}
+              </option>
+            ))}
           </select>
         </div>
 
-        {linkType !== 'none' && (
-          <div className="space-y-1.5">
-            <label className="text-sm text-white/70">Which one?</label>
-            <select
-              name="linkId"
-              className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-            >
-              {options.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="space-y-1.5">
+          <label className="text-sm text-white/70">Contact</label>
+          <select
+            name="contactId"
+            value={contactId}
+            onChange={(e) => {
+              setContactId(e.target.value)
+              setDealId('')
+            }}
+            disabled={!companyId}
+            className={SELECT_CLASS}
+          >
+            <option value="">— Select contact (optional) —</option>
+            {filteredContacts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm text-white/70">Deal</label>
+          <select
+            name="dealId"
+            value={dealId}
+            onChange={(e) => setDealId(e.target.value)}
+            disabled={!companyId && !contactId}
+            className={SELECT_CLASS}
+          >
+            <option value="">— Select deal (optional) —</option>
+            {filteredDeals.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="sm:col-span-2 space-y-1.5">
           <label className="text-sm text-white/70">Notes</label>
-          <textarea
-            name="description"
-            rows={2}
-            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-          />
+          <textarea name="description" rows={2} className={TEXTAREA_CLASS} />
         </div>
 
         {error && <p className="sm:col-span-2 text-sm text-red-400">{error}</p>}
@@ -264,7 +335,7 @@ function NewFollowUpForm({
           <Button type="button" variant="ghost" size="sm" onClick={onDone}>
             Cancel
           </Button>
-          <Button type="submit" size="sm" disabled={pending} loading={pending} className="gap-1.5">
+          <Button type="submit" size="sm" loading={pending} disabled={pending} className="gap-1.5">
             {pending ? (
               'Saving…'
             ) : (

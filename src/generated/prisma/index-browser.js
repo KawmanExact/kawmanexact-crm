@@ -626,6 +626,7 @@ exports.Prisma.FollowUpScalarFieldEnum = {
   ownerId: 'ownerId',
   leadId: 'leadId',
   companyId: 'companyId',
+  contactId: 'contactId',
   dealId: 'dealId',
   completedAt: 'completedAt',
   createdAt: 'createdAt',

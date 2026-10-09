@@ -12,6 +12,7 @@ import { logAudit } from '@/lib/audit-log'
 import { canManageAssignments } from '@/lib/record-scope'
 import { findOrCreateCompanyByName } from '@/services/company.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
+import { recomputeDealNextFollowUp } from '@/app/follow-ups/actions'
 import { toMoney, computeLineTotal, sumMoney, toQuantity } from '@/lib/sales-money'
 import { productOptionLabel } from '@/types/sales'
 import { STAGE_PROBABILITIES, getStageProbability, getStageLabel } from '@/lib/deal-pipeline'
@@ -177,17 +178,18 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
       })
     : null
   const companyId = company?.id ?? null
-  const contact = data.contactName?.trim()
-    ? await findOrCreateContactByName({
-        email: data.contactEmail || null,
-        mobile: data.contactMobile || null,
-        phone: data.phone || null,
-        address: null,
-        name: data.contactName.trim(),
-        organizationId: session.user.organizationId,
-        ownerId: data.ownerId || session.user.id,
-        companyId,
-      })
+   const contact = data.contactName?.trim()
+     ? await findOrCreateContactByName({
+         email: data.email || data.contactEmail || null,
+         mobile: data.contactMobile || null,
+         phone: data.phone || null,
+         address: null,
+         name: data.contactName.trim(),
+         organizationId: session.user.organizationId,
+         ownerId: data.ownerId || session.user.id,
+         companyId,
+         designation: data.designation || null,
+       })
     : null
   const contactId = contact?.id ?? null
 
@@ -221,8 +223,30 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
       designation: data.designation ?? null,
       email: data.email || data.contactEmail || null,
       phone: data.phone || data.contactMobile || null,
+      // nextFollowUp will be set via FollowUp table; keep column in sync
+      nextFollowUp: data.nextFollowUp ? new Date(data.nextFollowUp) : null,
     },
   })
+
+  // If nextFollowUp is provided, create a FollowUp row (single source of truth)
+  if (data.nextFollowUp) {
+    await prisma.followUp.create({
+      data: {
+        title: `Follow up on ${deal.name}`,
+        description: '',
+        dueDate: new Date(data.nextFollowUp),
+        priority: data.priority ?? 'MEDIUM',
+        status: 'PENDING',
+        organizationId: session.user.organizationId,
+        ownerId: data.ownerId || session.user.id,
+        companyId,
+        contactId,
+        dealId: deal.id,
+      },
+    })
+  }
+  // Sync the Deal.nextFollowUp column from the FollowUp table
+  await recomputeDealNextFollowUp(deal.id, session.user.organizationId)
 
   await createDealItems(deal.id, session.user.organizationId, lineItems)
 
@@ -291,7 +315,7 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
   const companyId = rawCompany !== null ? (company?.id ?? null) : existing.companyId
   const contact = data.contactName?.trim()
     ? await findOrCreateContactByName({
-        email: data.contactEmail || null,
+        email: data.email || data.contactEmail || null,
         mobile: data.contactMobile || null,
         phone: data.phone || null,
         address: null,
@@ -299,6 +323,7 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
         organizationId: session.user.organizationId,
         ownerId: data.ownerId || existing.ownerId,
         companyId,
+        designation: data.designation || null,
       })
     : null
   const rawContact = formData.get('contactName')
@@ -312,6 +337,9 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
     await replaceDealItems(id, session.user.organizationId, lineItems)
   }
 
+  // nextFollowUp column is derived from the FollowUp table; the explicit
+  // value from buildDealCaptureUpdateData is overridden here and re-synced
+  // via recomputeDealNextFollowUp after the FollowUp rows are adjusted.
   await prisma.deal.update({
     where: { id },
     data: {
@@ -337,8 +365,52 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
       designation: data.designation ?? null,
       email: data.email || data.contactEmail || null,
       phone: data.phone || data.contactMobile || null,
+      // Let recomputeDealNextFollowUp derive this from the FollowUp table
+      nextFollowUp: null,
     },
   })
+
+  // Handle nextFollowUp: create, update or cancel FollowUp rows (single source of truth)
+  if (data.nextFollowUp) {
+    const existingFollowUp = await prisma.followUp.findFirst({
+      where: { dealId: id, organizationId: session.user.organizationId, status: 'PENDING' },
+      orderBy: { dueDate: 'asc' },
+    })
+    if (existingFollowUp) {
+      await prisma.followUp.update({
+        where: { id: existingFollowUp.id },
+        data: {
+          dueDate: new Date(data.nextFollowUp),
+          priority: data.priority ?? existingFollowUp.priority,
+          title: `Follow up on ${data.name}`,
+        },
+      })
+    } else {
+      await prisma.followUp.create({
+        data: {
+          title: `Follow up on ${data.name}`,
+          description: '',
+          dueDate: new Date(data.nextFollowUp),
+          priority: data.priority ?? 'MEDIUM',
+          status: 'PENDING',
+          organizationId: session.user.organizationId,
+          ownerId: data.ownerId || existing.ownerId,
+          companyId,
+          contactId,
+          dealId: id,
+        },
+      })
+    }
+  } else {
+    // Field cleared: cancel any pending follow-ups for this deal
+    await prisma.followUp.updateMany({
+      where: { dealId: id, organizationId: session.user.organizationId, status: 'PENDING' },
+      data: { status: 'CANCELLED' },
+    })
+  }
+
+  // Sync the Deal.nextFollowUp column from the (now updated) FollowUp table
+  await recomputeDealNextFollowUp(id, session.user.organizationId)
 
   if (data.stage && data.stage !== existing.stage) {
     await prisma.dealStageHistory.create({
@@ -542,6 +614,48 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
     }
   }
 
+  // Resolve contacts once up front (by name + company)
+  const contactKeys = [
+    ...new Set(
+      parsed.rows
+        .filter((r): r is typeof r & { contactPerson: string; company: string } => Boolean(r.contactPerson && r.company))
+        .map((r) => `${r.contactPerson.trim()}|${r.company.trim()}`),
+    ),
+  ]
+  // Gather the first non-empty email/phone for each contact key so the
+  // Contact row carries the details (not just the Deal row).
+  const contactDetailsByKey = new Map<string, { email: string | null; phone: string | null; designation: string | null }>()
+  for (const row of parsed.rows) {
+    if (!row.contactPerson || !row.company) continue
+    const key = `${row.contactPerson.trim()}|${row.company.trim()}`
+    if (!contactDetailsByKey.has(key)) {
+      contactDetailsByKey.set(key, {
+        email: row.email?.trim() || null,
+        phone: row.phone?.trim() || null,
+        designation: row.designation?.trim() || null,
+      })
+    }
+  }
+  const contactIdByKey = new Map<string, string>()
+  for (const key of contactKeys) {
+    const [contactName, companyName] = key.split('|')
+    const companyId = companyIdByName.get(companyName) ?? companyIdByName.get(companyName.toLowerCase())
+    const details = contactDetailsByKey.get(key)
+    const resolved = await findOrCreateContactByName({
+      name: contactName,
+      organizationId: session.user.organizationId,
+      ownerId: session.user.id,
+      companyId: companyId ?? null,
+      email: details?.email || null,
+      phone: details?.phone || null,
+      designation: details?.designation || null,
+    })
+    if (resolved) {
+      contactIdByKey.set(key, resolved.id)
+      contactIdByKey.set(key.toLowerCase(), resolved.id)
+    }
+  }
+
   // Owner assignment by email
   const ownerEmails = [
     ...new Set(
@@ -584,13 +698,28 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
   let created = 0
   for (let start = 0; start < parsed.rows.length; start += IMPORT_CHUNK_SIZE) {
     const chunk = parsed.rows.slice(start, start + IMPORT_CHUNK_SIZE)
+
+    // Pre-compute derived IDs per row so they can be reused for FollowUp creation
+    const rowsWithDealInfo = chunk.map((data) => {
+      const ownerId = data.email
+        ? (ownerIdByEmail.get(data.email.toLowerCase()) ?? session.user.id)
+        : session.user.id
+      const stage = data.stage ?? 'SUSPECT'
+      const companyId = data.company
+        ? (companyIdByName.get(data.company) ?? companyIdByName.get(data.company.toLowerCase()) ?? null)
+        : null
+      const contactKey = data.contactPerson && data.company
+        ? `${data.contactPerson.trim()}|${data.company.trim()}`
+        : null
+      const contactId = contactKey
+        ? (contactIdByKey.get(contactKey) ?? contactIdByKey.get(contactKey.toLowerCase()) ?? null)
+        : null
+      return { data, ownerId, stage, companyId, contactId }
+    })
+
     const chunkCreated = await prisma.$transaction(
-      chunk.map((data) => {
-        const ownerId = data.email
-          ? (ownerIdByEmail.get(data.email.toLowerCase()) ?? session.user.id)
-          : session.user.id
-        const stage = data.stage ?? 'SUSPECT'
-        return prisma.deal.create({
+      rowsWithDealInfo.map(({ data, ownerId, stage, companyId, contactId }) =>
+        prisma.deal.create({
           data: {
             name: data.name,
             // A sheet that carries no figure must not invent one — it would
@@ -605,9 +734,8 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
             score: data.score ?? 0,
             notes: data.notes || null,
             lastActivityAt: new Date(),
-            companyId: data.company
-              ? (companyIdByName.get(data.company) ?? companyIdByName.get(data.company.toLowerCase()) ?? null)
-              : null,
+            companyId,
+            contactId,
             contactPerson: data.contactPerson || null,
             designation: data.designation || null,
             email: data.email || null,
@@ -635,9 +763,32 @@ export async function importDealsAction(formData: FormData): Promise<DealImportR
             lostAt: stage === 'LOST' ? new Date() : null,
           },
         })
-      })
+      )
     )
     created += chunkCreated.length
+
+    // Create FollowUp rows for deals with nextFollowUp, using the IDs
+    // returned from the transaction instead of a separate findFirst query.
+    for (let i = 0; i < rowsWithDealInfo.length; i++) {
+      const { data, ownerId, companyId, contactId } = rowsWithDealInfo[i]
+      const dealRecord = chunkCreated[i] as { id: string } | null | undefined
+      if (data.nextFollowUp && dealRecord?.id) {
+        await prisma.followUp.create({
+          data: {
+            title: `Follow up on ${data.name}`,
+            description: '',
+            dueDate: new Date(data.nextFollowUp),
+            priority: 'MEDIUM',
+            status: 'PENDING',
+            organizationId: session.user.organizationId,
+            ownerId,
+            companyId,
+            contactId,
+            dealId: dealRecord.id,
+          },
+        })
+      }
+    }
   }
 
   await prisma.activity.create({
@@ -805,6 +956,58 @@ export async function bulkReassignDealsAction(ids: string[], ownerId: string): P
     return { updated: result.count }
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Failed to reassign deals' }
+  }
+}
+
+export async function backfillDealFollowUpsAction(): Promise<{ created: number; error?: string }> {
+  await validateCsrf()
+  const session = await assertPermission(PERMISSIONS['deals.update'].name)
+
+  try {
+    // Find deals with nextFollowUp set but no PENDING follow-up
+    const deals = await prisma.deal.findMany({
+      where: {
+        organizationId: session.user.organizationId,
+        nextFollowUp: { not: null },
+        followUps: { none: { status: 'PENDING' } },
+      },
+      select: {
+        id: true,
+        name: true,
+        nextFollowUp: true,
+        companyId: true,
+        contactId: true,
+        ownerId: true,
+        priority: true,
+      },
+    })
+
+    let created = 0
+    for (const deal of deals) {
+      if (!deal.nextFollowUp) continue
+      await prisma.followUp.create({
+        data: {
+          title: `Follow up on ${deal.name}`,
+          description: '',
+          dueDate: deal.nextFollowUp,
+          priority: deal.priority ?? 'MEDIUM',
+          status: 'PENDING',
+          organizationId: session.user.organizationId,
+          ownerId: deal.ownerId,
+          companyId: deal.companyId,
+          contactId: deal.contactId,
+          dealId: deal.id,
+        },
+      })
+      created++
+    }
+
+    revalidatePath('/deals')
+    revalidatePath('/dashboard')
+    revalidatePath('/follow-ups')
+    return { created }
+  } catch (err) {
+    return { created: 0, error: err instanceof Error ? err.message : 'Failed to backfill follow-ups' }
   }
 }
 

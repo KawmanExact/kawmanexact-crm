@@ -1,6 +1,7 @@
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
 import { getOrgUserOptions } from '@/services/user.service'
+import { getCompanyOptions } from '@/services/company.service'
 import { ContactForm } from './contact-form'
 import { isOk } from '@/lib/result'
 import { requireApiSession } from '@/lib/session'
@@ -19,8 +20,9 @@ export default async function NewContactPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const [ownersResult, params] = await Promise.all([
+  const [ownersResult, companyOptions, params] = await Promise.all([
     getOrgUserOptions(),
+    getCompanyOptions(),
     searchParams,
   ])
   const owners = isOk(ownersResult) ? ownersResult.data : []
@@ -44,7 +46,7 @@ export default async function NewContactPage({
     <MainLayout>
       <div className="space-y-6 max-w-3xl">
         <PageHeader title="New Contact" subtitle="Add a contact to your CRM" />
-        <ContactForm owners={owners} canAssign={canAssign} currentUser={currentUser} initialValues={hasValues ? initialValues : undefined} />
+        <ContactForm owners={owners} canAssign={canAssign} currentUser={currentUser} companies={companyOptions} initialValues={hasValues ? initialValues : undefined} />
       </div>
     </MainLayout>
   )

@@ -5,7 +5,12 @@ import { FollowUpsView } from './follow-ups-view'
 
 export const metadata = { title: 'Follow-ups | Kawman ExAct' }
 
-export default async function FollowUpsPage() {
+export default async function FollowUpsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ dealId?: string }>
+}) {
+  const { dealId } = await searchParams
   const [followUps, linkOptions] = await Promise.all([getFollowUps(), getFollowUpLinkOptions()])
   const pendingCount = followUps.filter((f) => f.status === 'PENDING').length
   const overdueCount = followUps.filter((f) => f.isOverdue).length
@@ -17,7 +22,7 @@ export default async function FollowUpsPage() {
           title="Follow-ups"
           subtitle={`${pendingCount} pending${overdueCount > 0 ? ` · ${overdueCount} overdue` : ''}`}
         />
-        <FollowUpsView followUps={followUps} linkOptions={linkOptions} />
+        <FollowUpsView followUps={followUps} linkOptions={linkOptions} preSelectedDealId={dealId} />
       </div>
     </MainLayout>
   )

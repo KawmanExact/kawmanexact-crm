@@ -13,6 +13,7 @@ import { SEGMENTS, SEGMENT_LABEL } from '@/types/crm'
 import { computeLineTotal } from '@/lib/sales-money'
 import { ProductDropdown } from '@/components/crm/product-dropdown'
 import { NativeSelect } from '@/components/ui/select'
+import { CompanySelect } from '@/components/crm/company-select'
 import {
   CDA_STATUS_OPTIONS,
   SAMPLING_STATUS_OPTIONS,
@@ -271,10 +272,12 @@ export function DealForm({
   owners,
   canAssign,
   currentUser,
+  companies = [],
 }: {
   owners: UserOption[]
   canAssign: boolean
   currentUser: UserOption
+  companies?: { id: string; name: string }[]
 }) {
   const [state, formAction, pending] = useActionState(createDealAction, initialState)
   const router = useRouter()
@@ -383,7 +386,7 @@ export function DealForm({
             <Input name="name" placeholder="lead name" required />
           </Field>
           <Field label="Company" error={state.fieldErrors?.company}>
-            <Input name="company" placeholder="Acme Nutraceuticals" />
+            <CompanySelect companies={companies} />
           </Field>
           <Field label="Source" error={state.fieldErrors?.source}>
             <NativeSelect name="source" defaultValue="Website" placeholder="Select source" error={state.fieldErrors?.source}>
