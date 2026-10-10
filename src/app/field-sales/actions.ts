@@ -11,7 +11,7 @@ import { PERMISSIONS } from '@/lib/permissions-data'
 import { isCloudinaryConfigured, uploadToCloudinary } from '@/lib/cloudinary'
 import { findOrCreateCompanyByName } from '@/services/company.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
-import { createCheckIn as createCheckInRow } from '@/services/field-visit.service'
+import { createCheckIn as createCheckInRow, appendVisitReportToDailyReport } from '@/services/field-visit.service'
 import { getUserPermissions } from '@/services/permission.service'
 import { canManageAssignments } from '@/lib/record-scope'
 
@@ -392,12 +392,6 @@ export interface VisitReportFormState {
   dailyReportId?: string
 }
 
-function startOfDayLocal(d = new Date()): Date {
-  const x = new Date(d)
-  x.setHours(0, 0, 0, 0)
-  return x
-}
-
 export async function createVisitReportAction(
   _prev: VisitReportFormState,
   formData: FormData
@@ -433,74 +427,27 @@ export async function createVisitReportAction(
       },
     })
 
-    // Link to today's DailyReport — create or append so Submit Daily Report already contains field work.
-    const today = startOfDayLocal(new Date())
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-
-    const fieldSnippet = [
-      `Field Visit: ${visit.title}${visit.company?.name ? ` — ${visit.company.name}` : ''}`,
-      `Purpose: ${data.purpose}`,
-      `Discussion: ${data.discussion}`,
-      data.requirements ? `Requirements: ${data.requirements}` : null,
-      data.competitorInfo ? `Competitor: ${data.competitorInfo}` : null,
-      data.customerFeedback ? `Feedback: ${data.customerFeedback}` : null,
-      `Next: ${data.nextSteps}`,
-    ]
-      .filter(Boolean)
-      .join('\n')
-
-    const existingDaily = await prisma.dailyReport.findFirst({
-      where: { organizationId: session.user.organizationId, userId: session.user.id, date: { gte: today, lt: tomorrow } },
+    const dailyResult = await appendVisitReportToDailyReport({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      visitTitle: visit.title,
+      companyName: visit.company?.name ?? null,
+      purpose: data.purpose,
+      discussion: data.discussion,
+      requirements: data.requirements || null,
+      competitorInfo: data.competitorInfo || null,
+      customerFeedback: data.customerFeedback || null,
+      nextSteps: data.nextSteps,
     })
-
-    let dailyReportId = existingDaily?.id ?? null
-
-    if (!existingDaily) {
-      const created = await prisma.dailyReport.create({
-        data: {
-          organizationId: session.user.organizationId,
-          userId: session.user.id,
-          date: today,
-          status: 'DRAFT',
-          workDescription: fieldSnippet,
-          completedWork: `Field report — ${visit.title}: ${data.discussion.slice(0, 600)}`,
-          pendingWork: data.nextSteps || null,
-        },
-      })
-      dailyReportId = created.id
-    } else if (existingDaily.status === 'DRAFT') {
-      // Append without overwriting what the rep already wrote — keep both.
-      const appendedWork = existingDaily.workDescription
-        ? `${existingDaily.workDescription}\n\n---\n${fieldSnippet}`
-        : fieldSnippet
-      const appendedCompleted = existingDaily.completedWork
-        ? `${existingDaily.completedWork}\n• ${visit.title}: ${data.discussion.slice(0, 400)}`
-        : `Field report — ${visit.title}: ${data.discussion.slice(0, 600)}`
-      // Only fill pending if empty — nextSteps are tomorrow's carry-forward
-      const nextPending = existingDaily.pendingWork || data.nextSteps || null
-      const updated = await prisma.dailyReport.update({
-        where: { id: existingDaily.id },
-        data: {
-          workDescription: appendedWork.slice(0, 8000),
-          completedWork: appendedCompleted.slice(0, 8000),
-          pendingWork: nextPending?.slice(0, 5000) ?? null,
-        },
-      })
-      dailyReportId = updated.id
-    } else {
-      // SUBMITTED daily report exists — don't mutate submitted row; keep visitReport alone.
-      // The AI summary will still pull both when requested.
-      dailyReportId = existingDaily.id
-    }
 
     revalidatePath('/field-sales/reports')
     revalidatePath('/dashboard/daily-report')
     revalidatePath('/admin/my-team')
     revalidatePath('/admin/my-team/reports')
 
-    return { success: true, reportId: report.id, dailyReportId: dailyReportId ?? undefined }
+    return { success: true, reportId: report.id, dailyReportId: dailyResult.dailyReportId ?? undefined }
   } catch (err) {
     return { error: err instanceof Error ? err.message : 'Failed to save field report' }
   }
 }
+

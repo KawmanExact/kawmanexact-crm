@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { mobileGuard, badRequest } from '@/lib/mobile-api'
+import { appendVisitReportToDailyReport } from '@/services/field-visit.service'
 
 const schema = z.object({
   purpose: z.string().trim().min(2).max(2000),
@@ -13,11 +14,10 @@ const schema = z.object({
 })
 
 /**
- * Same VisitReport row the web form creates. The web action also appends to
- * today's DailyReport; that logic lives in a Server Action, so to keep a single
- * source of truth extract it to a service and call it from both places.
- * TODO(mobile): extract `appendFieldSnippetToDailyReport()` from
- * src/app/field-sales/actions.ts and call it here.
+ * Saves a VisitReport for the visit, then links it to today's DailyReport via
+ * `appendVisitReportToDailyReport()` — the same single-source-of-truth function
+ * the web form (src/app/field-sales/actions.ts → createVisitReportAction) uses.
+ * Create/append on DRAFT; link-only on already-SUBMITTED (no mutation).
  */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -31,7 +31,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
   const visit = await prisma.fieldVisit.findFirst({
     where: { id, organizationId: g.session.user.organizationId, assigneeId: g.session.user.id },
-    select: { id: true },
+    select: { id: true, title: true, company: { select: { name: true } } },
   })
   if (!visit) return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
 
@@ -49,5 +49,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     },
     select: { id: true },
   })
-  return NextResponse.json({ id: report.id }, { status: 201 })
+
+  // Same single-source-of-truth linkage the web form uses: create/append today's
+  // DailyReport so Submit Daily Report already contains this field work.
+  const dailyResult = await appendVisitReportToDailyReport({
+    organizationId: g.session.user.organizationId,
+    userId: g.session.user.id,
+    visitTitle: visit.title,
+    companyName: visit.company?.name ?? null,
+    purpose: d.purpose,
+    discussion: d.discussion,
+    requirements: d.requirements || null,
+    competitorInfo: d.competitorInfo || null,
+    customerFeedback: d.customerFeedback || null,
+    nextSteps: d.nextSteps,
+  })
+
+  return NextResponse.json({ id: report.id, dailyReportId: dailyResult.dailyReportId ?? undefined }, { status: 201 })
 }
