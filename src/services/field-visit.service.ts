@@ -434,6 +434,111 @@ export async function createCheckIn(input: {
 }
 
 // ============================================================
+// Visit Report → Daily Report sync
+// ============================================================
+
+function startOfDayForReport(d = new Date()): Date {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  return x
+}
+
+export interface VisitReportDailyInput {
+  organizationId: string
+  userId: string
+  visitTitle: string
+  companyName?: string | null
+  purpose: string
+  discussion: string
+  requirements?: string | null
+  competitorInfo?: string | null
+  customerFeedback?: string | null
+  nextSteps: string
+}
+
+export type VisitReportDailyAction = 'created' | 'appended' | 'linked'
+
+export interface VisitReportDailyResult {
+  dailyReportId: string | null
+  action: VisitReportDailyAction
+}
+
+/**
+ * Single source of truth for linking a completed field-visit report into the
+ * rep's DailyReport. Shared by the web Server Action (createVisitReportAction)
+ * and the mobile API route (api/mobile/visits/[id]/report) so the two paths
+ * can never diverge.
+ *
+ * - No DailyReport for today yet → create a DRAFT prefilled from the report.
+ * - Today is a DRAFT → append workDescription/completedWork (never overwrite
+ *   what the rep already wrote), fill pendingWork only if empty.
+ * - Today is SUBMITTED → never mutate; link only (AI summary pulls both).
+ */
+export async function appendVisitReportToDailyReport(input: VisitReportDailyInput): Promise<VisitReportDailyResult> {
+  const today = startOfDayForReport()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const fieldSnippet = [
+    `Field Visit: ${input.visitTitle}${input.companyName ? ` — ${input.companyName}` : ''}`,
+    `Purpose: ${input.purpose}`,
+    `Discussion: ${input.discussion}`,
+    input.requirements ? `Requirements: ${input.requirements}` : null,
+    input.competitorInfo ? `Competitor: ${input.competitorInfo}` : null,
+    input.customerFeedback ? `Feedback: ${input.customerFeedback}` : null,
+    `Next: ${input.nextSteps}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const existing = await prisma.dailyReport.findFirst({
+    where: {
+      organizationId: input.organizationId,
+      userId: input.userId,
+      date: { gte: today, lt: tomorrow },
+    },
+  })
+
+  if (!existing) {
+    const created = await prisma.dailyReport.create({
+      data: {
+        organizationId: input.organizationId,
+        userId: input.userId,
+        date: today,
+        status: 'DRAFT',
+        workDescription: fieldSnippet,
+        completedWork: `Field report — ${input.visitTitle}: ${input.discussion.slice(0, 600)}`,
+        pendingWork: input.nextSteps || null,
+      },
+    })
+    return { dailyReportId: created.id, action: 'created' }
+  }
+
+  if (existing.status === 'DRAFT') {
+    const appendedWork = existing.workDescription
+      ? `${existing.workDescription}\n\n---\n${fieldSnippet}`
+      : fieldSnippet
+    const appendedCompleted = existing.completedWork
+      ? `${existing.completedWork}\n• ${input.visitTitle}: ${input.discussion.slice(0, 400)}`
+      : `Field report — ${input.visitTitle}: ${input.discussion.slice(0, 600)}`
+    const nextPending = existing.pendingWork || input.nextSteps || null
+    const updated = await prisma.dailyReport.update({
+      where: { id: existing.id },
+      data: {
+        workDescription: appendedWork.slice(0, 8000),
+        completedWork: appendedCompleted.slice(0, 8000),
+        pendingWork: nextPending?.slice(0, 5000) ?? null,
+      },
+    })
+    return { dailyReportId: updated.id, action: 'appended' }
+  }
+
+  // SUBMITTED (or any other non-DRAFT state) — don't mutate; the AI summary
+  // pulls both source rows when rendering.
+  return { dailyReportId: existing.id, action: 'linked' }
+}
+
+// ============================================================
 // GeoFences
 // ============================================================
 
