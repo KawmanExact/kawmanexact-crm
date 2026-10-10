@@ -10,6 +10,8 @@ export interface DailyReportDraft {
   leadsWorkedOnCount: number
   filesUploadedCount: number
   activeWorkingTimeMinutes: number
+  visitReportsCount: number
+  checkInsCount: number
   existingReport: DailyReportWithRelations | null
 }
 
@@ -144,7 +146,7 @@ export async function getTodayReportDraft(targetUserId?: string): Promise<Result
     include: { user: { select: { id: true, name: true, email: true } }, aiReport: { select: { id: true, content: true } } },
   })
 
-  const [followUpsCompleted, activityCount, distinctLeadIds, filesUploaded, activeSessions] = await Promise.all([
+  const [followUpsCompleted, activityCount, distinctLeadIds, filesUploaded, activeSessions, visitReportsCount, checkInsCount] = await Promise.all([
     prisma.followUp.count({ where: { organizationId, ownerId: userId, status: 'COMPLETED', completedAt: { gte: today, lt: tomorrow } } }),
     prisma.activity.count({ where: { organizationId, actorId: userId, createdAt: { gte: today, lt: tomorrow } } }),
     prisma.activity.findMany({
@@ -159,6 +161,8 @@ export async function getTodayReportDraft(targetUserId?: string): Promise<Result
       },
       select: { createdAt: true, lastSeenAt: true, updatedAt: true },
     }),
+    prisma.visitReport.count({ where: { createdById: userId, createdAt: { gte: today, lt: tomorrow } } }),
+    prisma.checkIn.count({ where: { userId, createdAt: { gte: today, lt: tomorrow } } }),
   ])
 
   const leadsWorkedOnCount = new Set(distinctLeadIds.map((r) => r.leadId).filter(Boolean)).size
@@ -194,7 +198,7 @@ export async function getTodayReportDraft(targetUserId?: string): Promise<Result
         updatedAt: existingReport.updatedAt,
         user: existingReport.user,
         aiReport: existingReport.aiReport,
-        visitReportsCount: 0,
+        visitReportsCount,
       }
     : null
 
@@ -204,6 +208,8 @@ export async function getTodayReportDraft(targetUserId?: string): Promise<Result
     leadsWorkedOnCount,
     filesUploadedCount: filesUploaded,
     activeWorkingTimeMinutes,
+    visitReportsCount,
+    checkInsCount,
     existingReport: base,
   })
 }

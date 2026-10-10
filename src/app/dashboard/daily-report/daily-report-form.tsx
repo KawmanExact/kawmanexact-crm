@@ -77,6 +77,8 @@ export function DailyReportForm({ draft, aiConfigured }: { draft: DailyReportDra
           <StatPill label="Leads worked" value={draft.leadsWorkedOnCount} />
           <StatPill label="Files uploaded" value={draft.filesUploadedCount} />
           <StatPill label="Active minutes" value={draft.activeWorkingTimeMinutes} />
+          <StatPill label="Visit reports" value={draft.visitReportsCount} />
+          <StatPill label="Check-ins" value={draft.checkInsCount} />
         </div>
         <p className="text-xs text-white/40">Counts are pre-filled from today&apos;s activity — you can override them below when applicable.</p>
 

@@ -38,3 +38,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     },
   })
 }
+
+/** Delete a visit assigned to the authenticated mobile user. Allows any
+ * field_visits.delete-capable user to remove their own assigned visit
+ * (including COMPLETED ones), mirroring the web delete permission scope.
+ */
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const g = await mobileGuard('field_visits.delete')
+  if ('error' in g) return g.error
+  const { session } = g
+
+  const existing = await prisma.fieldVisit.findFirst({
+    where: { id, organizationId: session.user.organizationId, assigneeId: session.user.id },
+  })
+  if (!existing) return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
+
+  await prisma.fieldVisit.delete({ where: { id } })
+
+  return NextResponse.json({ success: true })
+}

@@ -39,6 +39,12 @@ vi.mock('@/lib/db', () => ({
     file: {
       count: vi.fn(),
     },
+    visitReport: {
+      count: vi.fn(),
+    },
+    checkIn: {
+      count: vi.fn(),
+    },
   },
 }))
 
@@ -87,6 +93,8 @@ describe('daily-report.service', () => {
     mockPrisma.activity.findMany.mockResolvedValue([])
     mockPrisma.file.count.mockResolvedValue(0)
     mockPrisma.session.findMany.mockResolvedValue([])
+    mockPrisma.visitReport.count.mockResolvedValue(0)
+    mockPrisma.checkIn.count.mockResolvedValue(0)
   })
 
   describe('getTodayReportDraft', () => {
@@ -112,7 +120,7 @@ describe('daily-report.service', () => {
         status: 'DRAFT',
         createdAt: new Date(),
         updatedAt: new Date(),
-        user: { id: 'user-1', name: 'Test User', email: 'test@example.com' },
+         user: { id: 'user-1', name: 'Test User', email: 'test@example.com' },
         aiReport: null,
       })
 
@@ -144,6 +152,8 @@ describe('daily-report.service', () => {
       expect(draft.crmRecordsUpdatedCount).toBe(5)
       expect(draft.leadsWorkedOnCount).toBe(2)
       expect(draft.filesUploadedCount).toBe(2)
+      expect(draft.visitReportsCount).toBe(0)
+      expect(draft.checkInsCount).toBe(0)
     })
   })
 
