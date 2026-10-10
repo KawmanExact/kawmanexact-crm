@@ -96,3 +96,40 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ id: followUp.id }, { status: 201 })
 }
+
+const statusSchema = z.object({
+  status: z.enum(['PENDING', 'COMPLETED', 'OVERDUE', 'CANCELLED']),
+})
+
+/** Update a follow-up's status manually from the mobile app. */
+export async function PATCH(request: Request) {
+  const g = await mobileGuard('field_visits.update')
+  if ('error' in g) return g.error
+  const { session } = g
+
+  const url = new URL(request.url)
+  const id = url.searchParams.get('id')
+  if (!id) return badRequest('Follow-up id is required')
+
+  const body = await request.json().catch(() => null)
+  const parsed = statusSchema.safeParse(body)
+  if (!parsed.success) {
+    const fe: Record<string, string> = {}
+    for (const i of parsed.error.issues) fe[String(i.path[0])] = i.message
+    return badRequest('Invalid status', fe)
+  }
+  const d = parsed.data
+
+  const existing = await prisma.followUp.findFirst({
+    where: { id, organizationId: session.user.organizationId, ownerId: session.user.id },
+    select: { id: true },
+  })
+  if (!existing) return NextResponse.json({ error: 'Follow-up not found' }, { status: 404 })
+
+  await prisma.followUp.update({
+    where: { id },
+    data: { status: d.status, completedAt: d.status === 'COMPLETED' ? new Date() : null },
+  })
+
+  return NextResponse.json({ success: true })
+}
