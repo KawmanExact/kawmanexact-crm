@@ -15,12 +15,27 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const r = await prisma.fieldVisit.findFirst({
     where: { id, organizationId: session.user.organizationId, assigneeId: session.user.id },
     include: {
-      company: { select: { name: true } },
-      contact: { select: { name: true } },
+      company: { select: { id: true, name: true } },
+      contact: { select: { id: true, name: true } },
       checkIns: { orderBy: { createdAt: 'desc' }, take: 1, select: { createdAt: true, photoUrl: true } },
+      visitReports: { select: { id: true, createdAt: true, nextSteps: true } },
     },
   })
   if (!r) return NextResponse.json({ error: 'Visit not found' }, { status: 404 })
+
+  // Query follow-ups linked to this visit's company/contact.
+  const followUpWhere: { organizationId: string; companyId?: string; contactId?: string } = {
+    organizationId: session.user.organizationId,
+  }
+  if (r.companyId) followUpWhere.companyId = r.companyId
+  if (r.contactId) followUpWhere.contactId = r.contactId
+
+  const followUps = await prisma.followUp.findMany({
+    where: followUpWhere,
+    select: { id: true, title: true, dueDate: true, status: true },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  })
 
   return NextResponse.json({
     visit: {
@@ -33,8 +48,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       latitude: r.latitude != null ? Number(r.latitude) : null,
       longitude: r.longitude != null ? Number(r.longitude) : null,
       company: r.company?.name ?? null,
+      companyId: r.company?.id ?? null,
       contact: r.contact?.name ?? null,
+      contactId: r.contact?.id ?? null,
       lastCheckInAt: r.checkIns[0]?.createdAt.toISOString() ?? null,
+      visitReport: r.visitReports[0]
+        ? {
+            id: r.visitReports[0].id,
+            createdAt: r.visitReports[0].createdAt.toISOString(),
+            nextSteps: r.visitReports[0].nextSteps ?? '',
+          }
+        : null,
+      followUps: followUps.map((f) => ({
+        id: f.id,
+        title: f.title,
+        dueDate: f.dueDate.toISOString(),
+        status: f.status,
+      })),
     },
   })
 }
