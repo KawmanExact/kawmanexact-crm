@@ -240,6 +240,11 @@ export type AIReport = $Result.DefaultSelection<Prisma.$AIReportPayload>
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 /**
+ * Model DevicePushToken
+ * 
+ */
+export type DevicePushToken = $Result.DefaultSelection<Prisma.$DevicePushTokenPayload>
+/**
  * Model AuditLog
  * 
  */
@@ -259,7 +264,15 @@ export type WebhookDelivery = $Result.DefaultSelection<Prisma.$WebhookDeliveryPa
  * Enums
  */
 export namespace $Enums {
-  export const UserStatus: {
+  export const PushPlatform: {
+  android: 'android',
+  ios: 'ios'
+};
+
+export type PushPlatform = (typeof PushPlatform)[keyof typeof PushPlatform]
+
+
+export const UserStatus: {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
   SUSPENDED: 'SUSPENDED',
@@ -408,6 +421,10 @@ export const AuditAction: {
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
 
 }
+
+export type PushPlatform = $Enums.PushPlatform
+
+export const PushPlatform: typeof $Enums.PushPlatform
 
 export type UserStatus = $Enums.UserStatus
 
@@ -1009,6 +1026,16 @@ export class PrismaClient<
   get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.devicePushToken`: Exposes CRUD operations for the **DevicePushToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DevicePushTokens
+    * const devicePushTokens = await prisma.devicePushToken.findMany()
+    * ```
+    */
+  get devicePushToken(): Prisma.DevicePushTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
     * Example usage:
     * ```ts
@@ -1527,6 +1554,7 @@ export namespace Prisma {
     AIInsight: 'AIInsight',
     AIReport: 'AIReport',
     Notification: 'Notification',
+    DevicePushToken: 'DevicePushToken',
     AuditLog: 'AuditLog',
     Integration: 'Integration',
     WebhookDelivery: 'WebhookDelivery'
@@ -1545,7 +1573,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "dealStageHistory" | "dealItem" | "product" | "salesTransaction" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "auditLog" | "integration" | "webhookDelivery"
+      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "dealStageHistory" | "dealItem" | "product" | "salesTransaction" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "devicePushToken" | "auditLog" | "integration" | "webhookDelivery"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4731,6 +4759,80 @@ export namespace Prisma {
           }
         }
       }
+      DevicePushToken: {
+        payload: Prisma.$DevicePushTokenPayload<ExtArgs>
+        fields: Prisma.DevicePushTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DevicePushTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DevicePushTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.DevicePushTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DevicePushTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          findMany: {
+            args: Prisma.DevicePushTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>[]
+          }
+          create: {
+            args: Prisma.DevicePushTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          createMany: {
+            args: Prisma.DevicePushTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DevicePushTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.DevicePushTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          update: {
+            args: Prisma.DevicePushTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.DevicePushTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DevicePushTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DevicePushTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.DevicePushTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevicePushTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.DevicePushTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDevicePushToken>
+          }
+          groupBy: {
+            args: Prisma.DevicePushTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DevicePushTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DevicePushTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<DevicePushTokenCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -5119,6 +5221,7 @@ export namespace Prisma {
     aIInsight?: AIInsightOmit
     aIReport?: AIReportOmit
     notification?: NotificationOmit
+    devicePushToken?: DevicePushTokenOmit
     auditLog?: AuditLogOmit
     integration?: IntegrationOmit
     webhookDelivery?: WebhookDeliveryOmit
@@ -5230,6 +5333,7 @@ export namespace Prisma {
     savedViews: number
     teams: number
     users: number
+    devicePushTokens: number
     liveLocations: number
   }
 
@@ -5262,6 +5366,7 @@ export namespace Prisma {
     savedViews?: boolean | OrganizationCountOutputTypeCountSavedViewsArgs
     teams?: boolean | OrganizationCountOutputTypeCountTeamsArgs
     users?: boolean | OrganizationCountOutputTypeCountUsersArgs
+    devicePushTokens?: boolean | OrganizationCountOutputTypeCountDevicePushTokensArgs
     liveLocations?: boolean | OrganizationCountOutputTypeCountLiveLocationsArgs
   }
 
@@ -5475,6 +5580,13 @@ export namespace Prisma {
   /**
    * OrganizationCountOutputType without action
    */
+  export type OrganizationCountOutputTypeCountDevicePushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DevicePushTokenWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
   export type OrganizationCountOutputTypeCountLiveLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserLiveLocationWhereInput
   }
@@ -5510,6 +5622,7 @@ export namespace Prisma {
     ownedFollowUps: number
     ownedLeads: number
     notifications: number
+    devicePushTokens: number
     grantsGiven: number
     salesTransactions: number
     savedViews: number
@@ -5546,6 +5659,7 @@ export namespace Prisma {
     ownedFollowUps?: boolean | UserCountOutputTypeCountOwnedFollowUpsArgs
     ownedLeads?: boolean | UserCountOutputTypeCountOwnedLeadsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    devicePushTokens?: boolean | UserCountOutputTypeCountDevicePushTokensArgs
     grantsGiven?: boolean | UserCountOutputTypeCountGrantsGivenArgs
     salesTransactions?: boolean | UserCountOutputTypeCountSalesTransactionsArgs
     savedViews?: boolean | UserCountOutputTypeCountSavedViewsArgs
@@ -5740,6 +5854,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDevicePushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DevicePushTokenWhereInput
   }
 
   /**
@@ -6806,6 +6927,7 @@ export namespace Prisma {
     savedViews?: boolean | Organization$savedViewsArgs<ExtArgs>
     teams?: boolean | Organization$teamsArgs<ExtArgs>
     users?: boolean | Organization$usersArgs<ExtArgs>
+    devicePushTokens?: boolean | Organization$devicePushTokensArgs<ExtArgs>
     liveLocations?: boolean | Organization$liveLocationsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
@@ -6894,6 +7016,7 @@ export namespace Prisma {
     savedViews?: boolean | Organization$savedViewsArgs<ExtArgs>
     teams?: boolean | Organization$teamsArgs<ExtArgs>
     users?: boolean | Organization$usersArgs<ExtArgs>
+    devicePushTokens?: boolean | Organization$devicePushTokensArgs<ExtArgs>
     liveLocations?: boolean | Organization$liveLocationsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -6931,6 +7054,7 @@ export namespace Prisma {
       savedViews: Prisma.$SavedViewPayload<ExtArgs>[]
       teams: Prisma.$TeamPayload<ExtArgs>[]
       users: Prisma.$UserPayload<ExtArgs>[]
+      devicePushTokens: Prisma.$DevicePushTokenPayload<ExtArgs>[]
       liveLocations: Prisma.$UserLiveLocationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -7371,6 +7495,7 @@ export namespace Prisma {
     savedViews<T extends Organization$savedViewsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$savedViewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teams<T extends Organization$teamsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     users<T extends Organization$usersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    devicePushTokens<T extends Organization$devicePushTokensArgs<ExtArgs> = {}>(args?: Subset<T, Organization$devicePushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     liveLocations<T extends Organization$liveLocationsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$liveLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserLiveLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8481,6 +8606,30 @@ export namespace Prisma {
   }
 
   /**
+   * Organization.devicePushTokens
+   */
+  export type Organization$devicePushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    where?: DevicePushTokenWhereInput
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    cursor?: DevicePushTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DevicePushTokenScalarFieldEnum | DevicePushTokenScalarFieldEnum[]
+  }
+
+  /**
    * Organization.liveLocations
    */
   export type Organization$liveLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8808,6 +8957,7 @@ export namespace Prisma {
     ownedFollowUps?: boolean | User$ownedFollowUpsArgs<ExtArgs>
     ownedLeads?: boolean | User$ownedLeadsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    devicePushTokens?: boolean | User$devicePushTokensArgs<ExtArgs>
     grantsGiven?: boolean | User$grantsGivenArgs<ExtArgs>
     salesTransactions?: boolean | User$salesTransactionsArgs<ExtArgs>
     savedViews?: boolean | User$savedViewsArgs<ExtArgs>
@@ -8919,6 +9069,7 @@ export namespace Prisma {
     ownedFollowUps?: boolean | User$ownedFollowUpsArgs<ExtArgs>
     ownedLeads?: boolean | User$ownedLeadsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    devicePushTokens?: boolean | User$devicePushTokensArgs<ExtArgs>
     grantsGiven?: boolean | User$grantsGivenArgs<ExtArgs>
     salesTransactions?: boolean | User$salesTransactionsArgs<ExtArgs>
     savedViews?: boolean | User$savedViewsArgs<ExtArgs>
@@ -8975,6 +9126,7 @@ export namespace Prisma {
       ownedFollowUps: Prisma.$FollowUpPayload<ExtArgs>[]
       ownedLeads: Prisma.$LeadPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      devicePushTokens: Prisma.$DevicePushTokenPayload<ExtArgs>[]
       grantsGiven: Prisma.$ResourceGrantPayload<ExtArgs>[]
       salesTransactions: Prisma.$SalesTransactionPayload<ExtArgs>[]
       savedViews: Prisma.$SavedViewPayload<ExtArgs>[]
@@ -9426,6 +9578,7 @@ export namespace Prisma {
     ownedFollowUps<T extends User$ownedFollowUpsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedFollowUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedLeads<T extends User$ownedLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    devicePushTokens<T extends User$devicePushTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$devicePushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     grantsGiven<T extends User$grantsGivenArgs<ExtArgs> = {}>(args?: Subset<T, User$grantsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourceGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     salesTransactions<T extends User$salesTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$salesTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalesTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     savedViews<T extends User$savedViewsArgs<ExtArgs> = {}>(args?: Subset<T, User$savedViewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10483,6 +10636,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.devicePushTokens
+   */
+  export type User$devicePushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    where?: DevicePushTokenWhereInput
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    cursor?: DevicePushTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DevicePushTokenScalarFieldEnum | DevicePushTokenScalarFieldEnum[]
   }
 
   /**
@@ -60972,6 +61149,1116 @@ export namespace Prisma {
 
 
   /**
+   * Model DevicePushToken
+   */
+
+  export type AggregateDevicePushToken = {
+    _count: DevicePushTokenCountAggregateOutputType | null
+    _min: DevicePushTokenMinAggregateOutputType | null
+    _max: DevicePushTokenMaxAggregateOutputType | null
+  }
+
+  export type DevicePushTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    token: string | null
+    platform: $Enums.PushPlatform | null
+    deviceName: string | null
+    createdAt: Date | null
+    lastSeenAt: Date | null
+  }
+
+  export type DevicePushTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    token: string | null
+    platform: $Enums.PushPlatform | null
+    deviceName: string | null
+    createdAt: Date | null
+    lastSeenAt: Date | null
+  }
+
+  export type DevicePushTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    organizationId: number
+    token: number
+    platform: number
+    deviceName: number
+    createdAt: number
+    lastSeenAt: number
+    _all: number
+  }
+
+
+  export type DevicePushTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    token?: true
+    platform?: true
+    deviceName?: true
+    createdAt?: true
+    lastSeenAt?: true
+  }
+
+  export type DevicePushTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    token?: true
+    platform?: true
+    deviceName?: true
+    createdAt?: true
+    lastSeenAt?: true
+  }
+
+  export type DevicePushTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    token?: true
+    platform?: true
+    deviceName?: true
+    createdAt?: true
+    lastSeenAt?: true
+    _all?: true
+  }
+
+  export type DevicePushTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DevicePushToken to aggregate.
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevicePushTokens to fetch.
+     */
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DevicePushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevicePushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevicePushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DevicePushTokens
+    **/
+    _count?: true | DevicePushTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DevicePushTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DevicePushTokenMaxAggregateInputType
+  }
+
+  export type GetDevicePushTokenAggregateType<T extends DevicePushTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateDevicePushToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDevicePushToken[P]>
+      : GetScalarType<T[P], AggregateDevicePushToken[P]>
+  }
+
+
+
+
+  export type DevicePushTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DevicePushTokenWhereInput
+    orderBy?: DevicePushTokenOrderByWithAggregationInput | DevicePushTokenOrderByWithAggregationInput[]
+    by: DevicePushTokenScalarFieldEnum[] | DevicePushTokenScalarFieldEnum
+    having?: DevicePushTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DevicePushTokenCountAggregateInputType | true
+    _min?: DevicePushTokenMinAggregateInputType
+    _max?: DevicePushTokenMaxAggregateInputType
+  }
+
+  export type DevicePushTokenGroupByOutputType = {
+    id: string
+    userId: string
+    organizationId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName: string | null
+    createdAt: Date
+    lastSeenAt: Date
+    _count: DevicePushTokenCountAggregateOutputType | null
+    _min: DevicePushTokenMinAggregateOutputType | null
+    _max: DevicePushTokenMaxAggregateOutputType | null
+  }
+
+  type GetDevicePushTokenGroupByPayload<T extends DevicePushTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DevicePushTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DevicePushTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DevicePushTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], DevicePushTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DevicePushTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    token?: boolean
+    platform?: boolean
+    deviceName?: boolean
+    createdAt?: boolean
+    lastSeenAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["devicePushToken"]>
+
+  export type DevicePushTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    token?: boolean
+    platform?: boolean
+    deviceName?: boolean
+    createdAt?: boolean
+    lastSeenAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["devicePushToken"]>
+
+  export type DevicePushTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    token?: boolean
+    platform?: boolean
+    deviceName?: boolean
+    createdAt?: boolean
+    lastSeenAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["devicePushToken"]>
+
+  export type DevicePushTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    token?: boolean
+    platform?: boolean
+    deviceName?: boolean
+    createdAt?: boolean
+    lastSeenAt?: boolean
+  }
+
+  export type DevicePushTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "organizationId" | "token" | "platform" | "deviceName" | "createdAt" | "lastSeenAt", ExtArgs["result"]["devicePushToken"]>
+  export type DevicePushTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DevicePushTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DevicePushTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DevicePushTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DevicePushToken"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      organizationId: string
+      token: string
+      platform: $Enums.PushPlatform
+      deviceName: string | null
+      createdAt: Date
+      lastSeenAt: Date
+    }, ExtArgs["result"]["devicePushToken"]>
+    composites: {}
+  }
+
+  type DevicePushTokenGetPayload<S extends boolean | null | undefined | DevicePushTokenDefaultArgs> = $Result.GetResult<Prisma.$DevicePushTokenPayload, S>
+
+  type DevicePushTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DevicePushTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DevicePushTokenCountAggregateInputType | true
+    }
+
+  export interface DevicePushTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DevicePushToken'], meta: { name: 'DevicePushToken' } }
+    /**
+     * Find zero or one DevicePushToken that matches the filter.
+     * @param {DevicePushTokenFindUniqueArgs} args - Arguments to find a DevicePushToken
+     * @example
+     * // Get one DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DevicePushTokenFindUniqueArgs>(args: SelectSubset<T, DevicePushTokenFindUniqueArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DevicePushToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DevicePushTokenFindUniqueOrThrowArgs} args - Arguments to find a DevicePushToken
+     * @example
+     * // Get one DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DevicePushTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, DevicePushTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DevicePushToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenFindFirstArgs} args - Arguments to find a DevicePushToken
+     * @example
+     * // Get one DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DevicePushTokenFindFirstArgs>(args?: SelectSubset<T, DevicePushTokenFindFirstArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DevicePushToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenFindFirstOrThrowArgs} args - Arguments to find a DevicePushToken
+     * @example
+     * // Get one DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DevicePushTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, DevicePushTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DevicePushTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DevicePushTokens
+     * const devicePushTokens = await prisma.devicePushToken.findMany()
+     * 
+     * // Get first 10 DevicePushTokens
+     * const devicePushTokens = await prisma.devicePushToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const devicePushTokenWithIdOnly = await prisma.devicePushToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DevicePushTokenFindManyArgs>(args?: SelectSubset<T, DevicePushTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DevicePushToken.
+     * @param {DevicePushTokenCreateArgs} args - Arguments to create a DevicePushToken.
+     * @example
+     * // Create one DevicePushToken
+     * const DevicePushToken = await prisma.devicePushToken.create({
+     *   data: {
+     *     // ... data to create a DevicePushToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends DevicePushTokenCreateArgs>(args: SelectSubset<T, DevicePushTokenCreateArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DevicePushTokens.
+     * @param {DevicePushTokenCreateManyArgs} args - Arguments to create many DevicePushTokens.
+     * @example
+     * // Create many DevicePushTokens
+     * const devicePushToken = await prisma.devicePushToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DevicePushTokenCreateManyArgs>(args?: SelectSubset<T, DevicePushTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DevicePushTokens and returns the data saved in the database.
+     * @param {DevicePushTokenCreateManyAndReturnArgs} args - Arguments to create many DevicePushTokens.
+     * @example
+     * // Create many DevicePushTokens
+     * const devicePushToken = await prisma.devicePushToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DevicePushTokens and only return the `id`
+     * const devicePushTokenWithIdOnly = await prisma.devicePushToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DevicePushTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, DevicePushTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DevicePushToken.
+     * @param {DevicePushTokenDeleteArgs} args - Arguments to delete one DevicePushToken.
+     * @example
+     * // Delete one DevicePushToken
+     * const DevicePushToken = await prisma.devicePushToken.delete({
+     *   where: {
+     *     // ... filter to delete one DevicePushToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DevicePushTokenDeleteArgs>(args: SelectSubset<T, DevicePushTokenDeleteArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DevicePushToken.
+     * @param {DevicePushTokenUpdateArgs} args - Arguments to update one DevicePushToken.
+     * @example
+     * // Update one DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DevicePushTokenUpdateArgs>(args: SelectSubset<T, DevicePushTokenUpdateArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DevicePushTokens.
+     * @param {DevicePushTokenDeleteManyArgs} args - Arguments to filter DevicePushTokens to delete.
+     * @example
+     * // Delete a few DevicePushTokens
+     * const { count } = await prisma.devicePushToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DevicePushTokenDeleteManyArgs>(args?: SelectSubset<T, DevicePushTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DevicePushTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DevicePushTokens
+     * const devicePushToken = await prisma.devicePushToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DevicePushTokenUpdateManyArgs>(args: SelectSubset<T, DevicePushTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DevicePushTokens and returns the data updated in the database.
+     * @param {DevicePushTokenUpdateManyAndReturnArgs} args - Arguments to update many DevicePushTokens.
+     * @example
+     * // Update many DevicePushTokens
+     * const devicePushToken = await prisma.devicePushToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DevicePushTokens and only return the `id`
+     * const devicePushTokenWithIdOnly = await prisma.devicePushToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DevicePushTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, DevicePushTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DevicePushToken.
+     * @param {DevicePushTokenUpsertArgs} args - Arguments to update or create a DevicePushToken.
+     * @example
+     * // Update or create a DevicePushToken
+     * const devicePushToken = await prisma.devicePushToken.upsert({
+     *   create: {
+     *     // ... data to create a DevicePushToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DevicePushToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DevicePushTokenUpsertArgs>(args: SelectSubset<T, DevicePushTokenUpsertArgs<ExtArgs>>): Prisma__DevicePushTokenClient<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DevicePushTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenCountArgs} args - Arguments to filter DevicePushTokens to count.
+     * @example
+     * // Count the number of DevicePushTokens
+     * const count = await prisma.devicePushToken.count({
+     *   where: {
+     *     // ... the filter for the DevicePushTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends DevicePushTokenCountArgs>(
+      args?: Subset<T, DevicePushTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DevicePushTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DevicePushToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DevicePushTokenAggregateArgs>(args: Subset<T, DevicePushTokenAggregateArgs>): Prisma.PrismaPromise<GetDevicePushTokenAggregateType<T>>
+
+    /**
+     * Group by DevicePushToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevicePushTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DevicePushTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DevicePushTokenGroupByArgs['orderBy'] }
+        : { orderBy?: DevicePushTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DevicePushTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDevicePushTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DevicePushToken model
+   */
+  readonly fields: DevicePushTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DevicePushToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DevicePushTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DevicePushToken model
+   */
+  interface DevicePushTokenFieldRefs {
+    readonly id: FieldRef<"DevicePushToken", 'String'>
+    readonly userId: FieldRef<"DevicePushToken", 'String'>
+    readonly organizationId: FieldRef<"DevicePushToken", 'String'>
+    readonly token: FieldRef<"DevicePushToken", 'String'>
+    readonly platform: FieldRef<"DevicePushToken", 'PushPlatform'>
+    readonly deviceName: FieldRef<"DevicePushToken", 'String'>
+    readonly createdAt: FieldRef<"DevicePushToken", 'DateTime'>
+    readonly lastSeenAt: FieldRef<"DevicePushToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DevicePushToken findUnique
+   */
+  export type DevicePushTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which DevicePushToken to fetch.
+     */
+    where: DevicePushTokenWhereUniqueInput
+  }
+
+  /**
+   * DevicePushToken findUniqueOrThrow
+   */
+  export type DevicePushTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which DevicePushToken to fetch.
+     */
+    where: DevicePushTokenWhereUniqueInput
+  }
+
+  /**
+   * DevicePushToken findFirst
+   */
+  export type DevicePushTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which DevicePushToken to fetch.
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevicePushTokens to fetch.
+     */
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DevicePushTokens.
+     */
+    cursor?: DevicePushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevicePushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevicePushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevicePushTokens.
+     */
+    distinct?: DevicePushTokenScalarFieldEnum | DevicePushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DevicePushToken findFirstOrThrow
+   */
+  export type DevicePushTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which DevicePushToken to fetch.
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevicePushTokens to fetch.
+     */
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DevicePushTokens.
+     */
+    cursor?: DevicePushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevicePushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevicePushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevicePushTokens.
+     */
+    distinct?: DevicePushTokenScalarFieldEnum | DevicePushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DevicePushToken findMany
+   */
+  export type DevicePushTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which DevicePushTokens to fetch.
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevicePushTokens to fetch.
+     */
+    orderBy?: DevicePushTokenOrderByWithRelationInput | DevicePushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DevicePushTokens.
+     */
+    cursor?: DevicePushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevicePushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevicePushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevicePushTokens.
+     */
+    distinct?: DevicePushTokenScalarFieldEnum | DevicePushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * DevicePushToken create
+   */
+  export type DevicePushTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DevicePushToken.
+     */
+    data: XOR<DevicePushTokenCreateInput, DevicePushTokenUncheckedCreateInput>
+  }
+
+  /**
+   * DevicePushToken createMany
+   */
+  export type DevicePushTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DevicePushTokens.
+     */
+    data: DevicePushTokenCreateManyInput | DevicePushTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DevicePushToken createManyAndReturn
+   */
+  export type DevicePushTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many DevicePushTokens.
+     */
+    data: DevicePushTokenCreateManyInput | DevicePushTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DevicePushToken update
+   */
+  export type DevicePushTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DevicePushToken.
+     */
+    data: XOR<DevicePushTokenUpdateInput, DevicePushTokenUncheckedUpdateInput>
+    /**
+     * Choose, which DevicePushToken to update.
+     */
+    where: DevicePushTokenWhereUniqueInput
+  }
+
+  /**
+   * DevicePushToken updateMany
+   */
+  export type DevicePushTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DevicePushTokens.
+     */
+    data: XOR<DevicePushTokenUpdateManyMutationInput, DevicePushTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which DevicePushTokens to update
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * Limit how many DevicePushTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DevicePushToken updateManyAndReturn
+   */
+  export type DevicePushTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update DevicePushTokens.
+     */
+    data: XOR<DevicePushTokenUpdateManyMutationInput, DevicePushTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which DevicePushTokens to update
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * Limit how many DevicePushTokens to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DevicePushToken upsert
+   */
+  export type DevicePushTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DevicePushToken to update in case it exists.
+     */
+    where: DevicePushTokenWhereUniqueInput
+    /**
+     * In case the DevicePushToken found by the `where` argument doesn't exist, create a new DevicePushToken with this data.
+     */
+    create: XOR<DevicePushTokenCreateInput, DevicePushTokenUncheckedCreateInput>
+    /**
+     * In case the DevicePushToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DevicePushTokenUpdateInput, DevicePushTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * DevicePushToken delete
+   */
+  export type DevicePushTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+    /**
+     * Filter which DevicePushToken to delete.
+     */
+    where: DevicePushTokenWhereUniqueInput
+  }
+
+  /**
+   * DevicePushToken deleteMany
+   */
+  export type DevicePushTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DevicePushTokens to delete
+     */
+    where?: DevicePushTokenWhereInput
+    /**
+     * Limit how many DevicePushTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DevicePushToken without action
+   */
+  export type DevicePushTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevicePushToken
+     */
+    select?: DevicePushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevicePushToken
+     */
+    omit?: DevicePushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DevicePushTokenInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AuditLog
    */
 
@@ -65199,6 +66486,20 @@ export namespace Prisma {
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+  export const DevicePushTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    organizationId: 'organizationId',
+    token: 'token',
+    platform: 'platform',
+    deviceName: 'deviceName',
+    createdAt: 'createdAt',
+    lastSeenAt: 'lastSeenAt'
+  };
+
+  export type DevicePushTokenScalarFieldEnum = (typeof DevicePushTokenScalarFieldEnum)[keyof typeof DevicePushTokenScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -65559,6 +66860,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PushPlatform'
+   */
+  export type EnumPushPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PushPlatform'>
+    
+
+
+  /**
+   * Reference to a field of type 'PushPlatform[]'
+   */
+  export type ListEnumPushPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PushPlatform[]'>
+    
+
+
+  /**
    * Reference to a field of type 'AuditAction'
    */
   export type EnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAction'>
@@ -65622,6 +66937,7 @@ export namespace Prisma {
     savedViews?: SavedViewListRelationFilter
     teams?: TeamListRelationFilter
     users?: UserListRelationFilter
+    devicePushTokens?: DevicePushTokenListRelationFilter
     liveLocations?: UserLiveLocationListRelationFilter
   }
 
@@ -65669,6 +66985,7 @@ export namespace Prisma {
     savedViews?: SavedViewOrderByRelationAggregateInput
     teams?: TeamOrderByRelationAggregateInput
     users?: UserOrderByRelationAggregateInput
+    devicePushTokens?: DevicePushTokenOrderByRelationAggregateInput
     liveLocations?: UserLiveLocationOrderByRelationAggregateInput
   }
 
@@ -65719,6 +67036,7 @@ export namespace Prisma {
     savedViews?: SavedViewListRelationFilter
     teams?: TeamListRelationFilter
     users?: UserListRelationFilter
+    devicePushTokens?: DevicePushTokenListRelationFilter
     liveLocations?: UserLiveLocationListRelationFilter
   }, "id" | "slug">
 
@@ -65810,6 +67128,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpListRelationFilter
     ownedLeads?: LeadListRelationFilter
     notifications?: NotificationListRelationFilter
+    devicePushTokens?: DevicePushTokenListRelationFilter
     grantsGiven?: ResourceGrantListRelationFilter
     salesTransactions?: SalesTransactionListRelationFilter
     savedViews?: SavedViewListRelationFilter
@@ -65868,6 +67187,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpOrderByRelationAggregateInput
     ownedLeads?: LeadOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    devicePushTokens?: DevicePushTokenOrderByRelationAggregateInput
     grantsGiven?: ResourceGrantOrderByRelationAggregateInput
     salesTransactions?: SalesTransactionOrderByRelationAggregateInput
     savedViews?: SavedViewOrderByRelationAggregateInput
@@ -65929,6 +67249,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpListRelationFilter
     ownedLeads?: LeadListRelationFilter
     notifications?: NotificationListRelationFilter
+    devicePushTokens?: DevicePushTokenListRelationFilter
     grantsGiven?: ResourceGrantListRelationFilter
     salesTransactions?: SalesTransactionListRelationFilter
     savedViews?: SavedViewListRelationFilter
@@ -70019,6 +71340,79 @@ export namespace Prisma {
     readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
   }
 
+  export type DevicePushTokenWhereInput = {
+    AND?: DevicePushTokenWhereInput | DevicePushTokenWhereInput[]
+    OR?: DevicePushTokenWhereInput[]
+    NOT?: DevicePushTokenWhereInput | DevicePushTokenWhereInput[]
+    id?: StringFilter<"DevicePushToken"> | string
+    userId?: StringFilter<"DevicePushToken"> | string
+    organizationId?: StringFilter<"DevicePushToken"> | string
+    token?: StringFilter<"DevicePushToken"> | string
+    platform?: EnumPushPlatformFilter<"DevicePushToken"> | $Enums.PushPlatform
+    deviceName?: StringNullableFilter<"DevicePushToken"> | string | null
+    createdAt?: DateTimeFilter<"DevicePushToken"> | Date | string
+    lastSeenAt?: DateTimeFilter<"DevicePushToken"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type DevicePushTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    deviceName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lastSeenAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DevicePushTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    AND?: DevicePushTokenWhereInput | DevicePushTokenWhereInput[]
+    OR?: DevicePushTokenWhereInput[]
+    NOT?: DevicePushTokenWhereInput | DevicePushTokenWhereInput[]
+    userId?: StringFilter<"DevicePushToken"> | string
+    organizationId?: StringFilter<"DevicePushToken"> | string
+    platform?: EnumPushPlatformFilter<"DevicePushToken"> | $Enums.PushPlatform
+    deviceName?: StringNullableFilter<"DevicePushToken"> | string | null
+    createdAt?: DateTimeFilter<"DevicePushToken"> | Date | string
+    lastSeenAt?: DateTimeFilter<"DevicePushToken"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "token">
+
+  export type DevicePushTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    deviceName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lastSeenAt?: SortOrder
+    _count?: DevicePushTokenCountOrderByAggregateInput
+    _max?: DevicePushTokenMaxOrderByAggregateInput
+    _min?: DevicePushTokenMinOrderByAggregateInput
+  }
+
+  export type DevicePushTokenScalarWhereWithAggregatesInput = {
+    AND?: DevicePushTokenScalarWhereWithAggregatesInput | DevicePushTokenScalarWhereWithAggregatesInput[]
+    OR?: DevicePushTokenScalarWhereWithAggregatesInput[]
+    NOT?: DevicePushTokenScalarWhereWithAggregatesInput | DevicePushTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DevicePushToken"> | string
+    userId?: StringWithAggregatesFilter<"DevicePushToken"> | string
+    organizationId?: StringWithAggregatesFilter<"DevicePushToken"> | string
+    token?: StringWithAggregatesFilter<"DevicePushToken"> | string
+    platform?: EnumPushPlatformWithAggregatesFilter<"DevicePushToken"> | $Enums.PushPlatform
+    deviceName?: StringNullableWithAggregatesFilter<"DevicePushToken"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DevicePushToken"> | Date | string
+    lastSeenAt?: DateTimeWithAggregatesFilter<"DevicePushToken"> | Date | string
+  }
+
   export type AuditLogWhereInput = {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
@@ -70307,6 +71701,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -70354,6 +71749,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -70401,6 +71797,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -70448,6 +71845,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -70544,6 +71942,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -70602,6 +72001,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -70652,6 +72052,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -70710,6 +72111,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -75140,6 +76542,81 @@ export namespace Prisma {
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type DevicePushTokenCreateInput = {
+    id?: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDevicePushTokensInput
+    user: UserCreateNestedOneWithoutDevicePushTokensInput
+  }
+
+  export type DevicePushTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+  }
+
+  export type DevicePushTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDevicePushTokensNestedInput
+    user?: UserUpdateOneRequiredWithoutDevicePushTokensNestedInput
+  }
+
+  export type DevicePushTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevicePushTokenCreateManyInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+  }
+
+  export type DevicePushTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevicePushTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuditLogCreateInput = {
     id?: string
     action: $Enums.AuditAction
@@ -75638,6 +77115,12 @@ export namespace Prisma {
     none?: UserWhereInput
   }
 
+  export type DevicePushTokenListRelationFilter = {
+    every?: DevicePushTokenWhereInput
+    some?: DevicePushTokenWhereInput
+    none?: DevicePushTokenWhereInput
+  }
+
   export type UserLiveLocationListRelationFilter = {
     every?: UserLiveLocationWhereInput
     some?: UserLiveLocationWhereInput
@@ -75758,6 +77241,10 @@ export namespace Prisma {
   }
 
   export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DevicePushTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -78700,6 +80187,56 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
+  export type EnumPushPlatformFilter<$PrismaModel = never> = {
+    equals?: $Enums.PushPlatform | EnumPushPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumPushPlatformFilter<$PrismaModel> | $Enums.PushPlatform
+  }
+
+  export type DevicePushTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    deviceName?: SortOrder
+    createdAt?: SortOrder
+    lastSeenAt?: SortOrder
+  }
+
+  export type DevicePushTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    deviceName?: SortOrder
+    createdAt?: SortOrder
+    lastSeenAt?: SortOrder
+  }
+
+  export type DevicePushTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    deviceName?: SortOrder
+    createdAt?: SortOrder
+    lastSeenAt?: SortOrder
+  }
+
+  export type EnumPushPlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PushPlatform | EnumPushPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumPushPlatformWithAggregatesFilter<$PrismaModel> | $Enums.PushPlatform
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPushPlatformFilter<$PrismaModel>
+    _max?: NestedEnumPushPlatformFilter<$PrismaModel>
+  }
+
   export type EnumAuditActionFilter<$PrismaModel = never> = {
     equals?: $Enums.AuditAction | EnumAuditActionFieldRefInput<$PrismaModel>
     in?: $Enums.AuditAction[] | ListEnumAuditActionFieldRefInput<$PrismaModel>
@@ -79051,6 +80588,13 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
+  export type DevicePushTokenCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput> | DevicePushTokenCreateWithoutOrganizationInput[] | DevicePushTokenUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutOrganizationInput | DevicePushTokenCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DevicePushTokenCreateManyOrganizationInputEnvelope
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+  }
+
   export type UserLiveLocationCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<UserLiveLocationCreateWithoutOrganizationInput, UserLiveLocationUncheckedCreateWithoutOrganizationInput> | UserLiveLocationCreateWithoutOrganizationInput[] | UserLiveLocationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserLiveLocationCreateOrConnectWithoutOrganizationInput | UserLiveLocationCreateOrConnectWithoutOrganizationInput[]
@@ -79252,6 +80796,13 @@ export namespace Prisma {
     connectOrCreate?: UserCreateOrConnectWithoutOrganizationInput | UserCreateOrConnectWithoutOrganizationInput[]
     createMany?: UserCreateManyOrganizationInputEnvelope
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput> | DevicePushTokenCreateWithoutOrganizationInput[] | DevicePushTokenUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutOrganizationInput | DevicePushTokenCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DevicePushTokenCreateManyOrganizationInputEnvelope
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
   }
 
   export type UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput = {
@@ -79665,6 +81216,20 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type DevicePushTokenUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput> | DevicePushTokenCreateWithoutOrganizationInput[] | DevicePushTokenUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutOrganizationInput | DevicePushTokenCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DevicePushTokenUpsertWithWhereUniqueWithoutOrganizationInput | DevicePushTokenUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DevicePushTokenCreateManyOrganizationInputEnvelope
+    set?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    disconnect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    delete?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    update?: DevicePushTokenUpdateWithWhereUniqueWithoutOrganizationInput | DevicePushTokenUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DevicePushTokenUpdateManyWithWhereWithoutOrganizationInput | DevicePushTokenUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
+  }
+
   export type UserLiveLocationUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<UserLiveLocationCreateWithoutOrganizationInput, UserLiveLocationUncheckedCreateWithoutOrganizationInput> | UserLiveLocationCreateWithoutOrganizationInput[] | UserLiveLocationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserLiveLocationCreateOrConnectWithoutOrganizationInput | UserLiveLocationCreateOrConnectWithoutOrganizationInput[]
@@ -80071,6 +81636,20 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput> | DevicePushTokenCreateWithoutOrganizationInput[] | DevicePushTokenUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutOrganizationInput | DevicePushTokenCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DevicePushTokenUpsertWithWhereUniqueWithoutOrganizationInput | DevicePushTokenUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DevicePushTokenCreateManyOrganizationInputEnvelope
+    set?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    disconnect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    delete?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    update?: DevicePushTokenUpdateWithWhereUniqueWithoutOrganizationInput | DevicePushTokenUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DevicePushTokenUpdateManyWithWhereWithoutOrganizationInput | DevicePushTokenUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
+  }
+
   export type UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<UserLiveLocationCreateWithoutOrganizationInput, UserLiveLocationUncheckedCreateWithoutOrganizationInput> | UserLiveLocationCreateWithoutOrganizationInput[] | UserLiveLocationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserLiveLocationCreateOrConnectWithoutOrganizationInput | UserLiveLocationCreateOrConnectWithoutOrganizationInput[]
@@ -80258,6 +81837,13 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type DevicePushTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput> | DevicePushTokenCreateWithoutUserInput[] | DevicePushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutUserInput | DevicePushTokenCreateOrConnectWithoutUserInput[]
+    createMany?: DevicePushTokenCreateManyUserInputEnvelope
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
   }
 
   export type ResourceGrantCreateNestedManyWithoutGrantorInput = {
@@ -80519,6 +82105,13 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type DevicePushTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput> | DevicePushTokenCreateWithoutUserInput[] | DevicePushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutUserInput | DevicePushTokenCreateOrConnectWithoutUserInput[]
+    createMany?: DevicePushTokenCreateManyUserInputEnvelope
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
   }
 
   export type ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput = {
@@ -80943,6 +82536,20 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type DevicePushTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput> | DevicePushTokenCreateWithoutUserInput[] | DevicePushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutUserInput | DevicePushTokenCreateOrConnectWithoutUserInput[]
+    upsert?: DevicePushTokenUpsertWithWhereUniqueWithoutUserInput | DevicePushTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DevicePushTokenCreateManyUserInputEnvelope
+    set?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    disconnect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    delete?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    update?: DevicePushTokenUpdateWithWhereUniqueWithoutUserInput | DevicePushTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DevicePushTokenUpdateManyWithWhereWithoutUserInput | DevicePushTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
   }
 
   export type ResourceGrantUpdateManyWithoutGrantorNestedInput = {
@@ -81453,6 +83060,20 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput> | DevicePushTokenCreateWithoutUserInput[] | DevicePushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DevicePushTokenCreateOrConnectWithoutUserInput | DevicePushTokenCreateOrConnectWithoutUserInput[]
+    upsert?: DevicePushTokenUpsertWithWhereUniqueWithoutUserInput | DevicePushTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DevicePushTokenCreateManyUserInputEnvelope
+    set?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    disconnect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    delete?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    connect?: DevicePushTokenWhereUniqueInput | DevicePushTokenWhereUniqueInput[]
+    update?: DevicePushTokenUpdateWithWhereUniqueWithoutUserInput | DevicePushTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DevicePushTokenUpdateManyWithWhereWithoutUserInput | DevicePushTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
   }
 
   export type ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput = {
@@ -85063,6 +86684,38 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutDevicePushTokensInput = {
+    create?: XOR<OrganizationCreateWithoutDevicePushTokensInput, OrganizationUncheckedCreateWithoutDevicePushTokensInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDevicePushTokensInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutDevicePushTokensInput = {
+    create?: XOR<UserCreateWithoutDevicePushTokensInput, UserUncheckedCreateWithoutDevicePushTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDevicePushTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumPushPlatformFieldUpdateOperationsInput = {
+    set?: $Enums.PushPlatform
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutDevicePushTokensNestedInput = {
+    create?: XOR<OrganizationCreateWithoutDevicePushTokensInput, OrganizationUncheckedCreateWithoutDevicePushTokensInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDevicePushTokensInput
+    upsert?: OrganizationUpsertWithoutDevicePushTokensInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDevicePushTokensInput, OrganizationUpdateWithoutDevicePushTokensInput>, OrganizationUncheckedUpdateWithoutDevicePushTokensInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutDevicePushTokensNestedInput = {
+    create?: XOR<UserCreateWithoutDevicePushTokensInput, UserUncheckedCreateWithoutDevicePushTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDevicePushTokensInput
+    upsert?: UserUpsertWithoutDevicePushTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDevicePushTokensInput, UserUpdateWithoutDevicePushTokensInput>, UserUncheckedUpdateWithoutDevicePushTokensInput>
+  }
+
   export type UserCreateNestedOneWithoutAuditLogsInput = {
     create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
@@ -85711,6 +87364,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPushPlatformFilter<$PrismaModel = never> = {
+    equals?: $Enums.PushPlatform | EnumPushPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumPushPlatformFilter<$PrismaModel> | $Enums.PushPlatform
+  }
+
+  export type NestedEnumPushPlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PushPlatform | EnumPushPlatformFieldRefInput<$PrismaModel>
+    in?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PushPlatform[] | ListEnumPushPlatformFieldRefInput<$PrismaModel>
+    not?: NestedEnumPushPlatformWithAggregatesFilter<$PrismaModel> | $Enums.PushPlatform
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPushPlatformFilter<$PrismaModel>
+    _max?: NestedEnumPushPlatformFilter<$PrismaModel>
   }
 
   export type NestedEnumAuditActionFilter<$PrismaModel = never> = {
@@ -86989,6 +88659,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -87045,6 +88716,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -87063,6 +88735,36 @@ export namespace Prisma {
 
   export type UserCreateManyOrganizationInputEnvelope = {
     data: UserCreateManyOrganizationInput | UserCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DevicePushTokenCreateWithoutOrganizationInput = {
+    id?: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+    user: UserCreateNestedOneWithoutDevicePushTokensInput
+  }
+
+  export type DevicePushTokenUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    userId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+  }
+
+  export type DevicePushTokenCreateOrConnectWithoutOrganizationInput = {
+    where: DevicePushTokenWhereUniqueInput
+    create: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DevicePushTokenCreateManyOrganizationInputEnvelope = {
+    data: DevicePushTokenCreateManyOrganizationInput | DevicePushTokenCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -88113,6 +89815,36 @@ export namespace Prisma {
     departmentId?: StringNullableFilter<"User"> | string | null
     teamId?: StringNullableFilter<"User"> | string | null
     managerId?: StringNullableFilter<"User"> | string | null
+  }
+
+  export type DevicePushTokenUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: DevicePushTokenWhereUniqueInput
+    update: XOR<DevicePushTokenUpdateWithoutOrganizationInput, DevicePushTokenUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<DevicePushTokenCreateWithoutOrganizationInput, DevicePushTokenUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DevicePushTokenUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: DevicePushTokenWhereUniqueInput
+    data: XOR<DevicePushTokenUpdateWithoutOrganizationInput, DevicePushTokenUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DevicePushTokenUpdateManyWithWhereWithoutOrganizationInput = {
+    where: DevicePushTokenScalarWhereInput
+    data: XOR<DevicePushTokenUpdateManyMutationInput, DevicePushTokenUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type DevicePushTokenScalarWhereInput = {
+    AND?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
+    OR?: DevicePushTokenScalarWhereInput[]
+    NOT?: DevicePushTokenScalarWhereInput | DevicePushTokenScalarWhereInput[]
+    id?: StringFilter<"DevicePushToken"> | string
+    userId?: StringFilter<"DevicePushToken"> | string
+    organizationId?: StringFilter<"DevicePushToken"> | string
+    token?: StringFilter<"DevicePushToken"> | string
+    platform?: EnumPushPlatformFilter<"DevicePushToken"> | $Enums.PushPlatform
+    deviceName?: StringNullableFilter<"DevicePushToken"> | string | null
+    createdAt?: DateTimeFilter<"DevicePushToken"> | Date | string
+    lastSeenAt?: DateTimeFilter<"DevicePushToken"> | Date | string
   }
 
   export type UserLiveLocationUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -89246,6 +90978,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DevicePushTokenCreateWithoutUserInput = {
+    id?: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDevicePushTokensInput
+  }
+
+  export type DevicePushTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    organizationId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
+  }
+
+  export type DevicePushTokenCreateOrConnectWithoutUserInput = {
+    where: DevicePushTokenWhereUniqueInput
+    create: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type DevicePushTokenCreateManyUserInputEnvelope = {
+    data: DevicePushTokenCreateManyUserInput | DevicePushTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ResourceGrantCreateWithoutGrantorInput = {
     id?: string
     resourceType?: string
@@ -89522,6 +91284,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -89579,6 +91342,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -89633,6 +91397,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -89689,6 +91454,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -89753,6 +91519,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -89799,6 +91566,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -90426,6 +92194,22 @@ export namespace Prisma {
     data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type DevicePushTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: DevicePushTokenWhereUniqueInput
+    update: XOR<DevicePushTokenUpdateWithoutUserInput, DevicePushTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<DevicePushTokenCreateWithoutUserInput, DevicePushTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type DevicePushTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: DevicePushTokenWhereUniqueInput
+    data: XOR<DevicePushTokenUpdateWithoutUserInput, DevicePushTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DevicePushTokenUpdateManyWithWhereWithoutUserInput = {
+    where: DevicePushTokenScalarWhereInput
+    data: XOR<DevicePushTokenUpdateManyMutationInput, DevicePushTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type ResourceGrantUpsertWithWhereUniqueWithoutGrantorInput = {
     where: ResourceGrantWhereUniqueInput
     update: XOR<ResourceGrantUpdateWithoutGrantorInput, ResourceGrantUncheckedUpdateWithoutGrantorInput>
@@ -90607,6 +92391,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -90664,6 +92449,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -90744,6 +92530,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -90790,6 +92577,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -90966,6 +92754,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -91023,6 +92812,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -91088,6 +92878,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -91145,6 +92936,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -91199,6 +92991,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLiveLocationsInput = {
@@ -91245,6 +93038,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLiveLocationsInput = {
@@ -91291,6 +93085,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -91348,6 +93143,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -91418,6 +93214,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLiveLocationsInput = {
@@ -91464,6 +93261,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutLiveLocationInput = {
@@ -91516,6 +93314,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -91573,6 +93372,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -91621,6 +93421,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -91678,6 +93479,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -91743,6 +93545,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -91800,6 +93603,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -92157,6 +93961,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -92214,6 +94019,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -92312,6 +94118,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -92369,6 +94176,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -92418,6 +94226,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -92475,6 +94284,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -92533,6 +94343,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -92579,6 +94390,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -92664,6 +94476,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -92721,6 +94534,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -92785,6 +94599,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -92831,6 +94646,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -92905,6 +94721,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -92962,6 +94779,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -93021,6 +94839,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -93067,6 +94886,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -93182,6 +95002,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -93238,6 +95059,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -93308,6 +95130,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -93365,6 +95188,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -93430,6 +95254,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -93476,6 +95301,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -93627,6 +95453,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -93684,6 +95511,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -93742,6 +95570,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -93788,6 +95617,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -93835,6 +95665,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -93891,6 +95722,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -94013,6 +95845,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -94070,6 +95903,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -94134,6 +95968,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -94180,6 +96015,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -94325,6 +96161,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -94382,6 +96219,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -94441,6 +96279,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -94487,6 +96326,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -94639,6 +96479,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -94696,6 +96537,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -94761,6 +96603,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -94807,6 +96650,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -94933,6 +96777,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -94979,6 +96824,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -95025,6 +96871,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -95082,6 +96929,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -95333,6 +97181,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -95379,6 +97228,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -95431,6 +97281,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -95488,6 +97339,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -95678,6 +97530,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -95735,6 +97588,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -95857,6 +97711,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -95914,6 +97769,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -95968,6 +97824,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -96014,6 +97871,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -96061,6 +97919,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -96118,6 +97977,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -96187,6 +98047,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -96233,6 +98094,7 @@ export namespace Prisma {
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -96286,6 +98148,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -96343,6 +98206,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -96391,6 +98255,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -96448,6 +98313,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -96642,6 +98508,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -96699,6 +98566,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -96764,6 +98632,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -96821,6 +98690,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -97045,6 +98915,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -97102,6 +98973,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -97202,6 +99074,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -97259,6 +99132,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -97313,6 +99187,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -97370,6 +99245,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -97492,6 +99368,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -97549,6 +99426,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -97609,6 +99487,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -97666,6 +99545,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -97720,6 +99600,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -97766,6 +99647,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -97828,6 +99710,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -97874,6 +99757,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -97966,6 +99850,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -98023,6 +99908,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -98145,6 +100031,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -98202,6 +100089,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -98564,6 +100452,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -98610,6 +100499,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -98656,6 +100546,7 @@ export namespace Prisma {
     createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -98713,6 +100604,7 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -98953,6 +100845,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -98999,6 +100892,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -99051,6 +100945,7 @@ export namespace Prisma {
     createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -99108,6 +101003,7 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -99198,6 +101094,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -99244,6 +101141,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -99290,6 +101188,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -99347,6 +101246,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -99911,6 +101811,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -99957,6 +101858,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -100009,6 +101911,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -100066,6 +101969,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -100327,6 +102231,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -100373,6 +102278,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -100419,6 +102325,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -100476,6 +102383,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -100937,6 +102845,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -100983,6 +102892,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -101035,6 +102945,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -101092,6 +103003,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -101447,6 +103359,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -101493,6 +103406,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -101539,6 +103453,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -101596,6 +103511,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -102063,6 +103979,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -102109,6 +104026,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -102161,6 +104079,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -102218,6 +104137,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -102444,6 +104364,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -102501,6 +104422,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -102560,6 +104482,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -102606,6 +104529,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -102782,6 +104706,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -102839,6 +104764,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -102904,6 +104830,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -102950,6 +104877,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -103109,6 +105037,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -103155,6 +105084,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -103381,6 +105311,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -103427,6 +105358,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -103556,6 +105488,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -103602,6 +105535,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -103758,6 +105692,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -103804,6 +105739,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -103925,6 +105861,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -103971,6 +105908,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -104063,6 +106001,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -104120,6 +106059,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -104254,6 +106194,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -104300,6 +106241,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -104404,6 +106346,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -104461,6 +106404,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -104509,6 +106453,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -104566,6 +106511,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -104939,6 +106885,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -104985,6 +106932,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -105042,6 +106990,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -105099,6 +107048,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -105502,6 +107452,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -105548,6 +107499,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -105621,6 +107573,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -105667,6 +107620,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -105713,6 +107667,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -105770,6 +107725,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -105873,6 +107829,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -105919,6 +107876,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -105971,6 +107929,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -106028,6 +107987,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -106396,6 +108356,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -106442,6 +108403,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -106488,6 +108450,7 @@ export namespace Prisma {
     createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -106545,6 +108508,7 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -106953,6 +108917,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -106999,6 +108964,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -107051,6 +109017,7 @@ export namespace Prisma {
     createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -107108,6 +109075,7 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -107193,6 +109161,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -107250,6 +109219,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -107532,6 +109502,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -107578,6 +109549,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -107691,6 +109663,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -107748,6 +109721,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -108054,6 +110028,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -108100,6 +110075,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -108157,6 +110133,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -108214,6 +110191,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -108326,6 +110304,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -108383,6 +110362,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -108549,6 +110529,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -108595,6 +110576,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -108722,6 +110704,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -108768,6 +110751,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -108810,6 +110794,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -108867,6 +110852,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -109001,6 +110987,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -109058,6 +111045,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -109364,6 +111352,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -109410,6 +111399,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -109456,6 +111446,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -109513,6 +111504,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -109609,6 +111601,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -109655,6 +111648,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -109707,6 +111701,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -109764,6 +111759,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -109898,6 +111894,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -109944,6 +111941,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -109990,6 +111988,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -110047,6 +112046,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -110117,6 +112117,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -110163,6 +112164,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -110215,6 +112217,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -110272,6 +112275,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -110326,6 +112330,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -110372,6 +112377,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -110434,6 +112440,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -110480,6 +112487,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -110566,6 +112574,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -110623,6 +112632,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -110682,6 +112692,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -110728,6 +112739,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -110836,6 +112848,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -110893,6 +112906,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -110958,6 +112972,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111004,6 +113019,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111050,6 +113066,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -111096,6 +113113,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -111142,6 +113160,7 @@ export namespace Prisma {
     createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -111199,6 +113218,7 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -111269,6 +113289,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111315,6 +113336,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111367,6 +113389,7 @@ export namespace Prisma {
     createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -111424,6 +113447,443 @@ export namespace Prisma {
     createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
+    subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
+    liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type OrganizationCreateWithoutDevicePushTokensInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
+    deals?: DealCreateNestedManyWithoutOrganizationInput
+    dealItems?: DealItemCreateNestedManyWithoutOrganizationInput
+    dealStageHistory?: DealStageHistoryCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryCreateNestedManyWithoutOrganizationInput
+    folders?: FolderCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
+    teams?: TeamCreateNestedManyWithoutOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutDevicePushTokensInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightUncheckedCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportUncheckedCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
+    deals?: DealUncheckedCreateNestedManyWithoutOrganizationInput
+    dealItems?: DealItemUncheckedCreateNestedManyWithoutOrganizationInput
+    dealStageHistory?: DealStageHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceUncheckedCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
+    teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutDevicePushTokensInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutDevicePushTokensInput, OrganizationUncheckedCreateWithoutDevicePushTokensInput>
+  }
+
+  export type UserCreateWithoutDevicePushTokensInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportCreateNestedManyWithoutGeneratedByInput
+    aiUsages?: AIUsageCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: ActivityCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactCreateNestedManyWithoutOwnerInput
+    dailyReports?: DailyReportCreateNestedManyWithoutUserInput
+    ownedDeals?: DealCreateNestedManyWithoutOwnerInput
+    movedDealHistory?: DealStageHistoryCreateNestedManyWithoutMovedByInput
+    managedDepartments?: DepartmentCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
+    savedViews?: SavedViewCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    managedTeams?: TeamCreateNestedManyWithoutManagerInput
+    department?: DepartmentCreateNestedOneWithoutUsersInput
+    manager?: UserCreateNestedOneWithoutSubordinatesInput
+    subordinates?: UserCreateNestedManyWithoutManagerInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    team?: TeamCreateNestedOneWithoutUsersInput
+    liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    roles?: UserRoleCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutDevicePushTokensInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    departmentId?: string | null
+    teamId?: string | null
+    managerId?: string | null
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportUncheckedCreateNestedManyWithoutGeneratedByInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyUncheckedCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactUncheckedCreateNestedManyWithoutOwnerInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
+    ownedDeals?: DealUncheckedCreateNestedManyWithoutOwnerInput
+    movedDealHistory?: DealStageHistoryUncheckedCreateNestedManyWithoutMovedByInput
+    managedDepartments?: DepartmentUncheckedCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitUncheckedCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileUncheckedCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityUncheckedCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionUncheckedCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionUncheckedCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareUncheckedCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareUncheckedCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionUncheckedCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
+    subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
+    liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutDevicePushTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDevicePushTokensInput, UserUncheckedCreateWithoutDevicePushTokensInput>
+  }
+
+  export type OrganizationUpsertWithoutDevicePushTokensInput = {
+    update: XOR<OrganizationUpdateWithoutDevicePushTokensInput, OrganizationUncheckedUpdateWithoutDevicePushTokensInput>
+    create: XOR<OrganizationCreateWithoutDevicePushTokensInput, OrganizationUncheckedCreateWithoutDevicePushTokensInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutDevicePushTokensInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutDevicePushTokensInput, OrganizationUncheckedUpdateWithoutDevicePushTokensInput>
+  }
+
+  export type OrganizationUpdateWithoutDevicePushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUpdateManyWithoutOrganizationNestedInput
+    dealItems?: DealItemUpdateManyWithoutOrganizationNestedInput
+    dealStageHistory?: DealStageHistoryUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUpdateManyWithoutOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutDevicePushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUncheckedUpdateManyWithoutOrganizationNestedInput
+    dealItems?: DealItemUncheckedUpdateManyWithoutOrganizationNestedInput
+    dealStageHistory?: DealStageHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUncheckedUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutDevicePushTokensInput = {
+    update: XOR<UserUpdateWithoutDevicePushTokensInput, UserUncheckedUpdateWithoutDevicePushTokensInput>
+    create: XOR<UserCreateWithoutDevicePushTokensInput, UserUncheckedCreateWithoutDevicePushTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDevicePushTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDevicePushTokensInput, UserUncheckedUpdateWithoutDevicePushTokensInput>
+  }
+
+  export type UserUpdateWithoutDevicePushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUpdateManyWithoutGeneratedByNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: ActivityUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUpdateManyWithoutOwnerNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
+    ownedDeals?: DealUpdateManyWithoutOwnerNestedInput
+    movedDealHistory?: DealStageHistoryUpdateManyWithoutMovedByNestedInput
+    managedDepartments?: DepartmentUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
+    savedViews?: SavedViewUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUpdateManyWithoutManagerNestedInput
+    department?: DepartmentUpdateOneWithoutUsersNestedInput
+    manager?: UserUpdateOneWithoutSubordinatesNestedInput
+    subordinates?: UserUpdateManyWithoutManagerNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    team?: TeamUpdateOneWithoutUsersNestedInput
+    liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    roles?: UserRoleUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDevicePushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    managerId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUncheckedUpdateManyWithoutOwnerNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
+    ownedDeals?: DealUncheckedUpdateManyWithoutOwnerNestedInput
+    movedDealHistory?: DealStageHistoryUncheckedUpdateManyWithoutMovedByNestedInput
+    managedDepartments?: DepartmentUncheckedUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUncheckedUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUncheckedUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUncheckedUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUncheckedUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUncheckedUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUncheckedUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUncheckedUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -111473,6 +113933,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewCreateNestedManyWithoutUserInput
@@ -111530,6 +113991,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
     ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
     grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
     salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
@@ -111589,6 +114051,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -111635,6 +114098,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -111692,6 +114156,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -111749,6 +114214,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -111814,6 +114280,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111860,6 +114327,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -111906,6 +114374,7 @@ export namespace Prisma {
     savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
   }
 
@@ -111952,6 +114421,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -112050,6 +114520,7 @@ export namespace Prisma {
     savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -112096,6 +114567,7 @@ export namespace Prisma {
     savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -112643,6 +115115,16 @@ export namespace Prisma {
     departmentId?: string | null
     teamId?: string | null
     managerId?: string | null
+  }
+
+  export type DevicePushTokenCreateManyOrganizationInput = {
+    id?: string
+    userId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
   }
 
   export type UserLiveLocationCreateManyOrganizationInput = {
@@ -114081,6 +116563,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -114137,6 +116620,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -114165,6 +116649,36 @@ export namespace Prisma {
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DevicePushTokenUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDevicePushTokensNestedInput
+  }
+
+  export type DevicePushTokenUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevicePushTokenUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserLiveLocationUpdateWithoutOrganizationInput = {
@@ -114592,6 +117106,16 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     readAt?: Date | string | null
+  }
+
+  export type DevicePushTokenCreateManyUserInput = {
+    id?: string
+    organizationId: string
+    token: string
+    platform: $Enums.PushPlatform
+    deviceName?: string | null
+    createdAt?: Date | string
+    lastSeenAt?: Date | string
   }
 
   export type ResourceGrantCreateManyGrantorInput = {
@@ -115946,6 +118470,36 @@ export namespace Prisma {
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type DevicePushTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDevicePushTokensNestedInput
+  }
+
+  export type DevicePushTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevicePushTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: EnumPushPlatformFieldUpdateOperationsInput | $Enums.PushPlatform
+    deviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastSeenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ResourceGrantUpdateWithoutGrantorInput = {
     id?: StringFieldUpdateOperationsInput | string
     resourceType?: StringFieldUpdateOperationsInput | string
@@ -116220,6 +118774,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -116276,6 +118831,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -116634,6 +119190,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -116690,6 +119247,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
@@ -116822,6 +119380,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUpdateManyWithoutUserNestedInput
@@ -116878,6 +119437,7 @@ export namespace Prisma {
     ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
     ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
     grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
     salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
     savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
