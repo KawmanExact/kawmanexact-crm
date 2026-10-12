@@ -59,6 +59,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             nextSteps: r.visitReports[0].nextSteps ?? '',
           }
         : null,
+      purposeMeta: r.purposeMeta as { productIds?: string[]; purposeOther?: string } | null,
       followUps: followUps.map((f) => ({
         id: f.id,
         title: f.title,
