@@ -68,6 +68,11 @@ export const auth = betterAuth({
     },
   },
 
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+  ].filter(Boolean) as string[],
+
   user: {
     additionalFields: {
       organizationId: { type: 'string', required: true, input: true },
@@ -156,10 +161,6 @@ export const auth = betterAuth({
         }
       }
     }),
-    // Lets the Android app (no cookie jar) authenticate with
-    // `Authorization: Bearer <token>`. The token is returned in the
-    // `set-auth-token` response header on sign-in.
-    bearer(),
     nextCookies(), // must be registered last: applies Set-Cookie on Server Actions
   ],
 })
