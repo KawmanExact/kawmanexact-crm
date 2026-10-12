@@ -647,6 +647,7 @@ exports.Prisma.FieldVisitScalarFieldEnum = {
   companyId: 'companyId',
   contactId: 'contactId',
   dealId: 'dealId',
+  purposeMeta: 'purposeMeta',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   completedAt: 'completedAt'
