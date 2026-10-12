@@ -108,7 +108,7 @@ export async function POST(request: Request) {
 
   const purposeMeta = productIds?.length || d.purposeOther
     ? { productIds: productIds ?? [], purposeOther: d.purposeOther ?? null }
-    : null
+    : undefined
 
   const visit = await prisma.fieldVisit.create({
     data: {

@@ -48250,6 +48250,7 @@ export namespace Prisma {
     companyId: number
     contactId: number
     dealId: number
+    purposeMeta: number
     createdAt: number
     updatedAt: number
     completedAt: number
@@ -48319,6 +48320,7 @@ export namespace Prisma {
     companyId?: true
     contactId?: true
     dealId?: true
+    purposeMeta?: true
     createdAt?: true
     updatedAt?: true
     completedAt?: true
@@ -48425,6 +48427,7 @@ export namespace Prisma {
     companyId: string | null
     contactId: string | null
     dealId: string | null
+    purposeMeta: JsonValue | null
     createdAt: Date
     updatedAt: Date
     completedAt: Date | null
@@ -48463,6 +48466,7 @@ export namespace Prisma {
     companyId?: boolean
     contactId?: boolean
     dealId?: boolean
+    purposeMeta?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
@@ -48490,6 +48494,7 @@ export namespace Prisma {
     companyId?: boolean
     contactId?: boolean
     dealId?: boolean
+    purposeMeta?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
@@ -48514,6 +48519,7 @@ export namespace Prisma {
     companyId?: boolean
     contactId?: boolean
     dealId?: boolean
+    purposeMeta?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
@@ -48538,12 +48544,13 @@ export namespace Prisma {
     companyId?: boolean
     contactId?: boolean
     dealId?: boolean
+    purposeMeta?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
   }
 
-  export type FieldVisitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "purpose" | "scheduledAt" | "status" | "latitude" | "longitude" | "address" | "organizationId" | "assigneeId" | "companyId" | "contactId" | "dealId" | "createdAt" | "updatedAt" | "completedAt", ExtArgs["result"]["fieldVisit"]>
+  export type FieldVisitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "purpose" | "scheduledAt" | "status" | "latitude" | "longitude" | "address" | "organizationId" | "assigneeId" | "companyId" | "contactId" | "dealId" | "purposeMeta" | "createdAt" | "updatedAt" | "completedAt", ExtArgs["result"]["fieldVisit"]>
   export type FieldVisitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     checkIns?: boolean | FieldVisit$checkInsArgs<ExtArgs>
     assignee?: boolean | UserDefaultArgs<ExtArgs>
@@ -48594,6 +48601,7 @@ export namespace Prisma {
       companyId: string | null
       contactId: string | null
       dealId: string | null
+      purposeMeta: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
       completedAt: Date | null
@@ -49040,6 +49048,7 @@ export namespace Prisma {
     readonly companyId: FieldRef<"FieldVisit", 'String'>
     readonly contactId: FieldRef<"FieldVisit", 'String'>
     readonly dealId: FieldRef<"FieldVisit", 'String'>
+    readonly purposeMeta: FieldRef<"FieldVisit", 'Json'>
     readonly createdAt: FieldRef<"FieldVisit", 'DateTime'>
     readonly updatedAt: FieldRef<"FieldVisit", 'DateTime'>
     readonly completedAt: FieldRef<"FieldVisit", 'DateTime'>
@@ -65034,6 +65043,7 @@ export namespace Prisma {
     companyId: 'companyId',
     contactId: 'contactId',
     dealId: 'dealId',
+    purposeMeta: 'purposeMeta',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     completedAt: 'completedAt'
@@ -69117,6 +69127,7 @@ export namespace Prisma {
     companyId?: StringNullableFilter<"FieldVisit"> | string | null
     contactId?: StringNullableFilter<"FieldVisit"> | string | null
     dealId?: StringNullableFilter<"FieldVisit"> | string | null
+    purposeMeta?: JsonNullableFilter<"FieldVisit">
     createdAt?: DateTimeFilter<"FieldVisit"> | Date | string
     updatedAt?: DateTimeFilter<"FieldVisit"> | Date | string
     completedAt?: DateTimeNullableFilter<"FieldVisit"> | Date | string | null
@@ -69143,6 +69154,7 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     contactId?: SortOrderInput | SortOrder
     dealId?: SortOrderInput | SortOrder
+    purposeMeta?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -69172,6 +69184,7 @@ export namespace Prisma {
     companyId?: StringNullableFilter<"FieldVisit"> | string | null
     contactId?: StringNullableFilter<"FieldVisit"> | string | null
     dealId?: StringNullableFilter<"FieldVisit"> | string | null
+    purposeMeta?: JsonNullableFilter<"FieldVisit">
     createdAt?: DateTimeFilter<"FieldVisit"> | Date | string
     updatedAt?: DateTimeFilter<"FieldVisit"> | Date | string
     completedAt?: DateTimeNullableFilter<"FieldVisit"> | Date | string | null
@@ -69198,6 +69211,7 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     contactId?: SortOrderInput | SortOrder
     dealId?: SortOrderInput | SortOrder
+    purposeMeta?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
@@ -69225,6 +69239,7 @@ export namespace Prisma {
     companyId?: StringNullableWithAggregatesFilter<"FieldVisit"> | string | null
     contactId?: StringNullableWithAggregatesFilter<"FieldVisit"> | string | null
     dealId?: StringNullableWithAggregatesFilter<"FieldVisit"> | string | null
+    purposeMeta?: JsonNullableWithAggregatesFilter<"FieldVisit">
     createdAt?: DateTimeWithAggregatesFilter<"FieldVisit"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FieldVisit"> | Date | string
     completedAt?: DateTimeNullableWithAggregatesFilter<"FieldVisit"> | Date | string | null
@@ -74183,6 +74198,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -74209,6 +74225,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -74225,6 +74242,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -74251,6 +74269,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -74272,6 +74291,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -74286,6 +74306,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -74305,6 +74326,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78159,6 +78181,7 @@ export namespace Prisma {
     companyId?: SortOrder
     contactId?: SortOrder
     dealId?: SortOrder
+    purposeMeta?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrder
@@ -86300,6 +86323,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -86324,6 +86348,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -87574,6 +87599,7 @@ export namespace Prisma {
     companyId?: StringNullableFilter<"FieldVisit"> | string | null
     contactId?: StringNullableFilter<"FieldVisit"> | string | null
     dealId?: StringNullableFilter<"FieldVisit"> | string | null
+    purposeMeta?: JsonNullableFilter<"FieldVisit">
     createdAt?: DateTimeFilter<"FieldVisit"> | Date | string
     updatedAt?: DateTimeFilter<"FieldVisit"> | Date | string
     completedAt?: DateTimeNullableFilter<"FieldVisit"> | Date | string | null
@@ -88729,6 +88755,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -88753,6 +88780,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -99518,6 +99546,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -99542,6 +99571,7 @@ export namespace Prisma {
     assigneeId: string
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -100589,6 +100619,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -100613,6 +100644,7 @@ export namespace Prisma {
     assigneeId: string
     companyId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -101655,6 +101687,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -101679,6 +101712,7 @@ export namespace Prisma {
     assigneeId: string
     companyId?: string | null
     contactId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -108205,6 +108239,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -108230,6 +108265,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -108378,6 +108414,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -108403,6 +108440,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -108853,6 +108891,7 @@ export namespace Prisma {
     latitude?: Decimal | DecimalJsLike | number | string | null
     longitude?: Decimal | DecimalJsLike | number | string | null
     address?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -108878,6 +108917,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -109048,6 +109088,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -109073,6 +109114,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -112367,6 +112409,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -113282,6 +113325,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -113306,6 +113350,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -113326,6 +113371,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -114384,6 +114430,7 @@ export namespace Prisma {
     companyId?: string | null
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -115351,6 +115398,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -115375,6 +115423,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -115395,6 +115444,7 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117637,6 +117687,7 @@ export namespace Prisma {
     assigneeId: string
     contactId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -118014,6 +118065,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118038,6 +118090,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118058,6 +118111,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118453,6 +118507,7 @@ export namespace Prisma {
     assigneeId: string
     companyId?: string | null
     dealId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -118720,6 +118775,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118744,6 +118800,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118764,6 +118821,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     dealId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118995,6 +119053,7 @@ export namespace Prisma {
     assigneeId: string
     companyId?: string | null
     contactId?: string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
@@ -119134,6 +119193,7 @@ export namespace Prisma {
     latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119158,6 +119218,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119178,6 +119239,7 @@ export namespace Prisma {
     assigneeId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     contactId?: NullableStringFieldUpdateOperationsInput | string | null
+    purposeMeta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
