@@ -50,8 +50,9 @@ model Organization {
   salesTransactions SalesTransaction[]
   savedViews        SavedView[]
   teams             Team[]
-  users             User[]
-  liveLocations     UserLiveLocation[]
+   users             User[]
+   devicePushTokens  DevicePushToken[]
+   liveLocations     UserLiveLocation[]
 
   @@index([slug])
   @@index([createdAt])
@@ -99,7 +100,8 @@ model User {
   createdFolders         Folder[]           @relation("FolderCreator")
   ownedFollowUps         FollowUp[]         @relation("FollowUpOwner")
   ownedLeads             Lead[]             @relation("LeadOwner")
-  notifications          Notification[]
+   notifications          Notification[]
+   devicePushTokens       DevicePushToken[]
   grantsGiven            ResourceGrant[]    @relation("GrantsGiven")
   salesTransactions      SalesTransaction[] @relation("SalesSalesperson")
   savedViews             SavedView[]
@@ -1132,6 +1134,27 @@ model Notification {
   @@index([userId])
   @@index([isRead])
   @@index([createdAt])
+}
+
+model DevicePushToken {
+  id              String       @id @default(cuid())
+  userId          String
+  organizationId  String
+  token           String       @unique
+  platform        PushPlatform
+  deviceName      String?
+  createdAt       DateTime     @default(now())
+  lastSeenAt      DateTime     @default(now())
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([organizationId])
+}
+
+enum PushPlatform {
+  android
+  ios
 }
 
 model AuditLog {

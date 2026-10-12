@@ -6,6 +6,7 @@ vi.mock('@/lib/db', () => ({
     contact: { findFirst: vi.fn(), create: vi.fn() },
     checkIn: { create: vi.fn() },
     notification: { create: vi.fn() },
+    devicePushToken: { findMany: vi.fn(), delete: vi.fn() },
   },
 }))
 
@@ -37,6 +38,11 @@ vi.mock('@/services/contact.service', () => ({
 
 vi.mock('@/services/field-visit.service', () => ({
   createCheckIn: vi.fn(),
+  appendVisitReportToDailyReport: vi.fn(),
+}))
+
+vi.mock('@/services/push.service', () => ({
+  sendPushToUser: vi.fn(),
 }))
 
 vi.mock('next/cache', () => ({
@@ -55,6 +61,7 @@ import { getUserPermissions } from '@/services/permission.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
 import { findOrCreateCompanyByName } from '@/services/company.service'
 import { createFieldVisitAction } from '@/app/field-sales/actions'
+import { sendPushToUser } from '@/services/push.service'
 
 const mockFieldVisitCreate = vi.mocked(prisma.fieldVisit.create)
 const mockContactCreate = vi.mocked(prisma.contact.create)
@@ -64,6 +71,8 @@ const mockRequireApiSession = vi.mocked(requireApiSession)
 const mockValidateCsrf = vi.mocked(validateCsrf)
 const mockCanManageAssignments = vi.mocked(canManageAssignments)
 const mockGetUserPermissions = vi.mocked(getUserPermissions)
+const mockNotificationCreate = vi.mocked(prisma.notification.create)
+const mockSendPushToUser = vi.mocked(sendPushToUser)
 
 function formData(obj: Record<string, string>): FormData {
   const fd = new FormData()
@@ -169,5 +178,86 @@ describe('createFieldVisitAction', () => {
         }),
       }),
     )
+  })
+
+  it('sends push notification when visit is assigned to a different user', async () => {
+    mockCanManageAssignments.mockReturnValue(true)
+    mockFieldVisitCreate.mockResolvedValue({
+      id: 'visit-1',
+      title: 'Test Visit',
+      organizationId: 'org-A',
+      assigneeId: 'user-2',
+      scheduledAt: new Date('2026-10-15T10:00:00Z'),
+    } as never)
+    mockNotificationCreate.mockResolvedValue({ id: 'notif-1' } as never)
+
+    await createFieldVisitAction({} as never, formData({
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+      assigneeId: 'user-2',
+    }))
+
+    expect(mockNotificationCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          type: 'VISIT_ASSIGNED',
+          userId: 'user-2',
+        }),
+      }),
+    )
+    expect(mockSendPushToUser).toHaveBeenCalledTimes(1)
+    expect(mockSendPushToUser).toHaveBeenCalledWith(
+      'user-2',
+      'org-A',
+      expect.objectContaining({
+        title: 'New visit assigned',
+        data: expect.objectContaining({
+          type: 'VISIT_ASSIGNED',
+          visitId: 'visit-1',
+        }),
+      }),
+    )
+  })
+
+  it('does not send push notification on self-assignment', async () => {
+    mockCanManageAssignments.mockReturnValue(true)
+    mockFieldVisitCreate.mockResolvedValue({
+      id: 'visit-1',
+      title: 'Test Visit',
+      organizationId: 'org-A',
+      assigneeId: 'user-1',
+      scheduledAt: new Date('2026-10-15T10:00:00Z'),
+    } as never)
+
+    await createFieldVisitAction({} as never, formData({
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+      assigneeId: 'user-1',
+    }))
+
+    expect(mockNotificationCreate).not.toHaveBeenCalled()
+    expect(mockSendPushToUser).not.toHaveBeenCalled()
+  })
+
+  it('fire-and-forget push does not fail the assignment on error', async () => {
+    mockCanManageAssignments.mockReturnValue(true)
+    mockFieldVisitCreate.mockResolvedValue({
+      id: 'visit-1',
+      title: 'Test Visit',
+      organizationId: 'org-A',
+      assigneeId: 'user-2',
+      scheduledAt: new Date('2026-10-15T10:00:00Z'),
+    } as never)
+    mockNotificationCreate.mockResolvedValue({ id: 'notif-1' } as never)
+    mockSendPushToUser.mockRejectedValueOnce(new Error('Push failed'))
+
+    await expect(createFieldVisitAction({} as never, formData({
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+      assigneeId: 'user-2',
+    }))).resolves.not.toThrow()
   })
 })

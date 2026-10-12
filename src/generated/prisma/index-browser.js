@@ -770,6 +770,17 @@ exports.Prisma.NotificationScalarFieldEnum = {
   readAt: 'readAt'
 };
 
+exports.Prisma.DevicePushTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  token: 'token',
+  platform: 'platform',
+  deviceName: 'deviceName',
+  createdAt: 'createdAt',
+  lastSeenAt: 'lastSeenAt'
+};
+
 exports.Prisma.AuditLogScalarFieldEnum = {
   id: 'id',
   action: 'action',
@@ -932,6 +943,11 @@ exports.NotificationType = exports.$Enums.NotificationType = {
   VISIT_ASSIGNED: 'VISIT_ASSIGNED'
 };
 
+exports.PushPlatform = exports.$Enums.PushPlatform = {
+  android: 'android',
+  ios: 'ios'
+};
+
 exports.AuditAction = exports.$Enums.AuditAction = {
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
@@ -994,6 +1010,7 @@ exports.Prisma.ModelName = {
   AIInsight: 'AIInsight',
   AIReport: 'AIReport',
   Notification: 'Notification',
+  DevicePushToken: 'DevicePushToken',
   AuditLog: 'AuditLog',
   Integration: 'Integration',
   WebhookDelivery: 'WebhookDelivery'
