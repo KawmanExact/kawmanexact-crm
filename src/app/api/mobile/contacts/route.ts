@@ -21,6 +21,45 @@ const schema = z.object({
   address: z.string().trim().optional(),
 })
 
+/** Contacts in the user's organization — for the mobile Contacts tab with search. */
+export async function GET(request: Request) {
+  const g = await mobileGuard('field_visits.view')
+  if ('error' in g) return g.error
+  const { session } = g
+  const orgId = session.user.organizationId
+
+  const url = new URL(request.url)
+  const search = url.searchParams.get('search')?.trim()
+  const companyId = url.searchParams.get('companyId')
+
+  const where: { organizationId: string; ownerId: string; name?: { contains: string; mode: 'insensitive' } } = {
+    organizationId: orgId,
+    ownerId: session.user.id,
+  }
+  if (search) where.name = { contains: search, mode: 'insensitive' }
+
+  const rows = await prisma.contact.findMany({
+    where,
+    include: { company: { select: { name: true } } },
+    orderBy: { name: 'asc' },
+    take: 300,
+  })
+
+  return NextResponse.json({
+    contacts: rows.map((c) => ({
+      id: c.id,
+      name: c.name,
+      designation: c.designation,
+      email: c.email,
+      phone: c.phone,
+      mobile: c.mobile,
+      address: c.address,
+      company: c.company?.name ?? null,
+      companyId: c.companyId,
+    })),
+  })
+}
+
 export async function POST(request: Request) {
   const g = await mobileGuard('contacts.create', { key: 'mobile-contact', max: 30, windowSec: 60 })
   if ('error' in g) return g.error
@@ -69,7 +108,7 @@ export async function POST(request: Request) {
   await prisma.activity.create({
     data: {
       type: 'CONTACT_CREATED',
-      description: `${session.user.name} added contact "${contact.name}" via Kawman Field app (business card scan)`,
+      description: `${session.user.name} added contact "${contact.name}" via Kawmanexact Sales Tracking app (business card scan)`,
       organizationId: orgId,
       actorId: session.user.id,
       contactId: contact.id,
