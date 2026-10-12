@@ -59,6 +59,8 @@ const createSchema = z.object({
   address: z.string().trim().optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
+  productIds: z.array(z.string().cuid()).max(50).optional(),
+  purposeOther: z.string().trim().max(120).optional(),
 })
 
 export async function POST(request: Request) {
@@ -94,6 +96,20 @@ export async function POST(request: Request) {
       })
     : null
 
+  // Validate productIds belong to the caller's organization (ignore unknown ids safely)
+  let productIds: string[] | undefined
+  if (d.productIds?.length) {
+    const found = await prisma.product.findMany({
+      where: { id: { in: d.productIds }, organizationId: session.user.organizationId },
+      select: { id: true },
+    })
+    productIds = found.map((p) => p.id)
+  }
+
+  const purposeMeta = productIds?.length || d.purposeOther
+    ? { productIds: productIds ?? [], purposeOther: d.purposeOther ?? null }
+    : null
+
   const visit = await prisma.fieldVisit.create({
     data: {
       title: d.title,
@@ -107,6 +123,7 @@ export async function POST(request: Request) {
       assigneeId,
       companyId: company?.id ?? null,
       contactId: contact?.id ?? null,
+      purposeMeta,
     },
     select: { id: true },
   })
