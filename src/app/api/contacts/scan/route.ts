@@ -12,8 +12,11 @@ const SYSTEM_PROMPT = `You are an OCR assistant. Extract contact information fro
   "company": "Company name as printed on the card",
   "designation": "Job title / designation as printed on the card",
   "phone": "Phone number (prefer business line if both provided)",
+  "phone2": "Secondary phone number if visible",
   "mobile": "Mobile / cell phone number if distinct from phone",
+  "mobile2": "Secondary mobile number if visible",
   "email": "Email address",
+  "email2": "Secondary email address if visible",
   "website": "Website URL (strip protocol, e.g. acme.com)",
   "address": "Full postal address if visible"
 }`
@@ -82,8 +85,11 @@ export async function POST(request: Request) {
       company: parsed.company ?? '-',
       designation: parsed.designation ?? '-',
       phone: parsed.phone ?? '-',
+      phone2: parsed.phone2 ?? '-',
       mobile: parsed.mobile ?? '-',
+      mobile2: parsed.mobile2 ?? '-',
       email: parsed.email ?? '-',
+      email2: parsed.email2 ?? '-',
       website: parsed.website ?? '-',
       address: parsed.address ?? '-',
     }

@@ -199,8 +199,14 @@ export function NewVisitForm({ owners, canAssign, currentUser }: { owners: UserO
         <Field label="Contact Email" error={state.fieldErrors?.contactEmail}>
           <Input name="contactEmail" type="email" placeholder="jane@example.com" />
         </Field>
+        <Field label="Contact Email 2" error={state.fieldErrors?.contactEmail2}>
+          <Input name="contactEmail2" type="email" placeholder="jane.personal@example.com" />
+        </Field>
         <Field label="Contact Mobile" error={state.fieldErrors?.contactMobile}>
           <Input name="contactMobile" placeholder="+91 98765 43210" />
+        </Field>
+        <Field label="Contact Mobile 2" error={state.fieldErrors?.contactMobile2}>
+          <Input name="contactMobile2" placeholder="+91 98765 43211" />
         </Field>
         <Field label="Address" error={state.fieldErrors?.address}>
           <Input name="address" placeholder="Plot 14, MIDC, Andheri East, Mumbai" />

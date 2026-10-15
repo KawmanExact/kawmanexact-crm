@@ -18,8 +18,11 @@ export interface ContactInitialValues {
   company?: string
   designation?: string
   email?: string
+  email2?: string
   phone?: string
+  phone2?: string
   mobile?: string
+  mobile2?: string
   address?: string
 }
 
@@ -52,11 +55,20 @@ export function ContactForm({ owners, canAssign, currentUser, companies, initial
         <Field label="Email" error={state.fieldErrors?.email}>
           <Input name="email" type="email" placeholder="anjali@acme.com" defaultValue={values.email || undefined} />
         </Field>
+        <Field label="Email 2" error={state.fieldErrors?.email2}>
+          <Input name="email2" type="email" placeholder="anjali.personal@gmail.com" defaultValue={values.email2 || undefined} />
+        </Field>
         <Field label="Phone" error={state.fieldErrors?.phone}>
           <Input name="phone" placeholder="+91 22 4000 1000" defaultValue={values.phone || undefined} />
         </Field>
+        <Field label="Phone 2" error={state.fieldErrors?.phone2}>
+          <Input name="phone2" placeholder="+91 22 4000 2000" defaultValue={values.phone2 || undefined} />
+        </Field>
         <Field label="Mobile" error={state.fieldErrors?.mobile}>
           <Input name="mobile" placeholder="+91 98765 43210" defaultValue={values.mobile || undefined} />
+        </Field>
+        <Field label="Mobile 2" error={state.fieldErrors?.mobile2}>
+          <Input name="mobile2" placeholder="+91 98765 43211" defaultValue={values.mobile2 || undefined} />
         </Field>
         <Field label="Address" error={state.fieldErrors?.address}>
           <Input name="address" placeholder="123 Main St, City, State" defaultValue={values.address || undefined} />

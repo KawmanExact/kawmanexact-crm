@@ -19,6 +19,8 @@ export interface DealExportRow {
   pincode: string
   contactPerson: string | null
   contactNumber: string
+  contactEmail2: string
+  contactPhone2: string
   designation: string | null
   email: string
   leadSource: string
@@ -109,6 +111,22 @@ export const DEAL_EXPORT_COLUMNS: DealExportColumn[] = [
     width: 18,
     type: 'text',
     accessor: (r) => r.contactNumber,
+  },
+  {
+    key: 'contactEmail2',
+    header: 'Contact Email 2',
+    group: 'Contact',
+    width: 26,
+    type: 'link',
+    accessor: (r) => r.contactEmail2,
+  },
+  {
+    key: 'contactPhone2',
+    header: 'Contact Phone 2',
+    group: 'Contact',
+    width: 18,
+    type: 'text',
+    accessor: (r) => r.contactPhone2,
   },
   {
     key: 'designation',
@@ -265,13 +283,19 @@ export const DEAL_EXPORT_COLUMNS: DealExportColumn[] = [
 ]
 
 export function toExportRow(deal: Record<string, unknown>, index: number): DealExportRow {
-  const companyName = typeof deal.company === 'object' && deal.company ? (deal.company as any).name : (deal.company as string) || ''
-  const contactName = typeof deal.contact === 'object' && deal.contact ? (deal.contact as any).name : (deal.contactPerson as string) || ''
-  const contactPhone = typeof deal.contact === 'object' && deal.contact ? (deal.contact as any).phone : (deal.phone as string) || ''
-  const customerName = companyName || (deal.name as string) || EMPTY
-  const contactNumber = contactPhone || (deal.phone as string) || EMPTY
+  interface DealLike { name?: string; company?: unknown; contact?: unknown; contactPerson?: string; phone?: string; email?: string; stage?: string }
+  const d = deal as unknown as DealLike
+  const contactObj = typeof d.contact === 'object' && d.contact ? (d.contact as Record<string, unknown>) : null
+  const companyObj = typeof d.company === 'object' && d.company ? (d.company as Record<string, unknown>) : null
+  const companyName = companyObj ? (companyObj.name as string) || '' : (d.company as string) || ''
+  const contactName = contactObj ? (contactObj.name as string) || '' : (d.contactPerson as string) || ''
+  const contactPhone = contactObj ? (contactObj.phone as string) || '' : (d.phone as string) || ''
+  const contactEmail2 = contactObj ? (contactObj.email2 as string) || '' : ''
+  const contactPhone2 = contactObj ? (contactObj.phone2 as string) || '' : ''
+  const customerName = companyName || (d.name as string) || EMPTY
+  const contactNumber = contactPhone || (d.phone as string) || EMPTY
 
-  const stageLabel = typeof deal.stage === 'string' ? getStageLabel(deal.stage as any) : ''
+  const stageLabel = d.stage ? getStageLabel(d.stage) : ''
 
   const products = [
     ...((deal.productsDiscussed as string[] | undefined) ?? []),
@@ -289,6 +313,8 @@ export function toExportRow(deal: Record<string, unknown>, index: number): DealE
     pincode: (deal.pinCode as string) || EMPTY,
     contactPerson: contactName || null,
     contactNumber,
+    contactEmail2: contactEmail2 || EMPTY,
+    contactPhone2: contactPhone2 || EMPTY,
     designation: (deal.designation as string) || null,
     email: (deal.email as string) || EMPTY,
     leadSource: (deal.source as string) || EMPTY,

@@ -529,10 +529,12 @@ model Company {
   name              String
   industry          String?
   website           String?
-  phone             String?
-  email             String?
-  address           String?
-  city              String?
+   phone             String?
+   phone2            String?
+   email             String?
+   email2            String?
+   address           String?
+   city              String?
   state             String?
   country           String?            @default("India")
   employees         Int?
@@ -564,14 +566,17 @@ model Contact {
   id             String       @id @default(cuid())
   name           String
   designation    String?
-  email          String?
-  phone          String?
-  mobile         String?
-  status         String       @default("ACTIVE")
-  organizationId String
-  companyId      String?
-  ownerId        String
-  emailKey       String?
+   email          String?
+   email2         String?
+   phone          String?
+   phone2         String?
+   mobile         String?
+   mobile2        String?
+   status         String       @default("ACTIVE")
+   organizationId String
+   companyId      String?
+   ownerId        String
+   emailKey       String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   lastActivityAt DateTime?
@@ -623,10 +628,12 @@ model Deal {
   // two drifted apart. The Deal row is now the single record, and the Deal
   // form is the old lead form plus the pipeline columns. `Lead` is retained
   // only as the pre-merge history behind Deal.leadId; nothing writes to it.
-  email               String?
-  phone               String?
-  source              String?
-  contactPerson       String?
+   email               String?
+   email2              String?
+   phone               String?
+   phone2              String?
+   source              String?
+   contactPerson       String?
   designation         String?
   meetingDate         DateTime?
   meetingAt           String?

@@ -18,8 +18,11 @@ export interface ContactCsvRow {
   company: string
   designation: string
   email: string
+  email2: string
   phone: string
+  phone2: string
   mobile: string
+  mobile2: string
   address: string
 }
 
@@ -28,8 +31,11 @@ export const CONTACT_CSV_COLUMNS: CsvColumn<ContactCsvRow>[] = [
   { key: 'company', header: 'Company' },
   { key: 'designation', header: 'Designation' },
   { key: 'email', header: 'Email' },
+  { key: 'email2', header: 'Email 2' },
   { key: 'phone', header: 'Phone', asText: true },
+  { key: 'phone2', header: 'Phone 2', asText: true },
   { key: 'mobile', header: 'Mobile', asText: true },
+  { key: 'mobile2', header: 'Mobile 2', asText: true },
   { key: 'address', header: 'Address' },
 ]
 
@@ -57,8 +63,11 @@ export function toContactCsvRows(
     company: displayValue(c.company),
     designation: displayValue(c.designation),
     email: displayValue(c.email),
+    email2: displayValue(c.email2),
     phone: withCountryCode(displayValue(c.phone)),
+    phone2: withCountryCode(displayValue(c.phone2)),
     mobile: withCountryCode(displayValue(c.mobile)),
+    mobile2: withCountryCode(displayValue(c.mobile2)),
     address: displayValue(c.address),
   }))
 }

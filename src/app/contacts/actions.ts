@@ -17,8 +17,11 @@ const contactSchema = z.object({
   company: z.string().trim().optional(),
   designation: z.string().trim().optional(),
   email: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
+  email2: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
   phone: z.string().trim().optional(),
+  phone2: z.string().trim().optional(),
   mobile: z.string().trim().optional(),
+  mobile2: z.string().trim().optional(),
   address: z.string().trim().optional(),
   segment: z.string().trim().optional(),
   ownerId: z.string().trim().optional(),
@@ -79,8 +82,11 @@ export async function createContactAction(_prev: ContactFormState, formData: For
   const companyId = company?.id ?? null
 
   const email = data.email || null
+  const email2 = data.email2 || null
   const phone = data.phone || null
+  const phone2 = data.phone2 || null
   const mobile = data.mobile || null
+  const mobile2 = data.mobile2 || null
   const address = data.address || null
 
   const emailKey = buildContactEmailKey(email)
@@ -95,8 +101,11 @@ export async function createContactAction(_prev: ContactFormState, formData: For
         name: data.name,
         designation: data.designation || null,
         email,
+        email2,
         phone,
+        phone2,
         mobile,
+        mobile2,
         address,
         segment: data.segment || null,
         companyId,
@@ -172,8 +181,11 @@ export async function updateContactAction(
   const companyId = rawCompany !== null ? (company?.id ?? null) : existing.companyId
 
   const email = data.email || null
+  const email2 = data.email2 || null
   const phone = data.phone || null
+  const phone2 = data.phone2 || null
   const mobile = data.mobile || null
+  const mobile2 = data.mobile2 || null
   const address = data.address || null
 
   const emailKey = buildContactEmailKey(email)
@@ -189,8 +201,11 @@ export async function updateContactAction(
         name: data.name,
         designation: data.designation || null,
         email,
+        email2,
         phone,
+        phone2,
         mobile,
+        mobile2,
         address,
         segment: data.segment || null,
         companyId,
@@ -249,8 +264,11 @@ interface ScannedContactData {
   company: string
   designation: string
   phone: string
+  phone2: string
   mobile: string
+  mobile2: string
   email: string
+  email2: string
   website: string
   address: string
 }
@@ -277,8 +295,11 @@ export async function scanAndCreateContactAction(scanned: ScannedContactData): P
   const companyId = company?.id ?? null
 
   const email = scanned.email !== '-' ? scanned.email : null
+  const email2 = scanned.email2 !== '-' ? scanned.email2 : null
   const phone = scanned.phone !== '-' ? scanned.phone : null
+  const phone2 = scanned.phone2 !== '-' ? scanned.phone2 : null
   const mobile = scanned.mobile !== '-' ? scanned.mobile : null
+  const mobile2 = scanned.mobile2 !== '-' ? scanned.mobile2 : null
   const address = scanned.address !== '-' ? scanned.address : null
 
   const emailKey = buildContactEmailKey(email)
@@ -288,21 +309,24 @@ export async function scanAndCreateContactAction(scanned: ScannedContactData): P
   }
 
   try {
-    const contact = await prisma.contact.create({
-      data: {
-        name,
-        designation: scanned.designation !== '-' ? scanned.designation : null,
-        email,
-        phone,
-        mobile,
-        address,
-        companyId,
-        organizationId: session.user.organizationId,
-        ownerId: session.user.id,
-        lastActivityAt: new Date(),
-        emailKey,
-      },
-    })
+     const contact = await prisma.contact.create({
+       data: {
+         name,
+         designation: scanned.designation !== '-' ? scanned.designation : null,
+         email,
+         email2,
+         phone,
+         phone2,
+         mobile,
+         mobile2,
+         address,
+         companyId,
+         organizationId: session.user.organizationId,
+         ownerId: session.user.id,
+         lastActivityAt: new Date(),
+         emailKey,
+       },
+     })
 
     await prisma.activity.create({
       data: {

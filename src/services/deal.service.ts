@@ -26,17 +26,20 @@ async function fetchDeals(organizationId: string, scopeFilter: Prisma.DealWhereI
       ...scopeFilter,
       ...(search
         ? {
-            OR: [
-              { name: { contains: search, mode: 'insensitive' as const } },
-              { company: { name: { contains: search, mode: 'insensitive' as const } } },
-              { contact: { name: { contains: search, mode: 'insensitive' as const } } },
-              { contactPerson: { contains: search, mode: 'insensitive' as const } },
-              { email: { contains: search, mode: 'insensitive' as const } },
-              { productsDiscussed: { has: search } },
-              { city: { contains: search, mode: 'insensitive' as const } },
-              { country: { contains: search, mode: 'insensitive' as const } },
-              { pinCode: { contains: search, mode: 'insensitive' as const } },
-            ],
+       OR: [
+               { name: { contains: search, mode: 'insensitive' as const } },
+               { company: { name: { contains: search, mode: 'insensitive' as const } } },
+               { contact: { name: { contains: search, mode: 'insensitive' as const } } },
+               { contactPerson: { contains: search, mode: 'insensitive' as const } },
+               { email: { contains: search, mode: 'insensitive' as const } },
+               { email2: { contains: search, mode: 'insensitive' as const } },
+               { phone: { contains: search, mode: 'insensitive' as const } },
+               { phone2: { contains: search, mode: 'insensitive' as const } },
+               { productsDiscussed: { has: search } },
+               { city: { contains: search, mode: 'insensitive' as const } },
+               { country: { contains: search, mode: 'insensitive' as const } },
+               { pinCode: { contains: search, mode: 'insensitive' as const } },
+             ],
           }
         : {}),
     },
@@ -64,10 +67,12 @@ function mapDeal(row: DealRow): Deal {
     expectedClose: row.expectedClose ? row.expectedClose.toISOString().slice(0, 10) : '',
     priority: (row.priority as Deal['priority']) ?? 'MEDIUM',
     paymentStatus: row.paymentStatus ?? null,
-    // Capture fields — a deal is the lead, so the board card can show the
-    // enquiry detail without a second lookup.
-    email: row.email ?? '',
-    phone: row.phone ?? '',
+     // Capture fields — a deal is the lead, so the board card can show the
+     // enquiry detail without a second lookup.
+     email: row.email ?? '',
+     email2: row.email2 ?? '',
+     phone: row.phone ?? '',
+     phone2: row.phone2 ?? '',
     source: row.source ?? '—',
     contactPerson: row.contactPerson ?? null,
     designation: row.designation ?? null,
@@ -163,6 +168,9 @@ export async function getDealsPage(query: DealQuery = {}): Promise<DealPage> {
           OR: [
             { name: { contains: search, mode: 'insensitive' as const } },
             { email: { contains: search, mode: 'insensitive' as const } },
+            { email2: { contains: search, mode: 'insensitive' as const } },
+            { phone: { contains: search, mode: 'insensitive' as const } },
+            { phone2: { contains: search, mode: 'insensitive' as const } },
             { contactPerson: { contains: search, mode: 'insensitive' as const } },
             { company: { name: { contains: search, mode: 'insensitive' as const } } },
             { productsDiscussed: { has: search } },
@@ -198,7 +206,7 @@ export async function getDealsPage(query: DealQuery = {}): Promise<DealPage> {
   }
 }
 
-export async function getDealsForExport(filters: { stage?: string; search?: string } = {}): Promise<Prisma.DealGetPayload<{ include: { owner: { select: { name: true } }; company: { select: { name: true } }; contact: { select: { name: true; phone: true } } } }>[]> {
+export async function getDealsForExport(filters: { stage?: string; search?: string } = {}): Promise<Prisma.DealGetPayload<{ include: { owner: { select: { name: true } }; company: { select: { name: true } }; contact: { select: { name: true; phone: true; email: true; mobile: true; phone2: true; email2: true } } } }>[]> {
   const session = await requireApiSession()
   const where: Prisma.DealWhereInput = {
     organizationId: session.user.organizationId,
@@ -212,6 +220,9 @@ export async function getDealsForExport(filters: { stage?: string; search?: stri
             { contact: { name: { contains: filters.search, mode: 'insensitive' as const } } },
             { contactPerson: { contains: filters.search, mode: 'insensitive' as const } },
             { email: { contains: filters.search, mode: 'insensitive' as const } },
+            { email2: { contains: filters.search, mode: 'insensitive' as const } },
+            { phone: { contains: filters.search, mode: 'insensitive' as const } },
+            { phone2: { contains: filters.search, mode: 'insensitive' as const } },
             { productsDiscussed: { has: filters.search } },
             { city: { contains: filters.search, mode: 'insensitive' as const } },
             { country: { contains: filters.search, mode: 'insensitive' as const } },
@@ -226,7 +237,7 @@ export async function getDealsForExport(filters: { stage?: string; search?: stri
     include: {
       owner: { select: { name: true } },
       company: { select: { name: true } },
-      contact: { select: { name: true, phone: true } },
+      contact: { select: { name: true, phone: true, email: true, mobile: true, phone2: true, email2: true } },
     },
     orderBy: { createdAt: 'desc' },
   })

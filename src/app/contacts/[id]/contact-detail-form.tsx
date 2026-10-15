@@ -64,11 +64,20 @@ export function ContactDetailForm({
         <Field label="Email" error={state.fieldErrors?.email}>
           <Input name="email" type="email" defaultValue={contact.email} />
         </Field>
+        <Field label="Email 2" error={state.fieldErrors?.email2}>
+          <Input name="email2" type="email" defaultValue={contact.email2} />
+        </Field>
         <Field label="Phone" error={state.fieldErrors?.phone}>
           <Input name="phone" defaultValue={contact.phone} />
         </Field>
+        <Field label="Phone 2" error={state.fieldErrors?.phone2}>
+          <Input name="phone2" defaultValue={contact.phone2} />
+        </Field>
         <Field label="Mobile" error={state.fieldErrors?.mobile}>
           <Input name="mobile" defaultValue={contact.mobile} />
+        </Field>
+        <Field label="Mobile 2" error={state.fieldErrors?.mobile2}>
+          <Input name="mobile2" defaultValue={contact.mobile2} />
         </Field>
         <Field label="Address" error={state.fieldErrors?.address}>
           <Input name="address" defaultValue={contact.address} placeholder="123 Main St, City, State" />

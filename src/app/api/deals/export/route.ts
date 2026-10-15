@@ -91,7 +91,7 @@ export async function GET(request: Request) {
   const csvColumns = DEAL_EXPORT_COLUMNS.map((c) => ({
     key: c.key,
     header: c.header,
-    asText: c.type === 'text' && (c.key === 'pincode' || c.key === 'contactNumber'),
+     asText: c.type === 'text' && (c.key === 'pincode' || c.key === 'contactNumber' || c.key === 'contactPhone2'),
   }))
 
   const safeRows = rows.map((r) => {

@@ -38,7 +38,9 @@ const visitSchema = z.object({
   company: z.string().trim().optional(),
   contactName: z.string().trim().optional(),
   contactEmail: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
+  contactEmail2: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
   contactMobile: z.string().trim().optional(),
+  contactMobile2: z.string().trim().optional(),
   assigneeId: z.string().trim().optional(),
   address: z.string().trim().optional(),
   // Empty string from the form means "no coordinate" — not 0. Without the
@@ -110,16 +112,18 @@ export async function createFieldVisitAction(_prev: VisitFormState, formData: Fo
       })
     : null
   const companyId = company?.id ?? null
-  const contact = data.contactName?.trim()
-    ? await findOrCreateContactByName({
-        email: data.contactEmail || null,
-        mobile: data.contactMobile || null,
-        name: data.contactName.trim(),
-        organizationId: session.user.organizationId,
-        ownerId: data.assigneeId || session.user.id,
-        companyId,
-      })
-    : null
+   const contact = data.contactName?.trim()
+     ? await findOrCreateContactByName({
+         email: data.contactEmail || null,
+         email2: data.contactEmail2 || null,
+         mobile: data.contactMobile || null,
+         mobile2: data.contactMobile2 || null,
+         name: data.contactName.trim(),
+         organizationId: session.user.organizationId,
+         ownerId: data.assigneeId || session.user.id,
+         companyId,
+       })
+     : null
   const contactId = contact?.id ?? null
 
   const visit = await prisma.fieldVisit.create({

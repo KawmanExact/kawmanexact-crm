@@ -7,8 +7,11 @@ const COLUMNS: ReportColumn[] = [
   { key: 'company', header: 'Company' },
   { key: 'designation', header: 'Designation' },
   { key: 'email', header: 'Email' },
+  { key: 'email2', header: 'Email 2' },
   { key: 'phone', header: 'Phone', format: 'text', csvText: true },
+  { key: 'phone2', header: 'Phone 2', format: 'text', csvText: true },
   { key: 'mobile', header: 'Mobile', format: 'text', csvText: true },
+  { key: 'mobile2', header: 'Mobile 2', format: 'text', csvText: true },
   { key: 'address', header: 'Address' },
 ]
 

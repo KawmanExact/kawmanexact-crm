@@ -120,7 +120,9 @@ describe('createFieldVisitAction', () => {
 
     expect(mockFindOrCreateContactByName).toHaveBeenCalledWith({
       email: 'new@test.com',
+      email2: null,
       mobile: '+91 98765 43210',
+      mobile2: null,
       name: 'New Contact',
       organizationId: 'org-A',
       ownerId: 'user-1',
@@ -147,7 +149,9 @@ describe('createFieldVisitAction', () => {
 
     expect(mockFindOrCreateContactByName).toHaveBeenCalledWith({
       email: null,
+      email2: null,
       mobile: null,
+      mobile2: null,
       name: 'Existing Contact',
       organizationId: 'org-A',
       ownerId: 'user-1',
