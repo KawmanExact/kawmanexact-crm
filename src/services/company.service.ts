@@ -30,7 +30,9 @@ function mapCompany(row: CompanyRow): Company {
     industry: row.industry ?? '—',
     website: row.website ?? '',
     phone: row.phone ?? '',
+    phone2: row.phone2 ?? '',
     email: row.email ?? '',
+    email2: row.email2 ?? '',
     city: row.city ?? '',
     state: row.state ?? '',
     employees: row.employees ?? 0,
@@ -162,14 +164,30 @@ export async function findOrCreateCompanyByName(input: {
   ownerId: string
   website?: string | null
   address?: string | null
+  phone?: string | null
+  phone2?: string | null
+  email?: string | null
+  email2?: string | null
 }): Promise<{ id: string; name: string } | null> {
   const trimmed = input.name?.trim()
   if (!trimmed) return null
   const existing = await prisma.company.findFirst({
     where: { organizationId: input.organizationId, name: { equals: trimmed, mode: 'insensitive' as const } },
-    select: { id: true, name: true },
+    select: { id: true, name: true, website: true, address: true, phone: true, phone2: true, email: true, email2: true },
   })
-  if (existing) return existing
+  if (existing) {
+    const updates: { website?: string | null; address?: string | null; phone?: string | null; phone2?: string | null; email?: string | null; email2?: string | null } = {}
+    if (input.website && !existing.website) updates.website = input.website
+    if (input.address && !existing.address) updates.address = input.address
+    if (input.phone && !existing.phone) updates.phone = input.phone
+    if (input.phone2 && !existing.phone2) updates.phone2 = input.phone2
+    if (input.email && !existing.email) updates.email = input.email
+    if (input.email2 && !existing.email2) updates.email2 = input.email2
+    if (Object.keys(updates).length > 0) {
+      await prisma.company.update({ where: { id: existing.id }, data: updates })
+    }
+    return existing
+  }
   const created = await prisma.company.create({
     data: {
       name: trimmed,
@@ -177,6 +195,10 @@ export async function findOrCreateCompanyByName(input: {
       ownerId: input.ownerId,
       website: input.website || undefined,
       address: input.address || undefined,
+      phone: input.phone || undefined,
+      phone2: input.phone2 || undefined,
+      email: input.email || undefined,
+      email2: input.email2 || undefined,
     },
     select: { id: true, name: true },
   })

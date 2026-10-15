@@ -34481,7 +34481,9 @@ export namespace Prisma {
     industry: string | null
     website: string | null
     phone: string | null
+    phone2: string | null
     email: string | null
+    email2: string | null
     address: string | null
     city: string | null
     state: string | null
@@ -34501,7 +34503,9 @@ export namespace Prisma {
     industry: string | null
     website: string | null
     phone: string | null
+    phone2: string | null
     email: string | null
+    email2: string | null
     address: string | null
     city: string | null
     state: string | null
@@ -34521,7 +34525,9 @@ export namespace Prisma {
     industry: number
     website: number
     phone: number
+    phone2: number
     email: number
+    email2: number
     address: number
     city: number
     state: number
@@ -34553,7 +34559,9 @@ export namespace Prisma {
     industry?: true
     website?: true
     phone?: true
+    phone2?: true
     email?: true
+    email2?: true
     address?: true
     city?: true
     state?: true
@@ -34573,7 +34581,9 @@ export namespace Prisma {
     industry?: true
     website?: true
     phone?: true
+    phone2?: true
     email?: true
+    email2?: true
     address?: true
     city?: true
     state?: true
@@ -34593,7 +34603,9 @@ export namespace Prisma {
     industry?: true
     website?: true
     phone?: true
+    phone2?: true
     email?: true
+    email2?: true
     address?: true
     city?: true
     state?: true
@@ -34700,7 +34712,9 @@ export namespace Prisma {
     industry: string | null
     website: string | null
     phone: string | null
+    phone2: string | null
     email: string | null
+    email2: string | null
     address: string | null
     city: string | null
     state: string | null
@@ -34739,7 +34753,9 @@ export namespace Prisma {
     industry?: boolean
     website?: boolean
     phone?: boolean
+    phone2?: boolean
     email?: boolean
+    email2?: boolean
     address?: boolean
     city?: boolean
     state?: boolean
@@ -34770,7 +34786,9 @@ export namespace Prisma {
     industry?: boolean
     website?: boolean
     phone?: boolean
+    phone2?: boolean
     email?: boolean
+    email2?: boolean
     address?: boolean
     city?: boolean
     state?: boolean
@@ -34792,7 +34810,9 @@ export namespace Prisma {
     industry?: boolean
     website?: boolean
     phone?: boolean
+    phone2?: boolean
     email?: boolean
+    email2?: boolean
     address?: boolean
     city?: boolean
     state?: boolean
@@ -34814,7 +34834,9 @@ export namespace Prisma {
     industry?: boolean
     website?: boolean
     phone?: boolean
+    phone2?: boolean
     email?: boolean
+    email2?: boolean
     address?: boolean
     city?: boolean
     state?: boolean
@@ -34828,7 +34850,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "industry" | "website" | "phone" | "email" | "address" | "city" | "state" | "country" | "employees" | "revenue" | "status" | "organizationId" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "industry" | "website" | "phone" | "phone2" | "email" | "email2" | "address" | "city" | "state" | "country" | "employees" | "revenue" | "status" | "organizationId" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
   export type CompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activities?: boolean | Company$activitiesArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -34871,7 +34893,9 @@ export namespace Prisma {
       industry: string | null
       website: string | null
       phone: string | null
+      phone2: string | null
       email: string | null
+      email2: string | null
       address: string | null
       city: string | null
       state: string | null
@@ -35321,7 +35345,9 @@ export namespace Prisma {
     readonly industry: FieldRef<"Company", 'String'>
     readonly website: FieldRef<"Company", 'String'>
     readonly phone: FieldRef<"Company", 'String'>
+    readonly phone2: FieldRef<"Company", 'String'>
     readonly email: FieldRef<"Company", 'String'>
+    readonly email2: FieldRef<"Company", 'String'>
     readonly address: FieldRef<"Company", 'String'>
     readonly city: FieldRef<"Company", 'String'>
     readonly state: FieldRef<"Company", 'String'>
@@ -35959,8 +35985,11 @@ export namespace Prisma {
     name: string | null
     designation: string | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     mobile: string | null
+    mobile2: string | null
     status: string | null
     organizationId: string | null
     companyId: string | null
@@ -35978,8 +36007,11 @@ export namespace Prisma {
     name: string | null
     designation: string | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     mobile: string | null
+    mobile2: string | null
     status: string | null
     organizationId: string | null
     companyId: string | null
@@ -35997,8 +36029,11 @@ export namespace Prisma {
     name: number
     designation: number
     email: number
+    email2: number
     phone: number
+    phone2: number
     mobile: number
+    mobile2: number
     status: number
     organizationId: number
     companyId: number
@@ -36018,8 +36053,11 @@ export namespace Prisma {
     name?: true
     designation?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     mobile?: true
+    mobile2?: true
     status?: true
     organizationId?: true
     companyId?: true
@@ -36037,8 +36075,11 @@ export namespace Prisma {
     name?: true
     designation?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     mobile?: true
+    mobile2?: true
     status?: true
     organizationId?: true
     companyId?: true
@@ -36056,8 +36097,11 @@ export namespace Prisma {
     name?: true
     designation?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     mobile?: true
+    mobile2?: true
     status?: true
     organizationId?: true
     companyId?: true
@@ -36148,8 +36192,11 @@ export namespace Prisma {
     name: string
     designation: string | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     mobile: string | null
+    mobile2: string | null
     status: string
     organizationId: string
     companyId: string | null
@@ -36184,8 +36231,11 @@ export namespace Prisma {
     name?: boolean
     designation?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     mobile?: boolean
+    mobile2?: boolean
     status?: boolean
     organizationId?: boolean
     companyId?: boolean
@@ -36212,8 +36262,11 @@ export namespace Prisma {
     name?: boolean
     designation?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     mobile?: boolean
+    mobile2?: boolean
     status?: boolean
     organizationId?: boolean
     companyId?: boolean
@@ -36234,8 +36287,11 @@ export namespace Prisma {
     name?: boolean
     designation?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     mobile?: boolean
+    mobile2?: boolean
     status?: boolean
     organizationId?: boolean
     companyId?: boolean
@@ -36256,8 +36312,11 @@ export namespace Prisma {
     name?: boolean
     designation?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     mobile?: boolean
+    mobile2?: boolean
     status?: boolean
     organizationId?: boolean
     companyId?: boolean
@@ -36270,7 +36329,7 @@ export namespace Prisma {
     segment?: boolean
   }
 
-  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "designation" | "email" | "phone" | "mobile" | "status" | "organizationId" | "companyId" | "ownerId" | "emailKey" | "createdAt" | "updatedAt" | "lastActivityAt" | "address" | "segment", ExtArgs["result"]["contact"]>
+  export type ContactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "designation" | "email" | "email2" | "phone" | "phone2" | "mobile" | "mobile2" | "status" | "organizationId" | "companyId" | "ownerId" | "emailKey" | "createdAt" | "updatedAt" | "lastActivityAt" | "address" | "segment", ExtArgs["result"]["contact"]>
   export type ContactInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activities?: boolean | Contact$activitiesArgs<ExtArgs>
     company?: boolean | Contact$companyArgs<ExtArgs>
@@ -36310,8 +36369,11 @@ export namespace Prisma {
       name: string
       designation: string | null
       email: string | null
+      email2: string | null
       phone: string | null
+      phone2: string | null
       mobile: string | null
+      mobile2: string | null
       status: string
       organizationId: string
       companyId: string | null
@@ -36757,8 +36819,11 @@ export namespace Prisma {
     readonly name: FieldRef<"Contact", 'String'>
     readonly designation: FieldRef<"Contact", 'String'>
     readonly email: FieldRef<"Contact", 'String'>
+    readonly email2: FieldRef<"Contact", 'String'>
     readonly phone: FieldRef<"Contact", 'String'>
+    readonly phone2: FieldRef<"Contact", 'String'>
     readonly mobile: FieldRef<"Contact", 'String'>
+    readonly mobile2: FieldRef<"Contact", 'String'>
     readonly status: FieldRef<"Contact", 'String'>
     readonly organizationId: FieldRef<"Contact", 'String'>
     readonly companyId: FieldRef<"Contact", 'String'>
@@ -37374,7 +37439,9 @@ export namespace Prisma {
     lostAt: Date | null
     lastActivityAt: Date | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     source: string | null
     contactPerson: string | null
     designation: string | null
@@ -37422,7 +37489,9 @@ export namespace Prisma {
     lostAt: Date | null
     lastActivityAt: Date | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     source: string | null
     contactPerson: string | null
     designation: string | null
@@ -37470,7 +37539,9 @@ export namespace Prisma {
     lostAt: number
     lastActivityAt: number
     email: number
+    email2: number
     phone: number
+    phone2: number
     source: number
     contactPerson: number
     designation: number
@@ -37534,7 +37605,9 @@ export namespace Prisma {
     lostAt?: true
     lastActivityAt?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     source?: true
     contactPerson?: true
     designation?: true
@@ -37582,7 +37655,9 @@ export namespace Prisma {
     lostAt?: true
     lastActivityAt?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     source?: true
     contactPerson?: true
     designation?: true
@@ -37630,7 +37705,9 @@ export namespace Prisma {
     lostAt?: true
     lastActivityAt?: true
     email?: true
+    email2?: true
     phone?: true
+    phone2?: true
     source?: true
     contactPerson?: true
     designation?: true
@@ -37767,7 +37844,9 @@ export namespace Prisma {
     lostAt: Date | null
     lastActivityAt: Date | null
     email: string | null
+    email2: string | null
     phone: string | null
+    phone2: string | null
     source: string | null
     contactPerson: string | null
     designation: string | null
@@ -37836,7 +37915,9 @@ export namespace Prisma {
     lostAt?: boolean
     lastActivityAt?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     source?: boolean
     contactPerson?: boolean
     designation?: boolean
@@ -37897,7 +37978,9 @@ export namespace Prisma {
     lostAt?: boolean
     lastActivityAt?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     source?: boolean
     contactPerson?: boolean
     designation?: boolean
@@ -37952,7 +38035,9 @@ export namespace Prisma {
     lostAt?: boolean
     lastActivityAt?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     source?: boolean
     contactPerson?: boolean
     designation?: boolean
@@ -38007,7 +38092,9 @@ export namespace Prisma {
     lostAt?: boolean
     lastActivityAt?: boolean
     email?: boolean
+    email2?: boolean
     phone?: boolean
+    phone2?: boolean
     source?: boolean
     contactPerson?: boolean
     designation?: boolean
@@ -38034,7 +38121,7 @@ export namespace Prisma {
     score?: boolean
   }
 
-  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "value" | "probability" | "stage" | "expectedClose" | "priority" | "notes" | "organizationId" | "ownerId" | "companyId" | "contactId" | "leadId" | "createdAt" | "updatedAt" | "closedAt" | "segment" | "paymentStatus" | "lostReason" | "lostAt" | "lastActivityAt" | "email" | "phone" | "source" | "contactPerson" | "designation" | "meetingDate" | "meetingAt" | "meetingMode" | "city" | "country" | "pinCode" | "purposeOfVisit" | "productsDiscussed" | "customProductNames" | "keyDiscussionPoints" | "customerRequirement" | "grade" | "application" | "applicationOther" | "cdaStatus" | "samplingStatus" | "rndFeedback" | "remark" | "nextFollowUp" | "loaStatus" | "score", ExtArgs["result"]["deal"]>
+  export type DealOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "value" | "probability" | "stage" | "expectedClose" | "priority" | "notes" | "organizationId" | "ownerId" | "companyId" | "contactId" | "leadId" | "createdAt" | "updatedAt" | "closedAt" | "segment" | "paymentStatus" | "lostReason" | "lostAt" | "lastActivityAt" | "email" | "email2" | "phone" | "phone2" | "source" | "contactPerson" | "designation" | "meetingDate" | "meetingAt" | "meetingMode" | "city" | "country" | "pinCode" | "purposeOfVisit" | "productsDiscussed" | "customProductNames" | "keyDiscussionPoints" | "customerRequirement" | "grade" | "application" | "applicationOther" | "cdaStatus" | "samplingStatus" | "rndFeedback" | "remark" | "nextFollowUp" | "loaStatus" | "score", ExtArgs["result"]["deal"]>
   export type DealInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activities?: boolean | Deal$activitiesArgs<ExtArgs>
     company?: boolean | Deal$companyArgs<ExtArgs>
@@ -38100,7 +38187,9 @@ export namespace Prisma {
       lostAt: Date | null
       lastActivityAt: Date | null
       email: string | null
+      email2: string | null
       phone: string | null
+      phone2: string | null
       source: string | null
       contactPerson: string | null
       designation: string | null
@@ -38580,7 +38669,9 @@ export namespace Prisma {
     readonly lostAt: FieldRef<"Deal", 'DateTime'>
     readonly lastActivityAt: FieldRef<"Deal", 'DateTime'>
     readonly email: FieldRef<"Deal", 'String'>
+    readonly email2: FieldRef<"Deal", 'String'>
     readonly phone: FieldRef<"Deal", 'String'>
+    readonly phone2: FieldRef<"Deal", 'String'>
     readonly source: FieldRef<"Deal", 'String'>
     readonly contactPerson: FieldRef<"Deal", 'String'>
     readonly designation: FieldRef<"Deal", 'String'>
@@ -66072,7 +66163,9 @@ export namespace Prisma {
     industry: 'industry',
     website: 'website',
     phone: 'phone',
+    phone2: 'phone2',
     email: 'email',
+    email2: 'email2',
     address: 'address',
     city: 'city',
     state: 'state',
@@ -66094,8 +66187,11 @@ export namespace Prisma {
     name: 'name',
     designation: 'designation',
     email: 'email',
+    email2: 'email2',
     phone: 'phone',
+    phone2: 'phone2',
     mobile: 'mobile',
+    mobile2: 'mobile2',
     status: 'status',
     organizationId: 'organizationId',
     companyId: 'companyId',
@@ -66134,7 +66230,9 @@ export namespace Prisma {
     lostAt: 'lostAt',
     lastActivityAt: 'lastActivityAt',
     email: 'email',
+    email2: 'email2',
     phone: 'phone',
+    phone2: 'phone2',
     source: 'source',
     contactPerson: 'contactPerson',
     designation: 'designation',
@@ -69034,7 +69132,9 @@ export namespace Prisma {
     industry?: StringNullableFilter<"Company"> | string | null
     website?: StringNullableFilter<"Company"> | string | null
     phone?: StringNullableFilter<"Company"> | string | null
+    phone2?: StringNullableFilter<"Company"> | string | null
     email?: StringNullableFilter<"Company"> | string | null
+    email2?: StringNullableFilter<"Company"> | string | null
     address?: StringNullableFilter<"Company"> | string | null
     city?: StringNullableFilter<"Company"> | string | null
     state?: StringNullableFilter<"Company"> | string | null
@@ -69064,7 +69164,9 @@ export namespace Prisma {
     industry?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
@@ -69097,7 +69199,9 @@ export namespace Prisma {
     industry?: StringNullableFilter<"Company"> | string | null
     website?: StringNullableFilter<"Company"> | string | null
     phone?: StringNullableFilter<"Company"> | string | null
+    phone2?: StringNullableFilter<"Company"> | string | null
     email?: StringNullableFilter<"Company"> | string | null
+    email2?: StringNullableFilter<"Company"> | string | null
     address?: StringNullableFilter<"Company"> | string | null
     city?: StringNullableFilter<"Company"> | string | null
     state?: StringNullableFilter<"Company"> | string | null
@@ -69127,7 +69231,9 @@ export namespace Prisma {
     industry?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
@@ -69155,7 +69261,9 @@ export namespace Prisma {
     industry?: StringNullableWithAggregatesFilter<"Company"> | string | null
     website?: StringNullableWithAggregatesFilter<"Company"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Company"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Company"> | string | null
     email?: StringNullableWithAggregatesFilter<"Company"> | string | null
+    email2?: StringNullableWithAggregatesFilter<"Company"> | string | null
     address?: StringNullableWithAggregatesFilter<"Company"> | string | null
     city?: StringNullableWithAggregatesFilter<"Company"> | string | null
     state?: StringNullableWithAggregatesFilter<"Company"> | string | null
@@ -69177,8 +69285,11 @@ export namespace Prisma {
     name?: StringFilter<"Contact"> | string
     designation?: StringNullableFilter<"Contact"> | string | null
     email?: StringNullableFilter<"Contact"> | string | null
+    email2?: StringNullableFilter<"Contact"> | string | null
     phone?: StringNullableFilter<"Contact"> | string | null
+    phone2?: StringNullableFilter<"Contact"> | string | null
     mobile?: StringNullableFilter<"Contact"> | string | null
+    mobile2?: StringNullableFilter<"Contact"> | string | null
     status?: StringFilter<"Contact"> | string
     organizationId?: StringFilter<"Contact"> | string
     companyId?: StringNullableFilter<"Contact"> | string | null
@@ -69204,8 +69315,11 @@ export namespace Prisma {
     name?: SortOrder
     designation?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
+    mobile2?: SortOrderInput | SortOrder
     status?: SortOrder
     organizationId?: SortOrder
     companyId?: SortOrderInput | SortOrder
@@ -69235,8 +69349,11 @@ export namespace Prisma {
     name?: StringFilter<"Contact"> | string
     designation?: StringNullableFilter<"Contact"> | string | null
     email?: StringNullableFilter<"Contact"> | string | null
+    email2?: StringNullableFilter<"Contact"> | string | null
     phone?: StringNullableFilter<"Contact"> | string | null
+    phone2?: StringNullableFilter<"Contact"> | string | null
     mobile?: StringNullableFilter<"Contact"> | string | null
+    mobile2?: StringNullableFilter<"Contact"> | string | null
     status?: StringFilter<"Contact"> | string
     organizationId?: StringFilter<"Contact"> | string
     companyId?: StringNullableFilter<"Contact"> | string | null
@@ -69262,8 +69379,11 @@ export namespace Prisma {
     name?: SortOrder
     designation?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     mobile?: SortOrderInput | SortOrder
+    mobile2?: SortOrderInput | SortOrder
     status?: SortOrder
     organizationId?: SortOrder
     companyId?: SortOrderInput | SortOrder
@@ -69287,8 +69407,11 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Contact"> | string
     designation?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     email?: StringNullableWithAggregatesFilter<"Contact"> | string | null
+    email2?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Contact"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     mobile?: StringNullableWithAggregatesFilter<"Contact"> | string | null
+    mobile2?: StringNullableWithAggregatesFilter<"Contact"> | string | null
     status?: StringWithAggregatesFilter<"Contact"> | string
     organizationId?: StringWithAggregatesFilter<"Contact"> | string
     companyId?: StringNullableWithAggregatesFilter<"Contact"> | string | null
@@ -69327,7 +69450,9 @@ export namespace Prisma {
     lostAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     lastActivityAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     email?: StringNullableFilter<"Deal"> | string | null
+    email2?: StringNullableFilter<"Deal"> | string | null
     phone?: StringNullableFilter<"Deal"> | string | null
+    phone2?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
     contactPerson?: StringNullableFilter<"Deal"> | string | null
     designation?: StringNullableFilter<"Deal"> | string | null
@@ -69387,7 +69512,9 @@ export namespace Prisma {
     lostAt?: SortOrderInput | SortOrder
     lastActivityAt?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
     contactPerson?: SortOrderInput | SortOrder
     designation?: SortOrderInput | SortOrder
@@ -69450,7 +69577,9 @@ export namespace Prisma {
     lostAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     lastActivityAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     email?: StringNullableFilter<"Deal"> | string | null
+    email2?: StringNullableFilter<"Deal"> | string | null
     phone?: StringNullableFilter<"Deal"> | string | null
+    phone2?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
     contactPerson?: StringNullableFilter<"Deal"> | string | null
     designation?: StringNullableFilter<"Deal"> | string | null
@@ -69510,7 +69639,9 @@ export namespace Prisma {
     lostAt?: SortOrderInput | SortOrder
     lastActivityAt?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    email2?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
     contactPerson?: SortOrderInput | SortOrder
     designation?: SortOrderInput | SortOrder
@@ -69568,7 +69699,9 @@ export namespace Prisma {
     lostAt?: DateTimeNullableWithAggregatesFilter<"Deal"> | Date | string | null
     lastActivityAt?: DateTimeNullableWithAggregatesFilter<"Deal"> | Date | string | null
     email?: StringNullableWithAggregatesFilter<"Deal"> | string | null
+    email2?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Deal"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     source?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     contactPerson?: StringNullableWithAggregatesFilter<"Deal"> | string | null
     designation?: StringNullableWithAggregatesFilter<"Deal"> | string | null
@@ -74008,7 +74141,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -74036,7 +74171,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -74064,7 +74201,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74092,7 +74231,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74120,7 +74261,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -74140,7 +74283,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74158,7 +74303,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74177,8 +74324,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -74201,8 +74351,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -74225,8 +74378,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74249,8 +74405,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74273,8 +74432,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -74292,8 +74454,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74308,8 +74473,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74340,7 +74508,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -74400,7 +74570,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -74450,7 +74622,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74510,7 +74684,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74565,7 +74741,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -74610,7 +74788,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74660,7 +74840,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78746,7 +78928,9 @@ export namespace Prisma {
     industry?: SortOrder
     website?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     address?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -78771,7 +78955,9 @@ export namespace Prisma {
     industry?: SortOrder
     website?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     address?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -78791,7 +78977,9 @@ export namespace Prisma {
     industry?: SortOrder
     website?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     address?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -78836,8 +79024,11 @@ export namespace Prisma {
     name?: SortOrder
     designation?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     mobile?: SortOrder
+    mobile2?: SortOrder
     status?: SortOrder
     organizationId?: SortOrder
     companyId?: SortOrder
@@ -78855,8 +79046,11 @@ export namespace Prisma {
     name?: SortOrder
     designation?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     mobile?: SortOrder
+    mobile2?: SortOrder
     status?: SortOrder
     organizationId?: SortOrder
     companyId?: SortOrder
@@ -78874,8 +79068,11 @@ export namespace Prisma {
     name?: SortOrder
     designation?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     mobile?: SortOrder
+    mobile2?: SortOrder
     status?: SortOrder
     organizationId?: SortOrder
     companyId?: SortOrder
@@ -78930,7 +79127,9 @@ export namespace Prisma {
     lostAt?: SortOrder
     lastActivityAt?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     source?: SortOrder
     contactPerson?: SortOrder
     designation?: SortOrder
@@ -78986,7 +79185,9 @@ export namespace Prisma {
     lostAt?: SortOrder
     lastActivityAt?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     source?: SortOrder
     contactPerson?: SortOrder
     designation?: SortOrder
@@ -79034,7 +79235,9 @@ export namespace Prisma {
     lostAt?: SortOrder
     lastActivityAt?: SortOrder
     email?: SortOrder
+    email2?: SortOrder
     phone?: SortOrder
+    phone2?: SortOrder
     source?: SortOrder
     contactPerson?: SortOrder
     designation?: SortOrder
@@ -87602,7 +87805,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -87629,7 +87834,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -87665,8 +87872,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -87688,8 +87898,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     companyId?: string | null
     ownerId: string
@@ -87784,7 +87997,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -87842,7 +88057,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -89016,7 +89233,9 @@ export namespace Prisma {
     industry?: StringNullableFilter<"Company"> | string | null
     website?: StringNullableFilter<"Company"> | string | null
     phone?: StringNullableFilter<"Company"> | string | null
+    phone2?: StringNullableFilter<"Company"> | string | null
     email?: StringNullableFilter<"Company"> | string | null
+    email2?: StringNullableFilter<"Company"> | string | null
     address?: StringNullableFilter<"Company"> | string | null
     city?: StringNullableFilter<"Company"> | string | null
     state?: StringNullableFilter<"Company"> | string | null
@@ -89054,8 +89273,11 @@ export namespace Prisma {
     name?: StringFilter<"Contact"> | string
     designation?: StringNullableFilter<"Contact"> | string | null
     email?: StringNullableFilter<"Contact"> | string | null
+    email2?: StringNullableFilter<"Contact"> | string | null
     phone?: StringNullableFilter<"Contact"> | string | null
+    phone2?: StringNullableFilter<"Contact"> | string | null
     mobile?: StringNullableFilter<"Contact"> | string | null
+    mobile2?: StringNullableFilter<"Contact"> | string | null
     status?: StringFilter<"Contact"> | string
     organizationId?: StringFilter<"Contact"> | string
     companyId?: StringNullableFilter<"Contact"> | string | null
@@ -89149,7 +89371,9 @@ export namespace Prisma {
     lostAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     lastActivityAt?: DateTimeNullableFilter<"Deal"> | Date | string | null
     email?: StringNullableFilter<"Deal"> | string | null
+    email2?: StringNullableFilter<"Deal"> | string | null
     phone?: StringNullableFilter<"Deal"> | string | null
+    phone2?: StringNullableFilter<"Deal"> | string | null
     source?: StringNullableFilter<"Deal"> | string | null
     contactPerson?: StringNullableFilter<"Deal"> | string | null
     designation?: StringNullableFilter<"Deal"> | string | null
@@ -90128,7 +90352,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -90155,7 +90381,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -90191,8 +90419,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -90214,8 +90445,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -90310,7 +90544,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -90368,7 +90604,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -100155,7 +100393,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -100213,7 +100453,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -100305,7 +100547,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -100332,7 +100576,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -100363,8 +100609,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -100386,8 +100635,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -100686,7 +100938,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -100713,7 +100967,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -100750,8 +101006,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -100773,8 +101032,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -101268,8 +101530,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -101291,8 +101556,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     ownerId: string
@@ -101337,7 +101605,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -101395,7 +101665,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -102135,7 +102407,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -102162,7 +102436,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -102418,7 +102694,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -102476,7 +102754,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -102743,7 +103023,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -102770,7 +103052,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -103121,7 +103405,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -103148,7 +103434,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -103179,8 +103467,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -103202,8 +103493,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -103723,7 +104017,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -103750,7 +104046,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -103787,8 +104085,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -103810,8 +104111,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -104231,7 +104535,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -104290,7 +104596,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -104567,7 +104875,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -104626,7 +104936,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -104899,7 +105211,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -104958,7 +105272,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -105167,7 +105483,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -105226,7 +105544,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -105765,7 +106085,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -105792,7 +106114,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -106092,7 +106416,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -106119,7 +106445,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -106534,7 +106862,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -106561,7 +106891,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -106592,8 +106924,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -106615,8 +106950,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -106656,7 +106994,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -106715,7 +107055,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -107077,7 +107419,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -107104,7 +107448,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -107141,8 +107487,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -107164,8 +107513,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -107211,7 +107563,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -107270,7 +107624,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -108005,7 +108361,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -108032,7 +108390,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -108063,8 +108423,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -108086,8 +108449,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -108127,7 +108493,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -108186,7 +108554,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -108542,7 +108912,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -108569,7 +108941,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -108606,8 +108980,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -108629,8 +109006,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -108676,7 +109056,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -108735,7 +109117,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -109242,7 +109626,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -109269,7 +109655,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -109300,8 +109688,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     emailKey?: string | null
     createdAt?: Date | string
@@ -109323,8 +109714,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -109364,7 +109758,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -109423,7 +109819,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -109750,7 +110148,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -109777,7 +110177,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -109814,8 +110216,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -109837,8 +110242,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -109884,7 +110292,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -109943,7 +110353,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -110433,7 +110845,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -110460,7 +110874,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -110602,7 +111018,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -110629,7 +111047,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -114737,7 +115157,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -114755,8 +115177,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     companyId?: string | null
     ownerId: string
@@ -114809,7 +115234,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -115349,7 +115776,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115376,7 +115805,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115403,7 +115834,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115421,8 +115854,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115444,8 +115880,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
@@ -115467,8 +115906,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
@@ -115557,7 +115999,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115615,7 +116059,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -115669,7 +116115,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -116811,7 +117259,9 @@ export namespace Prisma {
     industry?: string | null
     website?: string | null
     phone?: string | null
+    phone2?: string | null
     email?: string | null
+    email2?: string | null
     address?: string | null
     city?: string | null
     state?: string | null
@@ -116829,8 +117279,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     companyId?: string | null
@@ -116883,7 +117336,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -117497,7 +117952,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117524,7 +117981,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117551,7 +118010,9 @@ export namespace Prisma {
     industry?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117569,8 +118030,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117592,8 +118056,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117615,8 +118082,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117705,7 +118175,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117763,7 +118235,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117817,7 +118291,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -119863,7 +120339,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -119964,7 +120442,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -120022,7 +120502,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -120076,7 +120558,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -120172,8 +120656,11 @@ export namespace Prisma {
     name: string
     designation?: string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     mobile?: string | null
+    mobile2?: string | null
     status?: string
     organizationId: string
     ownerId: string
@@ -120207,7 +120694,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -120400,8 +120889,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     emailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120423,8 +120915,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
@@ -120446,8 +120941,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     designation?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    mobile2?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
@@ -120477,7 +120975,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -120535,7 +121035,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -120589,7 +121091,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -121027,7 +121531,9 @@ export namespace Prisma {
     lostAt?: Date | string | null
     lastActivityAt?: Date | string | null
     email?: string | null
+    email2?: string | null
     phone?: string | null
+    phone2?: string | null
     source?: string | null
     contactPerson?: string | null
     designation?: string | null
@@ -121187,7 +121693,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -121245,7 +121753,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -121299,7 +121809,9 @@ export namespace Prisma {
     lostAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    email2?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     designation?: NullableStringFieldUpdateOperationsInput | string | null

@@ -402,12 +402,18 @@ export function DealDetailForm({
           <Field label="Designation" error={state.fieldErrors?.designation}>
             <Input name="designation" defaultValue={deal.designation ?? ''} />
           </Field>
-          <Field label="Email" error={state.fieldErrors?.email}>
-            <Input name="email" type="email" defaultValue={deal.email} />
-          </Field>
-          <Field label="Phone" error={state.fieldErrors?.phone}>
-            <Input name="phone" defaultValue={deal.phone} />
-          </Field>
+           <Field label="Email" error={state.fieldErrors?.email}>
+             <Input name="email" type="email" defaultValue={deal.email} />
+           </Field>
+           <Field label="Email 2" error={state.fieldErrors?.email2}>
+             <Input name="email2" type="email" defaultValue={deal.email2 || ''} />
+           </Field>
+           <Field label="Phone" error={state.fieldErrors?.phone}>
+             <Input name="phone" defaultValue={deal.phone} />
+           </Field>
+           <Field label="Phone 2" error={state.fieldErrors?.phone2}>
+             <Input name="phone2" defaultValue={deal.phone2 || ''} />
+           </Field>
         </div>
       </Card>
 

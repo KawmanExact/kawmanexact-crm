@@ -243,7 +243,7 @@ function writeDealsSheet(wb: ExcelJS.Workbook, rows: DealExportRow[]): void {
         wrapText: wrapCols.has(col.key),
       }
 
-      if (col.key === 'pincode' || col.key === 'contactNumber') {
+      if (col.key === 'pincode' || col.key === 'contactNumber' || col.key === 'contactPhone2') {
         cell.numFmt = '@'
       }
       if (col.type === 'date' && value instanceof Date) {
@@ -259,7 +259,7 @@ function writeDealsSheet(wb: ExcelJS.Workbook, rows: DealExportRow[]): void {
         if (fill) cell.fill = fill
       }
 
-      if (col.key === 'email' && typeof raw === 'string' && raw) {
+      if ((col.key === 'email' || col.key === 'contactEmail2') && typeof raw === 'string' && raw) {
         cell.value = { text: raw, hyperlink: `mailto:${raw}` }
       }
     })
@@ -333,7 +333,9 @@ function writeNotesSheet(wb: ExcelJS.Workbook): void {
     Country: 'Country of the customer.',
     Pincode: 'Postal / pin code, exported as text to preserve leading zeros.',
     'Contact Person': 'Primary contact name for the deal.',
-    'Contact Number': 'Phone number, exported as text to preserve formatting and leading zeros.',
+     'Contact Number': 'Phone number, exported as text to preserve formatting and leading zeros.',
+    'Contact Email 2': 'Secondary email address with mailto hyperlink in Excel.',
+    'Contact Phone 2': 'Secondary phone number, exported as text to preserve formatting and leading zeros.',
     Designation: 'Job title of the contact person.',
     Email: 'Email address with mailto hyperlink in Excel.',
     'Lead source': 'How the lead was acquired.',

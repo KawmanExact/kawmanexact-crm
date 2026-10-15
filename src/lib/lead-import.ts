@@ -42,7 +42,9 @@ export interface LeadImportRow {
   company?: string
   contactPerson?: string
   email?: string
+  email2?: string
   phone?: string
+  phone2?: string
   source?: string
   segment?: string
   status?: string
@@ -101,7 +103,9 @@ export const LEAD_IMPORT_HEADER_ALIASES: Record<string, string[]> = {
   name: ['name', 'leadname', 'contactname', 'contact', 'fullname', 'clientname'],
   company: ['company', 'companyname', 'organisation', 'organization', 'account', 'customer', 'customername', 'firm'],
   email: ['email', 'emailaddress', 'mail', 'contactemail'],
+  email2: ['email2', 'emailaddress2', 'emailaddress 2', 'mail2', 'contactemail2', 'secondaryemail', 'alternateemail'],
   phone: ['phone', 'phonenumber', 'mobile', 'mobilenumber', 'contactnumber', 'telephone', 'tel'],
+  phone2: ['phone2', 'phonenumber2', 'phone number2', 'phone2', 'secondaryphone', 'alternatephone', 'mobile2', 'mobilenumber2'],
   source: ['source', 'leadsource', 'leadsrc'],
   segment: ['segment', 'category', 'productsdiscussed', 'product', 'productcategory'],
   status: ['status', 'leadstatus', 'stage'],
@@ -364,8 +368,10 @@ export function normalizeLeadRow(
     name,
     company: clean(mapped.company),
     contactPerson: clean(mapped.contactPerson),
-    email: validEmail,
-    phone: finalPhone,
+     email: validEmail,
+     email2: clean(mapped.email2),
+     phone: finalPhone,
+     phone2: clean(mapped.phone2),
     source: clean(mapped.source) || 'Import',
     segment,
     status,

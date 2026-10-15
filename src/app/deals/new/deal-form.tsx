@@ -427,12 +427,18 @@ export function DealForm({
           <Field label="Designation" error={state.fieldErrors?.designation}>
             <Input name="designation" placeholder="Purchase Manager" />
           </Field>
-          <Field label="Email" error={state.fieldErrors?.email}>
-            <Input name="email" type="email" placeholder="jane@acme.com" />
-          </Field>
-          <Field label="Phone" error={state.fieldErrors?.phone}>
-            <Input name="phone" placeholder="+91 98765 43210" />
-          </Field>
+           <Field label="Email" error={state.fieldErrors?.email}>
+             <Input name="email" type="email" placeholder="jane@acme.com" />
+           </Field>
+           <Field label="Email 2" error={state.fieldErrors?.email2}>
+             <Input name="email2" type="email" placeholder="jane.personal@gmail.com" />
+           </Field>
+           <Field label="Phone" error={state.fieldErrors?.phone}>
+             <Input name="phone" placeholder="+91 98765 43210" />
+           </Field>
+           <Field label="Phone 2" error={state.fieldErrors?.phone2}>
+             <Input name="phone2" placeholder="+91 98765 43211" />
+           </Field>
         </div>
       </Card>
 

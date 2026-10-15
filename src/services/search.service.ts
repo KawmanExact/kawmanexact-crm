@@ -37,7 +37,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
       take: RESULTS_PER_TYPE,
     }),
     prisma.contact.findMany({
-      where: { organizationId, OR: [{ name: contains }, { email: contains }] },
+      where: { organizationId, OR: [{ name: contains }, { email: contains }, { email2: contains }] },
       select: { id: true, name: true, designation: true, company: { select: { name: true } } },
       take: RESULTS_PER_TYPE,
     }),
@@ -49,7 +49,9 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
         OR: [
           { name: contains },
           { email: contains },
+          { email2: contains },
           { phone: contains },
+          { phone2: contains },
           { contactPerson: contains },
           { company: { name: contains } },
         ],

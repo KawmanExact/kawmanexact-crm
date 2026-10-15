@@ -10,7 +10,7 @@ import ExcelJS from 'exceljs'
 
 describe('Deal export columns', () => {
   it('has exactly 25 columns in the specified order with correct headers', () => {
-    expect(DEAL_EXPORT_COLUMNS).toHaveLength(25)
+    expect(DEAL_EXPORT_COLUMNS).toHaveLength(27)
     const expectedHeaders = [
       'No',
       'Date',
@@ -20,6 +20,8 @@ describe('Deal export columns', () => {
       'Pincode',
       'Contact Person',
       'Contact Number',
+      'Contact Email 2',
+      'Contact Phone 2',
       'Designation',
       'Email',
       'Lead source',
@@ -51,7 +53,7 @@ describe('Deal export columns', () => {
     const raw = {
       name: 'Deal 1',
       company: { name: 'Acme Corp' },
-      contact: { name: 'Rahul Sharma', phone: '+91 98765 43210' },
+      contact: { name: 'Rahul Sharma', phone: '+91 98765 43210', email2: 'rahul.personal@acme.com', phone2: '+91 98765 43211' },
       meetingDate: '2026-10-01',
       city: 'Mumbai',
       country: 'India',
@@ -84,6 +86,8 @@ describe('Deal export columns', () => {
     expect(row.country).toBe('India')
     expect(row.pincode).toBe('400001')
     expect(row.contactNumber).toBe('+91 98765 43210')
+    expect(row.contactEmail2).toBe('rahul.personal@acme.com')
+    expect(row.contactPhone2).toBe('+91 98765 43211')
     expect(row.email).toBe('rahul@acme.com')
     expect(row.productsDiscussed).toBe('ArginExAct™')
     expect(row.status).toBe('PROSPECT')
@@ -172,7 +176,7 @@ describe('Deal export workbook', () => {
     expect(sheetNames).toEqual(['Summary', 'Deals', 'Notes'])
   })
 
-  it('writes the 24 headers in row 2 of the Deals sheet', async () => {
+  it('writes the 27 headers in row 2 of the Deals sheet', async () => {
     const rows = [
       toExportRow({
         name: 'Deal 1',
@@ -365,7 +369,7 @@ describe('Deal export workbook', () => {
 })
 
 describe('Deal export CSV', () => {
-  it('has a single header row with the 24 labels', () => {
+  it('has a single header row with the 27 labels', () => {
     const rows = [
       toExportRow({
         name: 'Deal 1',
@@ -400,7 +404,7 @@ describe('Deal export CSV', () => {
     const csvColumns = DEAL_EXPORT_COLUMNS.map((c) => ({
       key: c.key,
       header: c.header,
-      asText: c.type === 'text' && (c.key === 'pincode' || c.key === 'contactNumber'),
+      asText: c.type === 'text' && (c.key === 'pincode' || c.key === 'contactNumber' || c.key === 'contactPhone2'),
     }))
 
     const csv = toCSV(rows as unknown as Record<string, unknown>[], csvColumns)

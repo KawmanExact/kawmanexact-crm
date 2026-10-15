@@ -530,7 +530,9 @@ model Company {
   industry          String?
   website           String?
   phone             String?
+  phone2            String?
   email             String?
+  email2            String?
   address           String?
   city              String?
   state             String?
@@ -565,8 +567,11 @@ model Contact {
   name           String
   designation    String?
   email          String?
+  email2         String?
   phone          String?
+  phone2         String?
   mobile         String?
+  mobile2        String?
   status         String       @default("ACTIVE")
   organizationId String
   companyId      String?
@@ -624,7 +629,9 @@ model Deal {
   // form is the old lead form plus the pipeline columns. `Lead` is retained
   // only as the pre-merge history behind Deal.leadId; nothing writes to it.
   email               String?
+  email2              String?
   phone               String?
+  phone2              String?
   source              String?
   contactPerson       String?
   designation         String?

@@ -50,8 +50,14 @@ export function CompanyDetailForm({ company, owners, canAssign, currentUser }: {
         <Field label="Phone">
           <Input name="phone" defaultValue={company.phone} />
         </Field>
+        <Field label="Phone 2">
+          <Input name="phone2" defaultValue={company.phone2} />
+        </Field>
         <Field label="Email">
           <Input name="email" type="email" defaultValue={company.email} />
+        </Field>
+        <Field label="Email 2">
+          <Input name="email2" type="email" defaultValue={company.email2} />
         </Field>
         <Field label="City">
           <Input name="city" defaultValue={company.city} />

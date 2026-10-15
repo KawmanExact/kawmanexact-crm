@@ -64,7 +64,9 @@ const dealSchema = dealCaptureSchema
   .safeExtend({
     contactName: z.string().trim().optional(),
     contactEmail: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
+    contactEmail2: z.string().trim().email('Enter a valid email').optional().or(z.literal('')),
     contactMobile: z.string().trim().optional(),
+    contactMobile2: z.string().trim().optional(),
     // Optional here because line items, when present, decide the value — the
     // old form made it required, which blocked creating a deal before pricing.
     value: z.coerce.number().min(0).optional(),
@@ -181,8 +183,11 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
    const contact = data.contactName?.trim()
      ? await findOrCreateContactByName({
          email: data.email || data.contactEmail || null,
+         email2: data.email2 || null,
          mobile: data.contactMobile || null,
+         mobile2: data.contactMobile2 || null,
          phone: data.phone || null,
+         phone2: data.phone2 || null,
          address: null,
          name: data.contactName.trim(),
          organizationId: session.user.organizationId,
@@ -190,12 +195,12 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
          companyId,
          designation: data.designation || null,
        })
-    : null
-  const contactId = contact?.id ?? null
+     : null
+   const contactId = contact?.id ?? null
 
-  const lineItems: LineItem[] = data.lineItems ?? []
-  const dealValue = computeDealValue(lineItems, data.value)
-  const stage = data.stage ?? 'SUSPECT'
+   const lineItems: LineItem[] = data.lineItems ?? []
+   const dealValue = computeDealValue(lineItems, data.value)
+   const stage = data.stage ?? 'SUSPECT'
 
   const deal = await prisma.deal.create({
     data: {
@@ -215,14 +220,16 @@ export async function createDealAction(_prev: DealFormState, formData: FormData)
       closedAt: (stage === 'LOST' || stage === 'PAYMENT') ? new Date() : null,
       lostAt: stage === 'LOST' ? new Date() : null,
       lastActivityAt: new Date(),
-      // Capture half — same fields the lead form used to own.
-      ...buildDealCaptureData(data),
-      // The contact form fields double as the deal's own contact columns so
-      // search and reports see them without joining through Contact.
-      contactPerson: data.contactName || data.contactPerson || null,
-      designation: data.designation ?? null,
-      email: data.email || data.contactEmail || null,
-      phone: data.phone || data.contactMobile || null,
+       // Capture half — same fields the lead form used to own.
+       ...buildDealCaptureData(data),
+       // The contact form fields double as the deal's own contact columns so
+       // search and reports see them without joining through Contact.
+       contactPerson: data.contactName || data.contactPerson || null,
+       designation: data.designation ?? null,
+       email: data.email || data.contactEmail || null,
+       email2: data.email2 || null,
+       phone: data.phone || data.contactMobile || null,
+       phone2: data.phone2 || null,
       // nextFollowUp will be set via FollowUp table; keep column in sync
       nextFollowUp: data.nextFollowUp ? new Date(data.nextFollowUp) : null,
     },
@@ -313,19 +320,22 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
     : null
   const rawCompany = formData.get('company')
   const companyId = rawCompany !== null ? (company?.id ?? null) : existing.companyId
-  const contact = data.contactName?.trim()
-    ? await findOrCreateContactByName({
-        email: data.email || data.contactEmail || null,
-        mobile: data.contactMobile || null,
-        phone: data.phone || null,
-        address: null,
-        name: data.contactName.trim(),
-        organizationId: session.user.organizationId,
-        ownerId: data.ownerId || existing.ownerId,
-        companyId,
-        designation: data.designation || null,
-      })
-    : null
+   const contact = data.contactName?.trim()
+     ? await findOrCreateContactByName({
+         email: data.email || data.contactEmail || null,
+         email2: data.email2 || null,
+         mobile: data.contactMobile || null,
+         mobile2: data.contactMobile2 || null,
+         phone: data.phone || null,
+         phone2: data.phone2 || null,
+         address: null,
+         name: data.contactName.trim(),
+         organizationId: session.user.organizationId,
+         ownerId: data.ownerId || existing.ownerId,
+         companyId,
+         designation: data.designation || null,
+       })
+     : null
   const rawContact = formData.get('contactName')
   const contactId = rawContact !== null ? (contact?.id ?? null) : existing.contactId
   const notes = formData.get('notes')
@@ -359,12 +369,14 @@ export async function updateDealAction(id: string, _prev: DealFormState, formDat
       closedAt: (data.stage === 'LOST' || data.stage === 'PAYMENT') ? (existing.closedAt ?? new Date()) : null,
       lostAt: data.stage === 'LOST' ? (existing.lostAt ?? new Date()) : null,
       lastActivityAt: new Date(),
-      // Capture half — same fields the lead form used to own.
-      ...buildDealCaptureUpdateData(data),
-      contactPerson: data.contactName || data.contactPerson || null,
-      designation: data.designation ?? null,
-      email: data.email || data.contactEmail || null,
-      phone: data.phone || data.contactMobile || null,
+       // Capture half — same fields the lead form used to own.
+       ...buildDealCaptureUpdateData(data),
+       contactPerson: data.contactName || data.contactPerson || null,
+       designation: data.designation ?? null,
+       email: data.email || data.contactEmail || null,
+       email2: data.email2 || null,
+       phone: data.phone || data.contactMobile || null,
+       phone2: data.phone2 || null,
       // Let recomputeDealNextFollowUp derive this from the FollowUp table
       nextFollowUp: null,
     },

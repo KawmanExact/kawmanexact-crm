@@ -10,12 +10,12 @@ export async function GET() {
 
   const rows = await prisma.company.findMany({
     where: { organizationId: session.user.organizationId },
-    select: { id: true, name: true },
+    select: { id: true, name: true, phone: true, phone2: true, email: true, email2: true },
     orderBy: { name: 'asc' },
     take: 200,
   })
 
   return NextResponse.json({
-    companies: rows.map((c) => ({ id: c.id, name: c.name })),
+    companies: rows.map((c) => ({ id: c.id, name: c.name, phone: c.phone, phone2: c.phone2, email: c.email, email2: c.email2 })),
   })
 }

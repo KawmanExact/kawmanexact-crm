@@ -52,20 +52,22 @@ export interface Lead {
 }
 
 export interface Company {
-  id: string
-  name: string
-  industry: string
-  website: string
-  phone: string
-  email: string
-  city: string
-  state: string
-  employees: number
-  revenue: number
-  owner: string
-  ownerInitials: string
-  status: 'ACTIVE' | 'INACTIVE'
-  createdAt: string
+   id: string
+   name: string
+   industry: string
+   website: string
+   phone: string
+   phone2: string
+   email: string
+   email2: string
+   city: string
+   state: string
+   employees: number
+   revenue: number
+   owner: string
+   ownerInitials: string
+   status: 'ACTIVE' | 'INACTIVE'
+   createdAt: string
 }
 
 export interface Contact {
@@ -74,8 +76,11 @@ export interface Contact {
   company: string
   designation: string
   email: string
+  email2: string
    phone: string
+   phone2: string
    mobile: string
+   mobile2: string
    address: string
    owner: string
    ownerInitials: string
@@ -100,10 +105,12 @@ export interface Deal {
   expectedClose: string
   priority: DealPriority
   paymentStatus?: string
-  /** Enquiry detail, merged in from the old lead form — a deal IS the lead. */
-  email: string
-  phone: string
-  source: string
+   /** Enquiry detail, merged in from the old lead form — a deal IS the lead. */
+   email: string
+   email2: string
+   phone: string
+   phone2: string
+   source: string
   contactPerson: string | null
   designation: string | null
   city: string | null

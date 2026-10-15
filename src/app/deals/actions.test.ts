@@ -132,13 +132,16 @@ describe('createDealAction', () => {
 
     expect(mockFindOrCreateContactByName).toHaveBeenCalledWith({
       email: 'new@test.com',
+      email2: null,
       mobile: '+91 98765 43210',
+      mobile2: null,
       name: 'New Person',
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: null,
       address: null,
       phone: null,
+      phone2: null,
       designation: null,
     })
     expect(mockDealCreate).toHaveBeenCalledWith(
@@ -162,13 +165,16 @@ describe('createDealAction', () => {
 
     expect(mockFindOrCreateContactByName).toHaveBeenCalledWith({
       email: null,
+      email2: null,
       mobile: null,
+      mobile2: null,
       name: 'Existing Contact',
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: null,
       address: null,
       phone: null,
+      phone2: null,
       designation: null,
     })
     expect(mockDealCreate).toHaveBeenCalledWith(
@@ -221,13 +227,16 @@ describe('updateDealAction', () => {
 
     expect(mockFindOrCreateContactByName).toHaveBeenCalledWith({
       email: 'linked@test.com',
+      email2: null,
       mobile: null,
+      mobile2: null,
       name: 'Linked Contact',
       organizationId: 'org-A',
       ownerId: 'user-1',
       companyId: undefined,
       address: null,
       phone: null,
+      phone2: null,
       designation: null,
     })
     expect(mockDealUpdate).toHaveBeenCalledWith(

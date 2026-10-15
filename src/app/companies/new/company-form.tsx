@@ -37,8 +37,14 @@ export function CompanyForm({ owners, canAssign, currentUser }: { owners: UserOp
         <Field label="Phone" error={state.fieldErrors?.phone}>
           <Input name="phone" placeholder="+91 22 4000 1000" />
         </Field>
+        <Field label="Phone 2" error={state.fieldErrors?.phone2}>
+          <Input name="phone2" placeholder="+91 22 4000 2000" />
+        </Field>
         <Field label="Email" error={state.fieldErrors?.email}>
           <Input name="email" type="email" placeholder="contact@acme.com" />
+        </Field>
+        <Field label="Email 2" error={state.fieldErrors?.email2}>
+          <Input name="email2" type="email" placeholder="accounts@acme.com" />
         </Field>
         <Field label="City" error={state.fieldErrors?.city}>
           <Input name="city" placeholder="Mumbai" />

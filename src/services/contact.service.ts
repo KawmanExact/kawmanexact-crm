@@ -33,8 +33,11 @@ function mapContact(row: ContactRow): Contact {
     company: row.company?.name ?? '—',
     designation: row.designation ?? '—',
     email: row.email ?? '',
+    email2: row.email2 ?? '',
     phone: row.phone ?? '',
+    phone2: row.phone2 ?? '',
     mobile: row.mobile ?? '',
+    mobile2: row.mobile2 ?? '',
     address: row.address ?? '',
     owner: row.owner.name ?? 'Unassigned',
     ownerInitials: toInitials(row.owner.name ?? 'U'),
@@ -97,6 +100,9 @@ export async function getContactsPage(query: ContactQuery = {}): Promise<Contact
           OR: [
             { name: { contains: search, mode: 'insensitive' as const } },
             { email: { contains: search, mode: 'insensitive' as const } },
+            { email2: { contains: search, mode: 'insensitive' as const } },
+            { mobile: { contains: search, mode: 'insensitive' as const } },
+            { mobile2: { contains: search, mode: 'insensitive' as const } },
             { company: { name: { contains: search, mode: 'insensitive' as const } } },
           ],
         }
@@ -186,10 +192,14 @@ export async function findOrCreateContactByName(input: {
   ownerId: string
   companyId?: string | null
   email?: string | null
+  email2?: string | null
   phone?: string | null
+  phone2?: string | null
   mobile?: string | null
+  mobile2?: string | null
   address?: string | null
   designation?: string | null
+  segment?: string | null
 }): Promise<{ id: string; name: string } | null> {
   const trimmedName = input.name?.trim()
   if (!trimmedName) return null
@@ -208,24 +218,35 @@ export async function findOrCreateContactByName(input: {
     return null
   }
 
-  // --- Normal path: look up by name ---
+   // --- Normal path: look up by name ---
   const existing = await prisma.contact.findFirst({
     where: { organizationId: input.organizationId, name: { equals: trimmedName, mode: 'insensitive' as const } },
-    select: { id: true, name: true, email: true, mobile: true, phone: true, address: true, designation: true },
+    select: { id: true, name: true, email: true, email2: true, mobile: true, mobile2: true, phone: true, phone2: true, address: true, designation: true, segment: true },
   })
 
   if (existing) {
-    // Backfill: fill only blank email / mobile / phone / address / designation fields
-    const updates: { email?: string | null; mobile?: string | null; phone?: string | null; address?: string | null; designation?: string | null; lastActivityAt: Date } = {
+    // Backfill: fill only blank email / mobile / phone / address / designation / email2 / mobile2 / phone2 fields
+    const updates: { email?: string | null; email2?: string | null; mobile?: string | null; mobile2?: string | null; phone?: string | null; phone2?: string | null; address?: string | null; designation?: string | null; segment?: string | null; lastActivityAt: Date } = {
       lastActivityAt: new Date(),
     }
     if (input.email && !existing.email) updates.email = input.email
+    if (input.email2 && !existing.email2) updates.email2 = input.email2
     if (input.mobile && !existing.mobile) updates.mobile = input.mobile
+    if (input.mobile2 && !existing.mobile2) updates.mobile2 = input.mobile2
     if (input.phone && !existing.phone) updates.phone = input.phone
+    if (input.phone2 && !existing.phone2) updates.phone2 = input.phone2
     if (input.address && !existing.address) updates.address = input.address
     if (input.designation && !existing.designation) updates.designation = input.designation
+    if (input.segment && !existing.segment) updates.segment = input.segment
 
-    if ((input.email && !existing.email) || (input.mobile && !existing.mobile) || (input.phone && !existing.phone) || (input.address && !existing.address) || (input.designation && !existing.designation)) {
+    const needsUpdate =
+      (input.email && !existing.email) || (input.email2 && !existing.email2) ||
+      (input.mobile && !existing.mobile) || (input.mobile2 && !existing.mobile2) ||
+      (input.phone && !existing.phone) || (input.phone2 && !existing.phone2) ||
+      (input.address && !existing.address) || (input.designation && !existing.designation) ||
+      (input.segment && !existing.segment)
+
+    if (needsUpdate) {
       await prisma.contact.update({
         where: { id: existing.id },
         data: {
@@ -245,10 +266,14 @@ export async function findOrCreateContactByName(input: {
       ownerId: input.ownerId,
       companyId: input.companyId ?? null,
       email: input.email ?? null,
+      email2: input.email2 ?? null,
       phone: input.phone ?? null,
+      phone2: input.phone2 ?? null,
       mobile: input.mobile ?? null,
+      mobile2: input.mobile2 ?? null,
       address: input.address ?? null,
       designation: input.designation ?? null,
+      segment: input.segment ?? null,
       emailKey: buildContactEmailKey(input.email ?? null),
       lastActivityAt: new Date(),
     },
