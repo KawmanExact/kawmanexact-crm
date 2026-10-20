@@ -18,6 +18,9 @@ export function DailyReportForm({ draft, aiConfigured }: { draft: DailyReportDra
   const [aiLoading, setAiLoading] = useState(false)
   const [aiErr, setAiErr] = useState<string | null>(null)
   const existing = draft.existingReport
+  const baseActiveMinutes = existing?.activeWorkingTimeMinutes ?? draft.activeWorkingTimeMinutes
+  const [activeHours, setActiveHours] = useState(() => String(minutesToHours(baseActiveMinutes)))
+  const [activeMinutes, setActiveMinutes] = useState(() => String(baseActiveMinutes))
   const todayStr = new Date().toISOString().slice(0, 10)
 
   async function handleGenerateSummary() {
@@ -76,7 +79,7 @@ export function DailyReportForm({ draft, aiConfigured }: { draft: DailyReportDra
           <StatPill label="CRM updates" value={draft.crmRecordsUpdatedCount} />
           <StatPill label="Leads worked" value={draft.leadsWorkedOnCount} />
           <StatPill label="Files uploaded" value={draft.filesUploadedCount} />
-          <StatPill label="Active minutes" value={draft.activeWorkingTimeMinutes} />
+          <StatPill label="Active hours" value={minutesToHours(draft.activeWorkingTimeMinutes)} />
           <StatPill label="Visit reports" value={draft.visitReportsCount} />
           <StatPill label="Check-ins" value={draft.checkInsCount} />
         </div>
@@ -111,8 +114,24 @@ export function DailyReportForm({ draft, aiConfigured }: { draft: DailyReportDra
           <Field label="Files uploaded">
             <Input name="filesUploadedCount" type="number" min={0} max={10000} defaultValue={existing?.filesUploadedCount ?? draft.filesUploadedCount} />
           </Field>
-          <Field label="Active minutes">
-            <Input name="activeWorkingTimeMinutes" type="number" min={0} max={1440} defaultValue={existing?.activeWorkingTimeMinutes ?? draft.activeWorkingTimeMinutes} />
+          <Field label="Active hours">
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min={0}
+                max={24}
+                step={0.1}
+                value={activeHours}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setActiveHours(v)
+                  const h = parseFloat(v)
+                  setActiveMinutes(isNaN(h) ? '' : String(Math.round(h * 60)))
+                }}
+                className="flex-1"
+              />
+              <input type="hidden" name="activeWorkingTimeMinutes" value={activeMinutes} />
+            </div>
           </Field>
         </div>
 
@@ -124,6 +143,10 @@ export function DailyReportForm({ draft, aiConfigured }: { draft: DailyReportDra
       </form>
     </Card>
   )
+}
+
+function minutesToHours(minutes: number): number {
+  return Math.round((minutes / 60) * 10) / 10
 }
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
