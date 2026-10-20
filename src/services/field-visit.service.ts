@@ -1,7 +1,7 @@
 import 'server-only'
 import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
-import type { FieldVisit, CheckIn, GeoFence, VisitReport, LiveMapVisit, VisitStatus, ActiveUserPin } from '@/types/field-sales'
+import type { FieldVisit, CheckIn, GeoFence, VisitReport, LiveMapVisit, VisitStatus, ActiveUserPin, DutySessionInfo } from '@/types/field-sales'
 import { ok, err, Result } from '@/lib/result'
 
 function initials(name: string): string {
@@ -599,4 +599,112 @@ export async function getVisitReports(): Promise<VisitReport[]> {
     nextSteps: r.nextSteps,
     createdAt: r.createdAt.toISOString(),
   }))
+}
+
+// ============================================================
+// Duty Sessions (Start Day / End Day)
+// ============================================================
+
+/** Start a duty session for the current user. Returns the created session ID. */
+export async function startDutySession(): Promise<Result<string>> {
+  const session = await requireApiSession()
+
+  // Close any open session first (e.g. user started day twice without ending)
+  await prisma.dutySession.updateMany({
+    where: { userId: session.user.id, organizationId: session.user.organizationId, isActive: true },
+    data: { isActive: false, endedAt: new Date() },
+  })
+
+  const record = await prisma.dutySession.create({
+    data: {
+      userId: session.user.id,
+      organizationId: session.user.organizationId,
+      startedAt: new Date(),
+      isActive: true,
+    },
+    select: { id: true },
+  })
+  return ok(record.id)
+}
+
+/** End the current user's active duty session, if one is open. */
+export async function endDutySession(): Promise<Result<boolean>> {
+  const session = await requireApiSession()
+  const updated = await prisma.dutySession.updateMany({
+    where: { userId: session.user.id, organizationId: session.user.organizationId, isActive: true },
+    data: { isActive: false, endedAt: new Date() },
+  })
+  return ok(updated.count > 0)
+}
+
+interface DutySessionRow {
+  id: string
+  startedAt: Date
+  endedAt: Date | null
+  isActive: boolean
+  user: { name: string | null; email: string; status: string }
+}
+
+function mapDutySession(row: DutySessionRow): DutySessionInfo {
+  return {
+    id: row.id,
+    userName: row.user.name ?? 'Unnamed user',
+    userEmail: row.user.email,
+    userStatus: row.user.status,
+    startedAt: row.startedAt.toISOString(),
+    endedAt: row.endedAt?.toISOString() ?? null,
+    isActive: row.isActive,
+    durationMinutes: row.endedAt
+      ? Math.floor((row.endedAt.getTime() - row.startedAt.getTime()) / 60000)
+      : row.isActive
+        ? Math.floor((Date.now() - row.startedAt.getTime()) / 60000)
+        : null,
+  }
+}
+
+/**
+ * List all duty sessions for an organization on a given date.
+ * Requires `field_visits.view_all` permission.
+ * `date` should be YYYY-MM-DD.
+ */
+export async function getDutySessions(dateStr?: string): Promise<DutySessionInfo[]> {
+  const session = await requireApiSession()
+  if (!(session.user.permissions as string[]).includes('field_visits.view_all')) {
+    throw new Error('Permission denied: field_visits.view_all')
+  }
+
+  const orgId = session.user.organizationId
+  const now = new Date()
+
+  let startOfDay: Date
+  let endOfDay: Date
+
+  if (dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number)
+    startOfDay = new Date(y, m - 1, d)
+    endOfDay = new Date(y, m - 1, d + 1)
+  } else {
+    startOfDay = new Date(now)
+    startOfDay.setHours(0, 0, 0, 0)
+    endOfDay = new Date(startOfDay)
+    endOfDay.setDate(endOfDay.getDate() + 1)
+  }
+
+  const rows = await prisma.dutySession.findMany({
+    where: {
+      organizationId: orgId,
+      OR: [
+        { startedAt: { gte: startOfDay, lt: endOfDay } },
+        { endedAt: { gte: startOfDay, lt: endOfDay } },
+        { startedAt: { lt: startOfDay }, endedAt: null, isActive: true },
+      ],
+    },
+    include: {
+      user: { select: { name: true, email: true, status: true } },
+    },
+    orderBy: { startedAt: 'desc' },
+    take: 100,
+  })
+
+  return rows.map(mapDutySession)
 }

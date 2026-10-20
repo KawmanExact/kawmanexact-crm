@@ -34,6 +34,11 @@ export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
  */
 export type UserLiveLocation = $Result.DefaultSelection<Prisma.$UserLiveLocationPayload>
 /**
+ * Model DutySession
+ * 
+ */
+export type DutySession = $Result.DefaultSelection<Prisma.$DutySessionPayload>
+/**
  * Model Account
  * 
  */
@@ -634,6 +639,16 @@ export class PrismaClient<
     * ```
     */
   get userLiveLocation(): Prisma.UserLiveLocationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dutySession`: Exposes CRUD operations for the **DutySession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DutySessions
+    * const dutySessions = await prisma.dutySession.findMany()
+    * ```
+    */
+  get dutySession(): Prisma.DutySessionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.account`: Exposes CRUD operations for the **Account** model.
@@ -1515,6 +1530,7 @@ export namespace Prisma {
     User: 'User',
     Session: 'Session',
     UserLiveLocation: 'UserLiveLocation',
+    DutySession: 'DutySession',
     Account: 'Account',
     Verification: 'Verification',
     Role: 'Role',
@@ -1573,7 +1589,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "dealStageHistory" | "dealItem" | "product" | "salesTransaction" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "devicePushToken" | "auditLog" | "integration" | "webhookDelivery"
+      modelProps: "organization" | "user" | "session" | "userLiveLocation" | "dutySession" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRole" | "resourceGrant" | "department" | "team" | "folder" | "file" | "fileVersion" | "savedView" | "filePermission" | "fileShare" | "fileCategory" | "fileActivity" | "lead" | "company" | "contact" | "deal" | "dealStageHistory" | "dealItem" | "product" | "salesTransaction" | "activity" | "dailyReport" | "followUp" | "fieldVisit" | "checkIn" | "geoFence" | "visitReport" | "visitReportAttachment" | "aIConversation" | "aIMessage" | "aIUsage" | "aIInsight" | "aIReport" | "notification" | "devicePushToken" | "auditLog" | "integration" | "webhookDelivery"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1870,6 +1886,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserLiveLocationCountArgs<ExtArgs>
             result: $Utils.Optional<UserLiveLocationCountAggregateOutputType> | number
+          }
+        }
+      }
+      DutySession: {
+        payload: Prisma.$DutySessionPayload<ExtArgs>
+        fields: Prisma.DutySessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DutySessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DutySessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          findFirst: {
+            args: Prisma.DutySessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DutySessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          findMany: {
+            args: Prisma.DutySessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>[]
+          }
+          create: {
+            args: Prisma.DutySessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          createMany: {
+            args: Prisma.DutySessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DutySessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>[]
+          }
+          delete: {
+            args: Prisma.DutySessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          update: {
+            args: Prisma.DutySessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DutySessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DutySessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DutySessionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>[]
+          }
+          upsert: {
+            args: Prisma.DutySessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DutySessionPayload>
+          }
+          aggregate: {
+            args: Prisma.DutySessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDutySession>
+          }
+          groupBy: {
+            args: Prisma.DutySessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DutySessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DutySessionCountArgs<ExtArgs>
+            result: $Utils.Optional<DutySessionCountAggregateOutputType> | number
           }
         }
       }
@@ -5182,6 +5272,7 @@ export namespace Prisma {
     user?: UserOmit
     session?: SessionOmit
     userLiveLocation?: UserLiveLocationOmit
+    dutySession?: DutySessionOmit
     account?: AccountOmit
     verification?: VerificationOmit
     role?: RoleOmit
@@ -5335,6 +5426,7 @@ export namespace Prisma {
     users: number
     devicePushTokens: number
     liveLocations: number
+    dutySessions: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5368,6 +5460,7 @@ export namespace Prisma {
     users?: boolean | OrganizationCountOutputTypeCountUsersArgs
     devicePushTokens?: boolean | OrganizationCountOutputTypeCountDevicePushTokensArgs
     liveLocations?: boolean | OrganizationCountOutputTypeCountLiveLocationsArgs
+    dutySessions?: boolean | OrganizationCountOutputTypeCountDutySessionsArgs
   }
 
   // Custom InputTypes
@@ -5591,6 +5684,13 @@ export namespace Prisma {
     where?: UserLiveLocationWhereInput
   }
 
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountDutySessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DutySessionWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -5629,6 +5729,7 @@ export namespace Prisma {
     sessions: number
     managedTeams: number
     subordinates: number
+    dutySessions: number
     roles: number
     visitReports: number
   }
@@ -5666,6 +5767,7 @@ export namespace Prisma {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     managedTeams?: boolean | UserCountOutputTypeCountManagedTeamsArgs
     subordinates?: boolean | UserCountOutputTypeCountSubordinatesArgs
+    dutySessions?: boolean | UserCountOutputTypeCountDutySessionsArgs
     roles?: boolean | UserCountOutputTypeCountRolesArgs
     visitReports?: boolean | UserCountOutputTypeCountVisitReportsArgs
   }
@@ -5903,6 +6005,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSubordinatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDutySessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DutySessionWhereInput
   }
 
   /**
@@ -6929,6 +7038,7 @@ export namespace Prisma {
     users?: boolean | Organization$usersArgs<ExtArgs>
     devicePushTokens?: boolean | Organization$devicePushTokensArgs<ExtArgs>
     liveLocations?: boolean | Organization$liveLocationsArgs<ExtArgs>
+    dutySessions?: boolean | Organization$dutySessionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -7018,6 +7128,7 @@ export namespace Prisma {
     users?: boolean | Organization$usersArgs<ExtArgs>
     devicePushTokens?: boolean | Organization$devicePushTokensArgs<ExtArgs>
     liveLocations?: boolean | Organization$liveLocationsArgs<ExtArgs>
+    dutySessions?: boolean | Organization$dutySessionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -7056,6 +7167,7 @@ export namespace Prisma {
       users: Prisma.$UserPayload<ExtArgs>[]
       devicePushTokens: Prisma.$DevicePushTokenPayload<ExtArgs>[]
       liveLocations: Prisma.$UserLiveLocationPayload<ExtArgs>[]
+      dutySessions: Prisma.$DutySessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7497,6 +7609,7 @@ export namespace Prisma {
     users<T extends Organization$usersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     devicePushTokens<T extends Organization$devicePushTokensArgs<ExtArgs> = {}>(args?: Subset<T, Organization$devicePushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevicePushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     liveLocations<T extends Organization$liveLocationsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$liveLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserLiveLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    dutySessions<T extends Organization$dutySessionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$dutySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8654,6 +8767,30 @@ export namespace Prisma {
   }
 
   /**
+   * Organization.dutySessions
+   */
+  export type Organization$dutySessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    where?: DutySessionWhereInput
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    cursor?: DutySessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DutySessionScalarFieldEnum | DutySessionScalarFieldEnum[]
+  }
+
+  /**
    * Organization without action
    */
   export type OrganizationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8969,6 +9106,7 @@ export namespace Prisma {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     team?: boolean | User$teamArgs<ExtArgs>
     liveLocation?: boolean | User$liveLocationArgs<ExtArgs>
+    dutySessions?: boolean | User$dutySessionsArgs<ExtArgs>
     roles?: boolean | User$rolesArgs<ExtArgs>
     visitReports?: boolean | User$visitReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -9081,6 +9219,7 @@ export namespace Prisma {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     team?: boolean | User$teamArgs<ExtArgs>
     liveLocation?: boolean | User$liveLocationArgs<ExtArgs>
+    dutySessions?: boolean | User$dutySessionsArgs<ExtArgs>
     roles?: boolean | User$rolesArgs<ExtArgs>
     visitReports?: boolean | User$visitReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -9138,6 +9277,7 @@ export namespace Prisma {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       team: Prisma.$TeamPayload<ExtArgs> | null
       liveLocation: Prisma.$UserLiveLocationPayload<ExtArgs> | null
+      dutySessions: Prisma.$DutySessionPayload<ExtArgs>[]
       roles: Prisma.$UserRolePayload<ExtArgs>[]
       visitReports: Prisma.$VisitReportPayload<ExtArgs>[]
     }
@@ -9590,6 +9730,7 @@ export namespace Prisma {
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     team<T extends User$teamArgs<ExtArgs> = {}>(args?: Subset<T, User$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     liveLocation<T extends User$liveLocationArgs<ExtArgs> = {}>(args?: Subset<T, User$liveLocationArgs<ExtArgs>>): Prisma__UserLiveLocationClient<$Result.GetResult<Prisma.$UserLiveLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    dutySessions<T extends User$dutySessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$dutySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     roles<T extends User$rolesArgs<ExtArgs> = {}>(args?: Subset<T, User$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     visitReports<T extends User$visitReportsArgs<ExtArgs> = {}>(args?: Subset<T, User$visitReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VisitReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -10880,6 +11021,30 @@ export namespace Prisma {
      */
     include?: UserLiveLocationInclude<ExtArgs> | null
     where?: UserLiveLocationWhereInput
+  }
+
+  /**
+   * User.dutySessions
+   */
+  export type User$dutySessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    where?: DutySessionWhereInput
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    cursor?: DutySessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DutySessionScalarFieldEnum | DutySessionScalarFieldEnum[]
   }
 
   /**
@@ -13273,6 +13438,1116 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserLiveLocationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DutySession
+   */
+
+  export type AggregateDutySession = {
+    _count: DutySessionCountAggregateOutputType | null
+    _min: DutySessionMinAggregateOutputType | null
+    _max: DutySessionMaxAggregateOutputType | null
+  }
+
+  export type DutySessionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    startedAt: Date | null
+    endedAt: Date | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DutySessionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    startedAt: Date | null
+    endedAt: Date | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DutySessionCountAggregateOutputType = {
+    id: number
+    userId: number
+    organizationId: number
+    startedAt: number
+    endedAt: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DutySessionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    startedAt?: true
+    endedAt?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DutySessionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    startedAt?: true
+    endedAt?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DutySessionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    startedAt?: true
+    endedAt?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DutySessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DutySession to aggregate.
+     */
+    where?: DutySessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DutySessions to fetch.
+     */
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DutySessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DutySessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DutySessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DutySessions
+    **/
+    _count?: true | DutySessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DutySessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DutySessionMaxAggregateInputType
+  }
+
+  export type GetDutySessionAggregateType<T extends DutySessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDutySession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDutySession[P]>
+      : GetScalarType<T[P], AggregateDutySession[P]>
+  }
+
+
+
+
+  export type DutySessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DutySessionWhereInput
+    orderBy?: DutySessionOrderByWithAggregationInput | DutySessionOrderByWithAggregationInput[]
+    by: DutySessionScalarFieldEnum[] | DutySessionScalarFieldEnum
+    having?: DutySessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DutySessionCountAggregateInputType | true
+    _min?: DutySessionMinAggregateInputType
+    _max?: DutySessionMaxAggregateInputType
+  }
+
+  export type DutySessionGroupByOutputType = {
+    id: string
+    userId: string
+    organizationId: string
+    startedAt: Date
+    endedAt: Date | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: DutySessionCountAggregateOutputType | null
+    _min: DutySessionMinAggregateOutputType | null
+    _max: DutySessionMaxAggregateOutputType | null
+  }
+
+  type GetDutySessionGroupByPayload<T extends DutySessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DutySessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DutySessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DutySessionGroupByOutputType[P]>
+            : GetScalarType<T[P], DutySessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DutySessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dutySession"]>
+
+  export type DutySessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dutySession"]>
+
+  export type DutySessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dutySession"]>
+
+  export type DutySessionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    startedAt?: boolean
+    endedAt?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DutySessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "organizationId" | "startedAt" | "endedAt" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["dutySession"]>
+  export type DutySessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DutySessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DutySessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DutySessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DutySession"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      organizationId: string
+      startedAt: Date
+      endedAt: Date | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dutySession"]>
+    composites: {}
+  }
+
+  type DutySessionGetPayload<S extends boolean | null | undefined | DutySessionDefaultArgs> = $Result.GetResult<Prisma.$DutySessionPayload, S>
+
+  type DutySessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DutySessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DutySessionCountAggregateInputType | true
+    }
+
+  export interface DutySessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DutySession'], meta: { name: 'DutySession' } }
+    /**
+     * Find zero or one DutySession that matches the filter.
+     * @param {DutySessionFindUniqueArgs} args - Arguments to find a DutySession
+     * @example
+     * // Get one DutySession
+     * const dutySession = await prisma.dutySession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DutySessionFindUniqueArgs>(args: SelectSubset<T, DutySessionFindUniqueArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DutySession that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DutySessionFindUniqueOrThrowArgs} args - Arguments to find a DutySession
+     * @example
+     * // Get one DutySession
+     * const dutySession = await prisma.dutySession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DutySessionFindUniqueOrThrowArgs>(args: SelectSubset<T, DutySessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DutySession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionFindFirstArgs} args - Arguments to find a DutySession
+     * @example
+     * // Get one DutySession
+     * const dutySession = await prisma.dutySession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DutySessionFindFirstArgs>(args?: SelectSubset<T, DutySessionFindFirstArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DutySession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionFindFirstOrThrowArgs} args - Arguments to find a DutySession
+     * @example
+     * // Get one DutySession
+     * const dutySession = await prisma.dutySession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DutySessionFindFirstOrThrowArgs>(args?: SelectSubset<T, DutySessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DutySessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DutySessions
+     * const dutySessions = await prisma.dutySession.findMany()
+     * 
+     * // Get first 10 DutySessions
+     * const dutySessions = await prisma.dutySession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dutySessionWithIdOnly = await prisma.dutySession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DutySessionFindManyArgs>(args?: SelectSubset<T, DutySessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DutySession.
+     * @param {DutySessionCreateArgs} args - Arguments to create a DutySession.
+     * @example
+     * // Create one DutySession
+     * const DutySession = await prisma.dutySession.create({
+     *   data: {
+     *     // ... data to create a DutySession
+     *   }
+     * })
+     * 
+     */
+    create<T extends DutySessionCreateArgs>(args: SelectSubset<T, DutySessionCreateArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DutySessions.
+     * @param {DutySessionCreateManyArgs} args - Arguments to create many DutySessions.
+     * @example
+     * // Create many DutySessions
+     * const dutySession = await prisma.dutySession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DutySessionCreateManyArgs>(args?: SelectSubset<T, DutySessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DutySessions and returns the data saved in the database.
+     * @param {DutySessionCreateManyAndReturnArgs} args - Arguments to create many DutySessions.
+     * @example
+     * // Create many DutySessions
+     * const dutySession = await prisma.dutySession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DutySessions and only return the `id`
+     * const dutySessionWithIdOnly = await prisma.dutySession.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DutySessionCreateManyAndReturnArgs>(args?: SelectSubset<T, DutySessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DutySession.
+     * @param {DutySessionDeleteArgs} args - Arguments to delete one DutySession.
+     * @example
+     * // Delete one DutySession
+     * const DutySession = await prisma.dutySession.delete({
+     *   where: {
+     *     // ... filter to delete one DutySession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DutySessionDeleteArgs>(args: SelectSubset<T, DutySessionDeleteArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DutySession.
+     * @param {DutySessionUpdateArgs} args - Arguments to update one DutySession.
+     * @example
+     * // Update one DutySession
+     * const dutySession = await prisma.dutySession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DutySessionUpdateArgs>(args: SelectSubset<T, DutySessionUpdateArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DutySessions.
+     * @param {DutySessionDeleteManyArgs} args - Arguments to filter DutySessions to delete.
+     * @example
+     * // Delete a few DutySessions
+     * const { count } = await prisma.dutySession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DutySessionDeleteManyArgs>(args?: SelectSubset<T, DutySessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DutySessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DutySessions
+     * const dutySession = await prisma.dutySession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DutySessionUpdateManyArgs>(args: SelectSubset<T, DutySessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DutySessions and returns the data updated in the database.
+     * @param {DutySessionUpdateManyAndReturnArgs} args - Arguments to update many DutySessions.
+     * @example
+     * // Update many DutySessions
+     * const dutySession = await prisma.dutySession.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DutySessions and only return the `id`
+     * const dutySessionWithIdOnly = await prisma.dutySession.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DutySessionUpdateManyAndReturnArgs>(args: SelectSubset<T, DutySessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DutySession.
+     * @param {DutySessionUpsertArgs} args - Arguments to update or create a DutySession.
+     * @example
+     * // Update or create a DutySession
+     * const dutySession = await prisma.dutySession.upsert({
+     *   create: {
+     *     // ... data to create a DutySession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DutySession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DutySessionUpsertArgs>(args: SelectSubset<T, DutySessionUpsertArgs<ExtArgs>>): Prisma__DutySessionClient<$Result.GetResult<Prisma.$DutySessionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DutySessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionCountArgs} args - Arguments to filter DutySessions to count.
+     * @example
+     * // Count the number of DutySessions
+     * const count = await prisma.dutySession.count({
+     *   where: {
+     *     // ... the filter for the DutySessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DutySessionCountArgs>(
+      args?: Subset<T, DutySessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DutySessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DutySession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DutySessionAggregateArgs>(args: Subset<T, DutySessionAggregateArgs>): Prisma.PrismaPromise<GetDutySessionAggregateType<T>>
+
+    /**
+     * Group by DutySession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DutySessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DutySessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DutySessionGroupByArgs['orderBy'] }
+        : { orderBy?: DutySessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DutySessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDutySessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DutySession model
+   */
+  readonly fields: DutySessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DutySession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DutySessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DutySession model
+   */
+  interface DutySessionFieldRefs {
+    readonly id: FieldRef<"DutySession", 'String'>
+    readonly userId: FieldRef<"DutySession", 'String'>
+    readonly organizationId: FieldRef<"DutySession", 'String'>
+    readonly startedAt: FieldRef<"DutySession", 'DateTime'>
+    readonly endedAt: FieldRef<"DutySession", 'DateTime'>
+    readonly isActive: FieldRef<"DutySession", 'Boolean'>
+    readonly createdAt: FieldRef<"DutySession", 'DateTime'>
+    readonly updatedAt: FieldRef<"DutySession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DutySession findUnique
+   */
+  export type DutySessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter, which DutySession to fetch.
+     */
+    where: DutySessionWhereUniqueInput
+  }
+
+  /**
+   * DutySession findUniqueOrThrow
+   */
+  export type DutySessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter, which DutySession to fetch.
+     */
+    where: DutySessionWhereUniqueInput
+  }
+
+  /**
+   * DutySession findFirst
+   */
+  export type DutySessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter, which DutySession to fetch.
+     */
+    where?: DutySessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DutySessions to fetch.
+     */
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DutySessions.
+     */
+    cursor?: DutySessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DutySessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DutySessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DutySessions.
+     */
+    distinct?: DutySessionScalarFieldEnum | DutySessionScalarFieldEnum[]
+  }
+
+  /**
+   * DutySession findFirstOrThrow
+   */
+  export type DutySessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter, which DutySession to fetch.
+     */
+    where?: DutySessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DutySessions to fetch.
+     */
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DutySessions.
+     */
+    cursor?: DutySessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DutySessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DutySessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DutySessions.
+     */
+    distinct?: DutySessionScalarFieldEnum | DutySessionScalarFieldEnum[]
+  }
+
+  /**
+   * DutySession findMany
+   */
+  export type DutySessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter, which DutySessions to fetch.
+     */
+    where?: DutySessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DutySessions to fetch.
+     */
+    orderBy?: DutySessionOrderByWithRelationInput | DutySessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DutySessions.
+     */
+    cursor?: DutySessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DutySessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DutySessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DutySessions.
+     */
+    distinct?: DutySessionScalarFieldEnum | DutySessionScalarFieldEnum[]
+  }
+
+  /**
+   * DutySession create
+   */
+  export type DutySessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DutySession.
+     */
+    data: XOR<DutySessionCreateInput, DutySessionUncheckedCreateInput>
+  }
+
+  /**
+   * DutySession createMany
+   */
+  export type DutySessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DutySessions.
+     */
+    data: DutySessionCreateManyInput | DutySessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DutySession createManyAndReturn
+   */
+  export type DutySessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * The data used to create many DutySessions.
+     */
+    data: DutySessionCreateManyInput | DutySessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DutySession update
+   */
+  export type DutySessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DutySession.
+     */
+    data: XOR<DutySessionUpdateInput, DutySessionUncheckedUpdateInput>
+    /**
+     * Choose, which DutySession to update.
+     */
+    where: DutySessionWhereUniqueInput
+  }
+
+  /**
+   * DutySession updateMany
+   */
+  export type DutySessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DutySessions.
+     */
+    data: XOR<DutySessionUpdateManyMutationInput, DutySessionUncheckedUpdateManyInput>
+    /**
+     * Filter which DutySessions to update
+     */
+    where?: DutySessionWhereInput
+    /**
+     * Limit how many DutySessions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DutySession updateManyAndReturn
+   */
+  export type DutySessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * The data used to update DutySessions.
+     */
+    data: XOR<DutySessionUpdateManyMutationInput, DutySessionUncheckedUpdateManyInput>
+    /**
+     * Filter which DutySessions to update
+     */
+    where?: DutySessionWhereInput
+    /**
+     * Limit how many DutySessions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DutySession upsert
+   */
+  export type DutySessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DutySession to update in case it exists.
+     */
+    where: DutySessionWhereUniqueInput
+    /**
+     * In case the DutySession found by the `where` argument doesn't exist, create a new DutySession with this data.
+     */
+    create: XOR<DutySessionCreateInput, DutySessionUncheckedCreateInput>
+    /**
+     * In case the DutySession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DutySessionUpdateInput, DutySessionUncheckedUpdateInput>
+  }
+
+  /**
+   * DutySession delete
+   */
+  export type DutySessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
+    /**
+     * Filter which DutySession to delete.
+     */
+    where: DutySessionWhereUniqueInput
+  }
+
+  /**
+   * DutySession deleteMany
+   */
+  export type DutySessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DutySessions to delete
+     */
+    where?: DutySessionWhereInput
+    /**
+     * Limit how many DutySessions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DutySession without action
+   */
+  export type DutySessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DutySession
+     */
+    select?: DutySessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DutySession
+     */
+    omit?: DutySessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DutySessionInclude<ExtArgs> | null
   }
 
 
@@ -65875,6 +67150,20 @@ export namespace Prisma {
   export type UserLiveLocationScalarFieldEnum = (typeof UserLiveLocationScalarFieldEnum)[keyof typeof UserLiveLocationScalarFieldEnum]
 
 
+  export const DutySessionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    organizationId: 'organizationId',
+    startedAt: 'startedAt',
+    endedAt: 'endedAt',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DutySessionScalarFieldEnum = (typeof DutySessionScalarFieldEnum)[keyof typeof DutySessionScalarFieldEnum]
+
+
   export const AccountScalarFieldEnum: {
     id: 'id',
     accountId: 'accountId',
@@ -67037,6 +68326,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     devicePushTokens?: DevicePushTokenListRelationFilter
     liveLocations?: UserLiveLocationListRelationFilter
+    dutySessions?: DutySessionListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -67085,6 +68375,7 @@ export namespace Prisma {
     users?: UserOrderByRelationAggregateInput
     devicePushTokens?: DevicePushTokenOrderByRelationAggregateInput
     liveLocations?: UserLiveLocationOrderByRelationAggregateInput
+    dutySessions?: DutySessionOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -67136,6 +68427,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     devicePushTokens?: DevicePushTokenListRelationFilter
     liveLocations?: UserLiveLocationListRelationFilter
+    dutySessions?: DutySessionListRelationFilter
   }, "id" | "slug">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -67238,6 +68530,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     liveLocation?: XOR<UserLiveLocationNullableScalarRelationFilter, UserLiveLocationWhereInput> | null
+    dutySessions?: DutySessionListRelationFilter
     roles?: UserRoleListRelationFilter
     visitReports?: VisitReportListRelationFilter
   }
@@ -67297,6 +68590,7 @@ export namespace Prisma {
     organization?: OrganizationOrderByWithRelationInput
     team?: TeamOrderByWithRelationInput
     liveLocation?: UserLiveLocationOrderByWithRelationInput
+    dutySessions?: DutySessionOrderByRelationAggregateInput
     roles?: UserRoleOrderByRelationAggregateInput
     visitReports?: VisitReportOrderByRelationAggregateInput
   }
@@ -67359,6 +68653,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     liveLocation?: XOR<UserLiveLocationNullableScalarRelationFilter, UserLiveLocationWhereInput> | null
+    dutySessions?: DutySessionListRelationFilter
     roles?: UserRoleListRelationFilter
     visitReports?: VisitReportListRelationFilter
   }, "id" | "email">
@@ -67577,6 +68872,79 @@ export namespace Prisma {
     isTracking?: BoolWithAggregatesFilter<"UserLiveLocation"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"UserLiveLocation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"UserLiveLocation"> | Date | string
+  }
+
+  export type DutySessionWhereInput = {
+    AND?: DutySessionWhereInput | DutySessionWhereInput[]
+    OR?: DutySessionWhereInput[]
+    NOT?: DutySessionWhereInput | DutySessionWhereInput[]
+    id?: StringFilter<"DutySession"> | string
+    userId?: StringFilter<"DutySession"> | string
+    organizationId?: StringFilter<"DutySession"> | string
+    startedAt?: DateTimeFilter<"DutySession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"DutySession"> | Date | string | null
+    isActive?: BoolFilter<"DutySession"> | boolean
+    createdAt?: DateTimeFilter<"DutySession"> | Date | string
+    updatedAt?: DateTimeFilter<"DutySession"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type DutySessionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DutySessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DutySessionWhereInput | DutySessionWhereInput[]
+    OR?: DutySessionWhereInput[]
+    NOT?: DutySessionWhereInput | DutySessionWhereInput[]
+    userId?: StringFilter<"DutySession"> | string
+    organizationId?: StringFilter<"DutySession"> | string
+    startedAt?: DateTimeFilter<"DutySession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"DutySession"> | Date | string | null
+    isActive?: BoolFilter<"DutySession"> | boolean
+    createdAt?: DateTimeFilter<"DutySession"> | Date | string
+    updatedAt?: DateTimeFilter<"DutySession"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type DutySessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DutySessionCountOrderByAggregateInput
+    _max?: DutySessionMaxOrderByAggregateInput
+    _min?: DutySessionMinOrderByAggregateInput
+  }
+
+  export type DutySessionScalarWhereWithAggregatesInput = {
+    AND?: DutySessionScalarWhereWithAggregatesInput | DutySessionScalarWhereWithAggregatesInput[]
+    OR?: DutySessionScalarWhereWithAggregatesInput[]
+    NOT?: DutySessionScalarWhereWithAggregatesInput | DutySessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DutySession"> | string
+    userId?: StringWithAggregatesFilter<"DutySession"> | string
+    organizationId?: StringWithAggregatesFilter<"DutySession"> | string
+    startedAt?: DateTimeWithAggregatesFilter<"DutySession"> | Date | string
+    endedAt?: DateTimeNullableWithAggregatesFilter<"DutySession"> | Date | string | null
+    isActive?: BoolWithAggregatesFilter<"DutySession"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"DutySession"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DutySession"> | Date | string
   }
 
   export type AccountWhereInput = {
@@ -71836,6 +73204,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -71884,6 +73253,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -71932,6 +73302,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -71980,6 +73351,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -72087,6 +73459,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -72142,6 +73515,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -72197,6 +73571,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -72252,6 +73627,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -72494,6 +73870,81 @@ export namespace Prisma {
     heading?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     speed?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     isTracking?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionCreateInput = {
+    id?: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDutySessionsInput
+    user: UserCreateNestedOneWithoutDutySessionsInput
+  }
+
+  export type DutySessionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DutySessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDutySessionsNestedInput
+    user?: UserUpdateOneRequiredWithoutDutySessionsNestedInput
+  }
+
+  export type DutySessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionCreateManyInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DutySessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -77309,6 +78760,12 @@ export namespace Prisma {
     none?: UserLiveLocationWhereInput
   }
 
+  export type DutySessionListRelationFilter = {
+    every?: DutySessionWhereInput
+    some?: DutySessionWhereInput
+    none?: DutySessionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -77431,6 +78888,10 @@ export namespace Prisma {
   }
 
   export type UserLiveLocationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DutySessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -77946,6 +79407,39 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type DutySessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DutySessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DutySessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    startedAt?: SortOrder
+    endedAt?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AccountProviderIdAccountIdCompoundUniqueInput = {
@@ -80805,6 +82299,13 @@ export namespace Prisma {
     connect?: UserLiveLocationWhereUniqueInput | UserLiveLocationWhereUniqueInput[]
   }
 
+  export type DutySessionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput> | DutySessionCreateWithoutOrganizationInput[] | DutySessionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutOrganizationInput | DutySessionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DutySessionCreateManyOrganizationInputEnvelope
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+  }
+
   export type AIConversationUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<AIConversationCreateWithoutOrganizationInput, AIConversationUncheckedCreateWithoutOrganizationInput> | AIConversationCreateWithoutOrganizationInput[] | AIConversationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutOrganizationInput | AIConversationCreateOrConnectWithoutOrganizationInput[]
@@ -81013,6 +82514,13 @@ export namespace Prisma {
     connectOrCreate?: UserLiveLocationCreateOrConnectWithoutOrganizationInput | UserLiveLocationCreateOrConnectWithoutOrganizationInput[]
     createMany?: UserLiveLocationCreateManyOrganizationInputEnvelope
     connect?: UserLiveLocationWhereUniqueInput | UserLiveLocationWhereUniqueInput[]
+  }
+
+  export type DutySessionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput> | DutySessionCreateWithoutOrganizationInput[] | DutySessionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutOrganizationInput | DutySessionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DutySessionCreateManyOrganizationInputEnvelope
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -81447,6 +82955,20 @@ export namespace Prisma {
     deleteMany?: UserLiveLocationScalarWhereInput | UserLiveLocationScalarWhereInput[]
   }
 
+  export type DutySessionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput> | DutySessionCreateWithoutOrganizationInput[] | DutySessionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutOrganizationInput | DutySessionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DutySessionUpsertWithWhereUniqueWithoutOrganizationInput | DutySessionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DutySessionCreateManyOrganizationInputEnvelope
+    set?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    disconnect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    delete?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    update?: DutySessionUpdateWithWhereUniqueWithoutOrganizationInput | DutySessionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DutySessionUpdateManyWithWhereWithoutOrganizationInput | DutySessionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+  }
+
   export type AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIConversationCreateWithoutOrganizationInput, AIConversationUncheckedCreateWithoutOrganizationInput> | AIConversationCreateWithoutOrganizationInput[] | AIConversationUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutOrganizationInput | AIConversationCreateOrConnectWithoutOrganizationInput[]
@@ -81867,6 +83389,20 @@ export namespace Prisma {
     deleteMany?: UserLiveLocationScalarWhereInput | UserLiveLocationScalarWhereInput[]
   }
 
+  export type DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput> | DutySessionCreateWithoutOrganizationInput[] | DutySessionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutOrganizationInput | DutySessionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DutySessionUpsertWithWhereUniqueWithoutOrganizationInput | DutySessionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DutySessionCreateManyOrganizationInputEnvelope
+    set?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    disconnect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    delete?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    update?: DutySessionUpdateWithWhereUniqueWithoutOrganizationInput | DutySessionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DutySessionUpdateManyWithWhereWithoutOrganizationInput | DutySessionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+  }
+
   export type AIConversationCreateNestedManyWithoutUserInput = {
     create?: XOR<AIConversationCreateWithoutUserInput, AIConversationUncheckedCreateWithoutUserInput> | AIConversationCreateWithoutUserInput[] | AIConversationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AIConversationCreateOrConnectWithoutUserInput | AIConversationCreateOrConnectWithoutUserInput[]
@@ -82121,6 +83657,13 @@ export namespace Prisma {
     connect?: UserLiveLocationWhereUniqueInput
   }
 
+  export type DutySessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput> | DutySessionCreateWithoutUserInput[] | DutySessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutUserInput | DutySessionCreateOrConnectWithoutUserInput[]
+    createMany?: DutySessionCreateManyUserInputEnvelope
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+  }
+
   export type UserRoleCreateNestedManyWithoutUserInput = {
     create?: XOR<UserRoleCreateWithoutUserInput, UserRoleUncheckedCreateWithoutUserInput> | UserRoleCreateWithoutUserInput[] | UserRoleUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserRoleCreateOrConnectWithoutUserInput | UserRoleCreateOrConnectWithoutUserInput[]
@@ -82363,6 +83906,13 @@ export namespace Prisma {
     create?: XOR<UserLiveLocationCreateWithoutUserInput, UserLiveLocationUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserLiveLocationCreateOrConnectWithoutUserInput
     connect?: UserLiveLocationWhereUniqueInput
+  }
+
+  export type DutySessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput> | DutySessionCreateWithoutUserInput[] | DutySessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutUserInput | DutySessionCreateOrConnectWithoutUserInput[]
+    createMany?: DutySessionCreateManyUserInputEnvelope
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
   }
 
   export type UserRoleUncheckedCreateNestedManyWithoutUserInput = {
@@ -82887,6 +84437,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserLiveLocationUpdateToOneWithWhereWithoutUserInput, UserLiveLocationUpdateWithoutUserInput>, UserLiveLocationUncheckedUpdateWithoutUserInput>
   }
 
+  export type DutySessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput> | DutySessionCreateWithoutUserInput[] | DutySessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutUserInput | DutySessionCreateOrConnectWithoutUserInput[]
+    upsert?: DutySessionUpsertWithWhereUniqueWithoutUserInput | DutySessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DutySessionCreateManyUserInputEnvelope
+    set?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    disconnect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    delete?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    update?: DutySessionUpdateWithWhereUniqueWithoutUserInput | DutySessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DutySessionUpdateManyWithWhereWithoutUserInput | DutySessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+  }
+
   export type UserRoleUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserRoleCreateWithoutUserInput, UserRoleUncheckedCreateWithoutUserInput> | UserRoleCreateWithoutUserInput[] | UserRoleUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserRoleCreateOrConnectWithoutUserInput | UserRoleCreateOrConnectWithoutUserInput[]
@@ -83373,6 +84937,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserLiveLocationUpdateToOneWithWhereWithoutUserInput, UserLiveLocationUpdateWithoutUserInput>, UserLiveLocationUncheckedUpdateWithoutUserInput>
   }
 
+  export type DutySessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput> | DutySessionCreateWithoutUserInput[] | DutySessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DutySessionCreateOrConnectWithoutUserInput | DutySessionCreateOrConnectWithoutUserInput[]
+    upsert?: DutySessionUpsertWithWhereUniqueWithoutUserInput | DutySessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DutySessionCreateManyUserInputEnvelope
+    set?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    disconnect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    delete?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    connect?: DutySessionWhereUniqueInput | DutySessionWhereUniqueInput[]
+    update?: DutySessionUpdateWithWhereUniqueWithoutUserInput | DutySessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DutySessionUpdateManyWithWhereWithoutUserInput | DutySessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+  }
+
   export type UserRoleUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserRoleCreateWithoutUserInput, UserRoleUncheckedCreateWithoutUserInput> | UserRoleCreateWithoutUserInput[] | UserRoleUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserRoleCreateOrConnectWithoutUserInput | UserRoleCreateOrConnectWithoutUserInput[]
@@ -83457,6 +85035,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutLiveLocationInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLiveLocationInput, UserUpdateWithoutLiveLocationInput>, UserUncheckedUpdateWithoutLiveLocationInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutDutySessionsInput = {
+    create?: XOR<OrganizationCreateWithoutDutySessionsInput, OrganizationUncheckedCreateWithoutDutySessionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDutySessionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutDutySessionsInput = {
+    create?: XOR<UserCreateWithoutDutySessionsInput, UserUncheckedCreateWithoutDutySessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDutySessionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutDutySessionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutDutySessionsInput, OrganizationUncheckedCreateWithoutDutySessionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDutySessionsInput
+    upsert?: OrganizationUpsertWithoutDutySessionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDutySessionsInput, OrganizationUpdateWithoutDutySessionsInput>, OrganizationUncheckedUpdateWithoutDutySessionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutDutySessionsNestedInput = {
+    create?: XOR<UserCreateWithoutDutySessionsInput, UserUncheckedCreateWithoutDutySessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDutySessionsInput
+    upsert?: UserUpsertWithoutDutySessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDutySessionsInput, UserUpdateWithoutDutySessionsInput>, UserUncheckedUpdateWithoutDutySessionsInput>
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -88887,6 +90493,7 @@ export namespace Prisma {
     subordinates?: UserCreateNestedManyWithoutManagerInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -88941,6 +90548,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -89018,6 +90626,36 @@ export namespace Prisma {
 
   export type UserLiveLocationCreateManyOrganizationInputEnvelope = {
     data: UserLiveLocationCreateManyOrganizationInput | UserLiveLocationCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DutySessionCreateWithoutOrganizationInput = {
+    id?: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDutySessionsInput
+  }
+
+  export type DutySessionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    userId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DutySessionCreateOrConnectWithoutOrganizationInput = {
+    where: DutySessionWhereUniqueInput
+    create: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DutySessionCreateManyOrganizationInputEnvelope = {
+    data: DutySessionCreateManyOrganizationInput | DutySessionCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -90102,6 +91740,36 @@ export namespace Prisma {
     isTracking?: BoolFilter<"UserLiveLocation"> | boolean
     createdAt?: DateTimeFilter<"UserLiveLocation"> | Date | string
     updatedAt?: DateTimeFilter<"UserLiveLocation"> | Date | string
+  }
+
+  export type DutySessionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: DutySessionWhereUniqueInput
+    update: XOR<DutySessionUpdateWithoutOrganizationInput, DutySessionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<DutySessionCreateWithoutOrganizationInput, DutySessionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DutySessionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: DutySessionWhereUniqueInput
+    data: XOR<DutySessionUpdateWithoutOrganizationInput, DutySessionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DutySessionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: DutySessionScalarWhereInput
+    data: XOR<DutySessionUpdateManyMutationInput, DutySessionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type DutySessionScalarWhereInput = {
+    AND?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+    OR?: DutySessionScalarWhereInput[]
+    NOT?: DutySessionScalarWhereInput | DutySessionScalarWhereInput[]
+    id?: StringFilter<"DutySession"> | string
+    userId?: StringFilter<"DutySession"> | string
+    organizationId?: StringFilter<"DutySession"> | string
+    startedAt?: DateTimeFilter<"DutySession"> | Date | string
+    endedAt?: DateTimeNullableFilter<"DutySession"> | Date | string | null
+    isActive?: BoolFilter<"DutySession"> | boolean
+    createdAt?: DateTimeFilter<"DutySession"> | Date | string
+    updatedAt?: DateTimeFilter<"DutySession"> | Date | string
   }
 
   export type AIConversationCreateWithoutUserInput = {
@@ -91533,6 +93201,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -91587,6 +93256,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -91646,6 +93316,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -91700,6 +93371,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -91759,6 +93431,7 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -91806,6 +93479,7 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -91873,6 +93547,36 @@ export namespace Prisma {
   export type UserLiveLocationCreateOrConnectWithoutUserInput = {
     where: UserLiveLocationWhereUniqueInput
     create: XOR<UserLiveLocationCreateWithoutUserInput, UserLiveLocationUncheckedCreateWithoutUserInput>
+  }
+
+  export type DutySessionCreateWithoutUserInput = {
+    id?: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDutySessionsInput
+  }
+
+  export type DutySessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    organizationId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DutySessionCreateOrConnectWithoutUserInput = {
+    where: DutySessionWhereUniqueInput
+    create: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DutySessionCreateManyUserInputEnvelope = {
+    data: DutySessionCreateManyUserInput | DutySessionCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserRoleCreateWithoutUserInput = {
@@ -92640,6 +94344,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -92694,6 +94399,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -92770,6 +94476,7 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -92817,6 +94524,7 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type TeamUpsertWithoutUsersInput = {
@@ -92891,6 +94599,22 @@ export namespace Prisma {
     isTracking?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: DutySessionWhereUniqueInput
+    update: XOR<DutySessionUpdateWithoutUserInput, DutySessionUncheckedUpdateWithoutUserInput>
+    create: XOR<DutySessionCreateWithoutUserInput, DutySessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DutySessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: DutySessionWhereUniqueInput
+    data: XOR<DutySessionUpdateWithoutUserInput, DutySessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DutySessionUpdateManyWithWhereWithoutUserInput = {
+    where: DutySessionScalarWhereInput
+    data: XOR<DutySessionUpdateManyMutationInput, DutySessionUncheckedUpdateManyWithoutUserInput>
   }
 
   export type UserRoleUpsertWithWhereUniqueWithoutUserInput = {
@@ -93003,6 +94727,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -93057,6 +94782,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -93127,6 +94853,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -93181,6 +94908,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -93230,6 +94958,7 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLiveLocationsInput = {
@@ -93277,6 +95006,7 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLiveLocationsInput = {
@@ -93334,6 +95064,7 @@ export namespace Prisma {
     subordinates?: UserCreateNestedManyWithoutManagerInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -93388,6 +95119,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -93453,6 +95185,7 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLiveLocationsInput = {
@@ -93500,6 +95233,7 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutLiveLocationInput = {
@@ -93563,6 +95297,7 @@ export namespace Prisma {
     subordinates?: UserUpdateManyWithoutManagerNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -93617,6 +95352,451 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
+    roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type OrganizationCreateWithoutDutySessionsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportCreateNestedManyWithoutOrganizationInput
+    deals?: DealCreateNestedManyWithoutOrganizationInput
+    dealItems?: DealItemCreateNestedManyWithoutOrganizationInput
+    dealStageHistory?: DealStageHistoryCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryCreateNestedManyWithoutOrganizationInput
+    folders?: FolderCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    products?: ProductCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewCreateNestedManyWithoutOrganizationInput
+    teams?: TeamCreateNestedManyWithoutOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutDutySessionsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo?: string | null
+    website?: string | null
+    industry?: string | null
+    address?: string | null
+    phone?: string | null
+    email?: string | null
+    timezone?: string
+    currency?: string
+    dateFormat?: string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    aiInsights?: AIInsightUncheckedCreateNestedManyWithoutOrganizationInput
+    aiReports?: AIReportUncheckedCreateNestedManyWithoutOrganizationInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutOrganizationInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    companies?: CompanyUncheckedCreateNestedManyWithoutOrganizationInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutOrganizationInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutOrganizationInput
+    deals?: DealUncheckedCreateNestedManyWithoutOrganizationInput
+    dealItems?: DealItemUncheckedCreateNestedManyWithoutOrganizationInput
+    dealStageHistory?: DealStageHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    visits?: FieldVisitUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    fileCategories?: FileCategoryUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    followUps?: FollowUpUncheckedCreateNestedManyWithoutOrganizationInput
+    geoFences?: GeoFenceUncheckedCreateNestedManyWithoutOrganizationInput
+    integrations?: IntegrationUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    products?: ProductUncheckedCreateNestedManyWithoutOrganizationInput
+    resourceGrants?: ResourceGrantUncheckedCreateNestedManyWithoutOrganizationInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutOrganizationInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutOrganizationInput
+    teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
+    liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutDutySessionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutDutySessionsInput, OrganizationUncheckedCreateWithoutDutySessionsInput>
+  }
+
+  export type UserCreateWithoutDutySessionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    aiConversations?: AIConversationCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportCreateNestedManyWithoutGeneratedByInput
+    aiUsages?: AIUsageCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: ActivityCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactCreateNestedManyWithoutOwnerInput
+    dailyReports?: DailyReportCreateNestedManyWithoutUserInput
+    ownedDeals?: DealCreateNestedManyWithoutOwnerInput
+    movedDealHistory?: DealStageHistoryCreateNestedManyWithoutMovedByInput
+    managedDepartments?: DepartmentCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionCreateNestedManyWithoutSalespersonInput
+    savedViews?: SavedViewCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    managedTeams?: TeamCreateNestedManyWithoutManagerInput
+    department?: DepartmentCreateNestedOneWithoutUsersInput
+    manager?: UserCreateNestedOneWithoutSubordinatesInput
+    subordinates?: UserCreateNestedManyWithoutManagerInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    team?: TeamCreateNestedOneWithoutUsersInput
+    liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    roles?: UserRoleCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutDutySessionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    passwordHash?: string | null
+    image?: string | null
+    employeeId?: string | null
+    phone?: string | null
+    designation?: string | null
+    status?: $Enums.UserStatus
+    emailVerified?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    departmentId?: string | null
+    teamId?: string | null
+    managerId?: string | null
+    aiConversations?: AIConversationUncheckedCreateNestedManyWithoutUserInput
+    generatedAIReports?: AIReportUncheckedCreateNestedManyWithoutGeneratedByInput
+    aiUsages?: AIUsageUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutActorInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    ownedCompanies?: CompanyUncheckedCreateNestedManyWithoutOwnerInput
+    ownedContacts?: ContactUncheckedCreateNestedManyWithoutOwnerInput
+    dailyReports?: DailyReportUncheckedCreateNestedManyWithoutUserInput
+    ownedDeals?: DealUncheckedCreateNestedManyWithoutOwnerInput
+    movedDealHistory?: DealStageHistoryUncheckedCreateNestedManyWithoutMovedByInput
+    managedDepartments?: DepartmentUncheckedCreateNestedManyWithoutManagerInput
+    assignedVisits?: FieldVisitUncheckedCreateNestedManyWithoutAssigneeInput
+    uploadedFiles?: FileUncheckedCreateNestedManyWithoutUploadedByInput
+    fileActivities?: FileActivityUncheckedCreateNestedManyWithoutUserInput
+    createdFilePermissions?: FilePermissionUncheckedCreateNestedManyWithoutCreatedByInput
+    filePermissions?: FilePermissionUncheckedCreateNestedManyWithoutUserInput
+    fileSharesBy?: FileShareUncheckedCreateNestedManyWithoutSharedByInput
+    fileSharesWith?: FileShareUncheckedCreateNestedManyWithoutSharedWithInput
+    uploadedFileVersions?: FileVersionUncheckedCreateNestedManyWithoutUploadedByInput
+    createdFolders?: FolderUncheckedCreateNestedManyWithoutCreatedByInput
+    ownedFollowUps?: FollowUpUncheckedCreateNestedManyWithoutOwnerInput
+    ownedLeads?: LeadUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutUserInput
+    grantsGiven?: ResourceGrantUncheckedCreateNestedManyWithoutGrantorInput
+    salesTransactions?: SalesTransactionUncheckedCreateNestedManyWithoutSalespersonInput
+    savedViews?: SavedViewUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
+    subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
+    liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
+    visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutDutySessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDutySessionsInput, UserUncheckedCreateWithoutDutySessionsInput>
+  }
+
+  export type OrganizationUpsertWithoutDutySessionsInput = {
+    update: XOR<OrganizationUpdateWithoutDutySessionsInput, OrganizationUncheckedUpdateWithoutDutySessionsInput>
+    create: XOR<OrganizationCreateWithoutDutySessionsInput, OrganizationUncheckedCreateWithoutDutySessionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutDutySessionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutDutySessionsInput, OrganizationUncheckedUpdateWithoutDutySessionsInput>
+  }
+
+  export type OrganizationUpdateWithoutDutySessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUpdateManyWithoutOrganizationNestedInput
+    dealItems?: DealItemUpdateManyWithoutOrganizationNestedInput
+    dealStageHistory?: DealStageHistoryUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUpdateManyWithoutOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutDutySessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    dateFormat?: StringFieldUpdateOperationsInput | string
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiInsights?: AIInsightUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiReports?: AIReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutOrganizationNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    companies?: CompanyUncheckedUpdateManyWithoutOrganizationNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutOrganizationNestedInput
+    deals?: DealUncheckedUpdateManyWithoutOrganizationNestedInput
+    dealItems?: DealItemUncheckedUpdateManyWithoutOrganizationNestedInput
+    dealStageHistory?: DealStageHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    visits?: FieldVisitUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    fileCategories?: FileCategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    followUps?: FollowUpUncheckedUpdateManyWithoutOrganizationNestedInput
+    geoFences?: GeoFenceUncheckedUpdateManyWithoutOrganizationNestedInput
+    integrations?: IntegrationUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    products?: ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+    resourceGrants?: ResourceGrantUncheckedUpdateManyWithoutOrganizationNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutOrganizationNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
+    liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutDutySessionsInput = {
+    update: XOR<UserUpdateWithoutDutySessionsInput, UserUncheckedUpdateWithoutDutySessionsInput>
+    create: XOR<UserCreateWithoutDutySessionsInput, UserUncheckedCreateWithoutDutySessionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDutySessionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDutySessionsInput, UserUncheckedUpdateWithoutDutySessionsInput>
+  }
+
+  export type UserUpdateWithoutDutySessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiConversations?: AIConversationUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUpdateManyWithoutGeneratedByNestedInput
+    aiUsages?: AIUsageUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: ActivityUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUpdateManyWithoutOwnerNestedInput
+    dailyReports?: DailyReportUpdateManyWithoutUserNestedInput
+    ownedDeals?: DealUpdateManyWithoutOwnerNestedInput
+    movedDealHistory?: DealStageHistoryUpdateManyWithoutMovedByNestedInput
+    managedDepartments?: DepartmentUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUpdateManyWithoutSalespersonNestedInput
+    savedViews?: SavedViewUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUpdateManyWithoutManagerNestedInput
+    department?: DepartmentUpdateOneWithoutUsersNestedInput
+    manager?: UserUpdateOneWithoutSubordinatesNestedInput
+    subordinates?: UserUpdateManyWithoutManagerNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    team?: TeamUpdateOneWithoutUsersNestedInput
+    liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    roles?: UserRoleUpdateManyWithoutUserNestedInput
+    visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDutySessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    designation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    managerId?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConversations?: AIConversationUncheckedUpdateManyWithoutUserNestedInput
+    generatedAIReports?: AIReportUncheckedUpdateManyWithoutGeneratedByNestedInput
+    aiUsages?: AIUsageUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutActorNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    ownedCompanies?: CompanyUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedContacts?: ContactUncheckedUpdateManyWithoutOwnerNestedInput
+    dailyReports?: DailyReportUncheckedUpdateManyWithoutUserNestedInput
+    ownedDeals?: DealUncheckedUpdateManyWithoutOwnerNestedInput
+    movedDealHistory?: DealStageHistoryUncheckedUpdateManyWithoutMovedByNestedInput
+    managedDepartments?: DepartmentUncheckedUpdateManyWithoutManagerNestedInput
+    assignedVisits?: FieldVisitUncheckedUpdateManyWithoutAssigneeNestedInput
+    uploadedFiles?: FileUncheckedUpdateManyWithoutUploadedByNestedInput
+    fileActivities?: FileActivityUncheckedUpdateManyWithoutUserNestedInput
+    createdFilePermissions?: FilePermissionUncheckedUpdateManyWithoutCreatedByNestedInput
+    filePermissions?: FilePermissionUncheckedUpdateManyWithoutUserNestedInput
+    fileSharesBy?: FileShareUncheckedUpdateManyWithoutSharedByNestedInput
+    fileSharesWith?: FileShareUncheckedUpdateManyWithoutSharedWithNestedInput
+    uploadedFileVersions?: FileVersionUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdFolders?: FolderUncheckedUpdateManyWithoutCreatedByNestedInput
+    ownedFollowUps?: FollowUpUncheckedUpdateManyWithoutOwnerNestedInput
+    ownedLeads?: LeadUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutUserNestedInput
+    grantsGiven?: ResourceGrantUncheckedUpdateManyWithoutGrantorNestedInput
+    salesTransactions?: SalesTransactionUncheckedUpdateManyWithoutSalespersonNestedInput
+    savedViews?: SavedViewUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
+    subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
+    liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -93671,6 +95851,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -93725,6 +95906,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -93795,6 +95977,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -93849,6 +96032,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -94211,6 +96395,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
 
@@ -94265,6 +96450,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
@@ -94368,6 +96554,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
 
@@ -94422,6 +96609,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
@@ -94475,6 +96663,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -94529,6 +96718,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -94583,6 +96773,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutResourceGrantsInput = {
@@ -94630,6 +96821,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutResourceGrantsInput = {
@@ -94725,6 +96917,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -94779,6 +96972,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -94839,6 +97033,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutResourceGrantsInput = {
@@ -94886,6 +97081,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RoleUpsertWithoutResourceGrantsInput = {
@@ -94971,6 +97167,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -95025,6 +97222,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -95079,6 +97277,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDepartmentsInput = {
@@ -95126,6 +97325,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDepartmentsInput = {
@@ -95251,6 +97451,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -95305,6 +97506,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -95380,6 +97582,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -95434,6 +97637,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -95494,6 +97698,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDepartmentsInput = {
@@ -95541,6 +97746,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FilePermissionUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -95702,6 +97908,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -95756,6 +97963,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -95810,6 +98018,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutTeamsInput = {
@@ -95857,6 +98066,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutTeamsInput = {
@@ -95914,6 +98124,7 @@ export namespace Prisma {
     subordinates?: UserCreateNestedManyWithoutManagerInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -95968,6 +98179,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -96094,6 +98306,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -96148,6 +98361,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -96208,6 +98422,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutTeamsInput = {
@@ -96255,6 +98470,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutTeamInput = {
@@ -96411,6 +98627,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -96465,6 +98682,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -96519,6 +98737,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFoldersInput = {
@@ -96566,6 +98785,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFoldersInput = {
@@ -96729,6 +98949,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -96783,6 +99004,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -96843,6 +99065,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFoldersInput = {
@@ -96890,6 +99113,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FolderUpsertWithoutChildrenInput = {
@@ -97017,6 +99241,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFilesInput = {
@@ -97064,6 +99289,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFilesInput = {
@@ -97121,6 +99347,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -97175,6 +99402,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -97421,6 +99649,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFilesInput = {
@@ -97468,6 +99697,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutUploadedFilesInput = {
@@ -97531,6 +99761,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -97585,6 +99816,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -97780,6 +100012,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -97834,6 +100067,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -97961,6 +100195,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -98015,6 +100250,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -98064,6 +100300,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSavedViewsInput = {
@@ -98111,6 +100348,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSavedViewsInput = {
@@ -98168,6 +100406,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -98222,6 +100461,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -98287,6 +100527,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSavedViewsInput = {
@@ -98334,6 +100575,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutSavedViewsInput = {
@@ -98397,6 +100639,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -98451,6 +100694,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -98505,6 +100749,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -98559,6 +100804,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -98758,6 +101004,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -98812,6 +101059,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -98882,6 +101130,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -98936,6 +101185,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -99165,6 +101415,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -99219,6 +101470,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -99324,6 +101576,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -99378,6 +101631,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -99437,6 +101691,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -99491,6 +101746,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -99618,6 +101874,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -99672,6 +101929,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -99737,6 +101995,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -99791,6 +102050,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -99840,6 +102100,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFileCategoriesInput = {
@@ -99887,6 +102148,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFileCategoriesInput = {
@@ -99950,6 +102212,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFileCategoriesInput = {
@@ -99997,6 +102260,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FileCreateWithoutActivitiesInput = {
@@ -100100,6 +102364,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -100154,6 +102419,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -100281,6 +102547,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -100335,6 +102602,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -100706,6 +102974,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLeadsInput = {
@@ -100753,6 +103022,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLeadsInput = {
@@ -100810,6 +103080,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -100864,6 +103135,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -101109,6 +103381,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLeadsInput = {
@@ -101156,6 +103429,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedLeadsInput = {
@@ -101219,6 +103493,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -101273,6 +103548,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -101358,6 +103634,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCompaniesInput = {
@@ -101405,6 +103682,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCompaniesInput = {
@@ -101462,6 +103740,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -101516,6 +103795,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -102085,6 +104365,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCompaniesInput = {
@@ -102132,6 +104413,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedCompaniesInput = {
@@ -102195,6 +104477,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -102249,6 +104532,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -102509,6 +104793,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutContactsInput = {
@@ -102556,6 +104841,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutContactsInput = {
@@ -102613,6 +104899,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -102667,6 +104954,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -103131,6 +105419,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutContactsInput = {
@@ -103178,6 +105467,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedContactsInput = {
@@ -103241,6 +105531,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -103295,6 +105586,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -103655,6 +105947,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDealsInput = {
@@ -103702,6 +105995,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDealsInput = {
@@ -103759,6 +106053,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -103813,6 +106108,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -104285,6 +106581,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDealsInput = {
@@ -104332,6 +106629,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedDealsInput = {
@@ -104395,6 +106693,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -104449,6 +106748,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -104684,6 +106984,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -104738,6 +107039,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -104792,6 +107094,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDealStageHistoryInput = {
@@ -104839,6 +107142,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDealStageHistoryInput = {
@@ -105030,6 +107334,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -105084,6 +107389,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -105144,6 +107450,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDealStageHistoryInput = {
@@ -105191,6 +107498,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type DealCreateWithoutItemsInput = {
@@ -105355,6 +107663,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDealItemsInput = {
@@ -105402,6 +107711,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDealItemsInput = {
@@ -105633,6 +107943,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDealItemsInput = {
@@ -105680,6 +107991,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProductUpsertWithoutDealItemsInput = {
@@ -105810,6 +108122,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutProductsInput = {
@@ -105857,6 +108170,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutProductsInput = {
@@ -106014,6 +108328,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutProductsInput = {
@@ -106061,6 +108376,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type SalesTransactionUpsertWithWhereUniqueWithoutProductInput = {
@@ -106187,6 +108503,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSalesTransactionsInput = {
@@ -106234,6 +108551,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSalesTransactionsInput = {
@@ -106336,6 +108654,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -106390,6 +108709,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -106524,6 +108844,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSalesTransactionsInput = {
@@ -106571,6 +108892,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProductUpsertWithoutSalesTransactionsInput = {
@@ -106685,6 +109007,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -106739,6 +109062,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -106793,6 +109117,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -106847,6 +109172,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -107229,6 +109555,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutActivitiesInput = {
@@ -107276,6 +109603,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutActivitiesInput = {
@@ -107344,6 +109672,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -107398,6 +109727,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -107810,6 +110140,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutActivitiesInput = {
@@ -107857,6 +110188,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AIReportCreateWithoutDailyReportInput = {
@@ -107931,6 +110263,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDailyReportsInput = {
@@ -107978,6 +110311,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDailyReportsInput = {
@@ -108035,6 +110369,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -108089,6 +110424,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -108187,6 +110523,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDailyReportsInput = {
@@ -108234,6 +110571,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutDailyReportsInput = {
@@ -108297,6 +110635,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -108351,6 +110690,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -108728,6 +111068,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFollowUpsInput = {
@@ -108775,6 +111116,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFollowUpsInput = {
@@ -108832,6 +111174,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -108886,6 +111229,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -109303,6 +111647,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFollowUpsInput = {
@@ -109350,6 +111695,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOwnedFollowUpsInput = {
@@ -109413,6 +111759,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -109467,6 +111814,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -109557,6 +111905,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -109611,6 +111960,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -109902,6 +112252,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutVisitsInput = {
@@ -109949,6 +112300,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutVisitsInput = {
@@ -110073,6 +112425,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -110127,6 +112480,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -110442,6 +112796,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutVisitsInput = {
@@ -110489,6 +112844,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type VisitReportUpsertWithWhereUniqueWithoutVisitInput = {
@@ -110557,6 +112913,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -110611,6 +112968,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -110728,6 +113086,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -110782,6 +113141,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -110947,6 +113307,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutGeoFencesInput = {
@@ -110994,6 +113355,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutGeoFencesInput = {
@@ -111126,6 +113488,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutGeoFencesInput = {
@@ -111173,6 +113536,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserCreateWithoutVisitReportsInput = {
@@ -111226,6 +113590,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
   }
 
@@ -111280,6 +113645,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -111419,6 +113785,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
   }
 
@@ -111473,6 +113840,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -111774,6 +114142,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiConversationsInput = {
@@ -111821,6 +114190,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiConversationsInput = {
@@ -111878,6 +114248,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -111932,6 +114303,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -112023,6 +114395,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiConversationsInput = {
@@ -112070,6 +114443,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutAiConversationsInput = {
@@ -112133,6 +114507,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -112187,6 +114562,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -112316,6 +114692,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiUsagesInput = {
@@ -112363,6 +114740,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiUsagesInput = {
@@ -112420,6 +114798,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -112474,6 +114853,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -112539,6 +114919,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiUsagesInput = {
@@ -112586,6 +114967,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutAiUsagesInput = {
@@ -112649,6 +115031,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -112703,6 +115086,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -112752,6 +115136,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiInsightsInput = {
@@ -112799,6 +115184,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiInsightsInput = {
@@ -112862,6 +115248,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiInsightsInput = {
@@ -112909,6 +115296,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type DailyReportCreateWithoutAiReportInput = {
@@ -113006,6 +115394,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -113060,6 +115449,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -113114,6 +115504,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiReportsInput = {
@@ -113161,6 +115552,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiReportsInput = {
@@ -113280,6 +115672,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -113334,6 +115727,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -113394,6 +115788,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiReportsInput = {
@@ -113441,6 +115836,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutNotificationsInput = {
@@ -113488,6 +115884,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutNotificationsInput = {
@@ -113535,6 +115932,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutNotificationsInput = {
@@ -113592,6 +115990,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -113646,6 +116045,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -113711,6 +116111,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutNotificationsInput = {
@@ -113758,6 +116159,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutNotificationsInput = {
@@ -113821,6 +116223,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -113875,6 +116278,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -113924,6 +116328,7 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDevicePushTokensInput = {
@@ -113971,6 +116376,7 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutOrganizationInput
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDevicePushTokensInput = {
@@ -114028,6 +116434,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -114082,6 +116489,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -114147,6 +116555,7 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDevicePushTokensInput = {
@@ -114194,6 +116603,7 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutOrganizationNestedInput
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutDevicePushTokensInput = {
@@ -114257,6 +116667,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -114311,6 +116722,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -114365,6 +116777,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     team?: TeamCreateNestedOneWithoutUsersInput
     liveLocation?: UserLiveLocationCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionCreateNestedManyWithoutUserInput
     roles?: UserRoleCreateNestedManyWithoutUserInput
     visitReports?: VisitReportCreateNestedManyWithoutCreatedByInput
   }
@@ -114419,6 +116832,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedCreateNestedManyWithoutManagerInput
     subordinates?: UserUncheckedCreateNestedManyWithoutManagerInput
     liveLocation?: UserLiveLocationUncheckedCreateNestedOneWithoutUserInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutUserInput
     roles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     visitReports?: VisitReportUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -114473,6 +116887,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -114520,6 +116935,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -114588,6 +117004,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -114642,6 +117059,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -114702,6 +117120,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -114749,6 +117168,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutIntegrationsInput = {
@@ -114796,6 +117216,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutIntegrationsInput = {
@@ -114843,6 +117264,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     devicePushTokens?: DevicePushTokenUncheckedCreateNestedManyWithoutOrganizationInput
     liveLocations?: UserLiveLocationUncheckedCreateNestedManyWithoutOrganizationInput
+    dutySessions?: DutySessionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutIntegrationsInput = {
@@ -114942,6 +117364,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutIntegrationsInput = {
@@ -114989,6 +117412,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     devicePushTokens?: DevicePushTokenUncheckedUpdateManyWithoutOrganizationNestedInput
     liveLocations?: UserLiveLocationUncheckedUpdateManyWithoutOrganizationNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type WebhookDeliveryUpsertWithWhereUniqueWithoutIntegrationInput = {
@@ -115563,6 +117987,16 @@ export namespace Prisma {
     heading?: Decimal | DecimalJsLike | number | string | null
     speed?: Decimal | DecimalJsLike | number | string | null
     isTracking?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DutySessionCreateManyOrganizationInput = {
+    id?: string
+    userId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -117022,6 +119456,7 @@ export namespace Prisma {
     subordinates?: UserUpdateManyWithoutManagerNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -117076,6 +119511,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -117164,6 +119600,36 @@ export namespace Prisma {
     heading?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     speed?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     isTracking?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDutySessionsNestedInput
+  }
+
+  export type DutySessionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -117667,6 +120133,16 @@ export namespace Prisma {
     organizationId: string
     departmentId?: string | null
     teamId?: string | null
+  }
+
+  export type DutySessionCreateManyUserInput = {
+    id?: string
+    organizationId: string
+    startedAt: Date | string
+    endedAt?: Date | string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserRoleCreateManyUserInput = {
@@ -119261,6 +121737,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -119315,6 +121792,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -119336,6 +121814,36 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DutySessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDutySessionsNestedInput
+  }
+
+  export type DutySessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DutySessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserRoleUpdateWithoutUserInput = {
@@ -119677,6 +122185,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     team?: TeamUpdateOneWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -119731,6 +122240,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
@@ -119867,6 +122377,7 @@ export namespace Prisma {
     subordinates?: UserUpdateManyWithoutManagerNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     liveLocation?: UserLiveLocationUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUpdateManyWithoutUserNestedInput
     roles?: UserRoleUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUpdateManyWithoutCreatedByNestedInput
   }
@@ -119921,6 +122432,7 @@ export namespace Prisma {
     managedTeams?: TeamUncheckedUpdateManyWithoutManagerNestedInput
     subordinates?: UserUncheckedUpdateManyWithoutManagerNestedInput
     liveLocation?: UserLiveLocationUncheckedUpdateOneWithoutUserNestedInput
+    dutySessions?: DutySessionUncheckedUpdateManyWithoutUserNestedInput
     roles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     visitReports?: VisitReportUncheckedUpdateManyWithoutCreatedByNestedInput
   }
