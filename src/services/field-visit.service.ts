@@ -664,15 +664,12 @@ function mapDutySession(row: DutySessionRow): DutySessionInfo {
 
 /**
  * List all duty sessions for an organization on a given date.
- * Requires `field_visits.view_all` permission.
+ * Requires `field_visits.view_all` permission (checked by mobileGuard
+ * at the API-route layer — this function trusts the caller).
  * `date` should be YYYY-MM-DD.
  */
 export async function getDutySessions(dateStr?: string): Promise<DutySessionInfo[]> {
   const session = await requireApiSession()
-  if (!(session.user.permissions as string[]).includes('field_visits.view_all')) {
-    throw new Error('Permission denied: field_visits.view_all')
-  }
-
   const orgId = session.user.organizationId
   const now = new Date()
 
