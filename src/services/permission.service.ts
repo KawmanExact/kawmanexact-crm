@@ -1,5 +1,6 @@
 import 'server-only'
 import { prisma } from '@/lib/db'
+import { PERMISSIONS } from '@/lib/permissions-data'
 
 /**
  * Source of truth for authorization. Every Server Action and Route
@@ -11,6 +12,11 @@ import { prisma } from '@/lib/db'
  * their organization, so cross-organization access is structurally
  * impossible: the query below is filtered on `user.organizationId`,
  * not on an organizationId supplied by the caller.
+ *
+ * SUPER_ADMIN is granted all declared permissions automatically as a
+ * safety net: if the database hasn't been re-synced since a new
+ * permission was added to permissions-data.ts, the role still
+ * resolves correctly without a manual migration.
  */
 export async function getUserPermissions(userId: string, organizationId: string): Promise<string[]> {
   const userRoles = await prisma.userRole.findMany({
@@ -35,6 +41,11 @@ export async function getUserPermissions(userId: string, organizationId: string)
 
   const permissions = new Set<string>()
   for (const userRole of userRoles) {
+    if (userRole.role.name === 'SUPER_ADMIN') {
+      for (const key of Object.keys(PERMISSIONS)) {
+        permissions.add(key)
+      }
+    }
     for (const rp of userRole.role.permissions) {
       permissions.add(rp.permission.name)
     }
