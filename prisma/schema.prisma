@@ -53,6 +53,7 @@ model Organization {
    users             User[]
    devicePushTokens  DevicePushToken[]
    liveLocations     UserLiveLocation[]
+   dutySessions      DutySession[]
 
   @@index([slug])
   @@index([createdAt])
@@ -112,8 +113,9 @@ model User {
   subordinates           User[]             @relation("UserManager")
   organization           Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   team                   Team?              @relation("TeamMembers", fields: [teamId], references: [id])
-  liveLocation           UserLiveLocation?
-  roles                  UserRole[]
+   liveLocation           UserLiveLocation?
+  dutySessions           DutySession[]
+   roles                  UserRole[]
   visitReports           VisitReport[]      @relation("VisitReportCreator")
 
   @@index([organizationId])
@@ -160,6 +162,25 @@ model UserLiveLocation {
   @@index([organizationId])
   @@index([updatedAt])
   @@index([isTracking])
+}
+
+model DutySession {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  startedAt      DateTime
+  endedAt        DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([userId, startedAt])
+  @@index([startedAt])
+  @@index([isActive])
 }
 
 model Account {

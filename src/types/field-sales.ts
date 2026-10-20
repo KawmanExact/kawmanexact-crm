@@ -109,3 +109,14 @@ export interface LiveMapData {
   visits: LiveMapVisit[]
   activeUsers: ActiveUserPin[]
 }
+
+export interface DutySessionInfo {
+  id: string
+  userName: string
+  userEmail: string
+  userStatus: string
+  startedAt: string
+  endedAt: string | null
+  isActive: boolean
+  durationMinutes: number | null
+}
