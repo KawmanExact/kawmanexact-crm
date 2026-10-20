@@ -8,7 +8,6 @@ import { requirePermission } from '@/lib/session'
 import { getSession } from '@/lib/session'
 import { ExportMenu } from '@/components/report-engine/export-menu'
 import { buildAuditLogReport } from '@/lib/report-engine/builders/audit-logs'
-import { format } from 'date-fns'
 
 export const metadata = { title: 'Activity Logs | Kawman ExAct Admin' }
 
@@ -33,6 +32,19 @@ const ACTION_VARIANT: Record<string, 'success' | 'neutral' | 'danger' | 'warning
 const ACTIONS = Object.keys(ACTION_VARIANT)
 
 function first(v: string | string[] | undefined) { return Array.isArray(v) ? v[0] : v }
+
+/** Format an audit-log timestamp in the org timezone; this is a Server Component so a bare date-fns/`toLocaleString` call would render in the server's (UTC) timezone. */
+function formatLogTime(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone,
+  }).format(date)
+}
 
 export default async function ActivityPage({
   searchParams,
@@ -64,7 +76,10 @@ export default async function ActivityPage({
     }
   }
 
-  const [logs, total] = await Promise.all([
+  const [organization, logs, total] = await Promise.all([
+    organizationId
+      ? prisma.organization.findUnique({ where: { id: organizationId }, select: { timezone: true } })
+      : null,
     prisma.auditLog.findMany({
       where: where as never,
       include: { actor: { select: { name: true, email: true } } },
@@ -74,6 +89,7 @@ export default async function ActivityPage({
     }),
     prisma.auditLog.count({ where: where as never }),
   ])
+  const timeZone = organization?.timezone ?? 'Asia/Kolkata'
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
   const sessionUser = session?.user as unknown as { name?: string; email?: string; organization?: { name?: string } | null } | undefined
@@ -151,7 +167,7 @@ export default async function ActivityPage({
             <tbody>
               {logs.map((l) => (
                 <tr key={l.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-2 text-white/60 whitespace-nowrap">{format(l.createdAt, 'd MMM yyyy, h:mm a')}</td>
+                  <td className="px-4 py-2 text-white/60 whitespace-nowrap">{formatLogTime(l.createdAt, timeZone)}</td>
                   <td className="px-4 py-2"><Badge variant={(ACTION_VARIANT[l.action] ?? 'info') as never}>{l.action}</Badge></td>
                   <td className="px-4 py-2 text-white/70">{l.resource}</td>
                   <td className="px-4 py-2 text-white/60">{(l as unknown as { actor?: { name?: string | null; email?: string | null } }).actor?.name ?? (l as unknown as { actor?: { name?: string | null; email?: string | null } }).actor?.email ?? '—'}</td>
