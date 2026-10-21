@@ -32,7 +32,7 @@ import { useSession, signOut } from '@/lib/auth-client'
 import { getInitials, formatRelativeTime } from '@/lib/utils'
 import { playNotificationSound } from '@/lib/notification-sound'
 import { ThemeToggle } from './theme-toggle'
-import { MailToLink } from '@/components/crm/mail-to-link'
+import { MailLink } from '@/components/ui/mail-link'
 
 const NOTIF_COLOR: Record<string, string> = {
   NEW_LEAD: 'bg-purple-500/15 text-purple-400',
@@ -282,12 +282,12 @@ export function Header() {
                 )}
                 <div className="hidden md:block text-left leading-tight min-w-0">
                   <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Account'}</p>
-                   <MailToLink
+                   <MailLink
                      email={user?.email ?? ''}
                      className={user?.email ? 'text-xs text-white/40 hover:text-white transition-colors truncate block' : 'text-xs text-white/40 truncate'}
                    >
                      {user?.email ?? ''}
-                   </MailToLink>
+                   </MailLink>
                 </div>
                 <ChevronDown className="h-4 w-4 text-white/40 hidden md:block" />
               </button>

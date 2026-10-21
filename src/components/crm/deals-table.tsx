@@ -14,7 +14,7 @@ import type { UserOption } from '@/services/user.service'
 import { bulkDeleteDealsAction, bulkUpdateDealStageAction, bulkReassignDealsAction } from '@/app/deals/actions'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { SavedViewsMenu } from '@/components/crm/saved-views-menu'
-import { MailToLink } from '@/components/crm/mail-to-link'
+import { MailLink } from '@/components/ui/mail-link'
 import { DEAL_PIPELINE_STAGES, getStageLabel } from '@/lib/deal-pipeline'
 
 const STAGE_VARIANT: Record<DealStage, BadgeVariant> = {
@@ -233,7 +233,7 @@ export function DealsTable({
                   <Link href={`/deals/${deal.id}`} className="font-medium text-white hover:text-purple-300 transition-colors">
                     {deal.name}
                   </Link>
-                  <MailToLink
+                  <MailLink
                     email={deal.email}
                     className="text-xs text-white/40 hover:text-white transition-colors break-all"
                   />
@@ -347,7 +347,7 @@ export function DealsTable({
                 aria-label={`Select ${deal.name}`}
               />
               <span className="text-xs text-white/30">Select</span>
-              <MailToLink email={deal.email} className="text-xs text-white/40 truncate ml-auto hover:text-white transition-colors" />
+              <MailLink email={deal.email} className="text-xs text-white/40 truncate ml-auto hover:text-white transition-colors" />
             </div>
           </div>
         ))}

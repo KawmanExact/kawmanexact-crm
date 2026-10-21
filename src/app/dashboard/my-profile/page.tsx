@@ -9,7 +9,7 @@ import { requireSession } from '@/lib/session'
 import { listEmployeeReports, type ReportSummary } from '@/services/ai.service'
 import { EmployeeTabs } from '@/app/admin/my-team/[userId]/employee-tabs'
 import { TeamDateFilter } from '@/app/admin/my-team/team-date-filter'
-import { MailToLink } from '@/components/crm/mail-to-link'
+import { MailLink } from '@/components/ui/mail-link'
 
 export const metadata = { title: 'My Profile | Kawman ExAct' }
 
@@ -71,7 +71,7 @@ export default async function MyProfilePage({ searchParams }: { searchParams: Pr
   return (
     <MainLayout>
       <div className="space-y-6">
-        <PageHeader title={profile.user.name ?? 'My Profile'} subtitle={<MailToLink email={profile.user.email} className="text-white/50 hover:text-white transition-colors" />} />
+        <PageHeader title={profile.user.name ?? 'My Profile'} subtitle={<MailLink email={profile.user.email} className="text-white/50 hover:text-white transition-colors" />} />
 
         <Card className="p-5 bg-[#0a111c]/80 border-white/[0.08]">
           <div className="flex flex-wrap gap-6 items-start">
