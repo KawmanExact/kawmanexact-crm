@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getOrgUsers } from '@/services/user.service'
 import { getInitials } from '@/lib/utils'
+import { MailToLink } from '@/components/crm/mail-to-link'
 
 export const metadata = { title: 'Users | Kawman ExAct Admin' }
 
@@ -71,7 +72,7 @@ export default async function AdminUsersPage() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-white group-hover:text-purple-300 transition-colors">{u.name}</p>
-                        <p className="text-white/40 text-xs">{u.email}</p>
+                         <MailToLink email={u.email} className="text-white/40 text-xs hover:text-white transition-colors" />
                       </div>
                     </Link>
                   </td>

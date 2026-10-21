@@ -12,6 +12,7 @@ import { requireSession } from '@/lib/session'
 import { prisma } from '@/lib/db'
 import { EmployeeTabs } from './employee-tabs'
 import { TeamDateFilter } from '../team-date-filter'
+import { MailToLink } from '@/components/crm/mail-to-link'
 
 export const metadata = { title: 'Employee Profile | Kawman ExAct' }
 
@@ -92,7 +93,7 @@ export default async function EmployeeProfilePage({ params, searchParams }: { pa
   return (
     <MainLayout>
       <div className="space-y-6">
-        <PageHeader title={profile.user.name ?? 'Employee'} subtitle={profile.user.email} />
+        <PageHeader title={profile.user.name ?? 'Employee'} subtitle={<MailToLink email={profile.user.email} className="text-white/50 hover:text-white transition-colors" />} />
 
         <Card className="p-5 bg-[#0a111c]/80 border-white/[0.08]">
           <div className="flex flex-wrap gap-6 items-start">

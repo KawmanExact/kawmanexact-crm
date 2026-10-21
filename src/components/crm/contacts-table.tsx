@@ -8,6 +8,7 @@ import { Search, Mail, Phone, ChevronLeft, ChevronRight, FileDown, Trash2, MapPi
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { DeleteRowButton } from '@/components/crm/delete-row-button'
+import { MailToLink } from '@/components/crm/mail-to-link'
 import { contactsToExcelCsv } from '@/lib/contacts-csv'
 import type { ContactPage, ContactSortKey } from '@/services/contact.service'
 import { deleteContactAction, bulkDeleteContactsAction } from '@/app/contacts/actions'
@@ -255,13 +256,13 @@ export function ContactsTable({ result }: { result: ContactPage }) {
                   </span>
                 </td>
                 <td className="px-5 py-4 align-top min-w-0">
-                  <span
-                    className="text-xs text-white/40 flex items-start gap-1.5 min-w-0"
-                    title={contact.email}
+                  <MailToLink
+                    email={contact.email}
+                    className="text-xs text-white/40 flex items-start gap-1.5 min-w-0 break-all line-clamp-2 hover:text-white transition-colors"
                   >
                     <Mail className="h-3 w-3 shrink-0 mt-0.5" />
                     <span className="line-clamp-2 break-all min-w-0">{contact.email}</span>
-                  </span>
+                  </MailToLink>
                 </td>
                 <td className="px-5 py-4 align-top min-w-0">
                   <span className="text-xs text-white/40 flex items-center gap-1.5 min-w-0">
