@@ -5,6 +5,7 @@ import { getOrgUserById } from '@/services/user.service'
 import { getDepartments, getTeams } from '@/services/org-structure.service'
 import { requirePermission } from '@/lib/session'
 import { UserDetailForm } from './user-detail-form'
+import { MailLink } from '@/components/ui/mail-link'
 
 export const metadata = { title: 'Edit User | Kawman ExAct Admin' }
 
@@ -19,7 +20,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
   return (
     <MainLayout>
       <div className="space-y-6 max-w-3xl">
-        <PageHeader title={user.name} subtitle={user.email} />
+        <PageHeader title={user.name} subtitle={<MailLink email={user.email} className="text-white/50 text-sm hover:text-white transition-colors" />} />
         <UserDetailForm user={user} departments={departments} teams={teams} isSelf={session.user.id === id} />
       </div>
     </MainLayout>

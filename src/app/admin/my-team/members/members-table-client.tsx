@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { getInitials } from '@/lib/utils'
 import { Search, Check, X } from 'lucide-react'
 import type { TeamMemberRow, ActivityLevel } from '@/services/team.service'
+import { MailLink } from '@/components/ui/mail-link'
 
 const ACTIVITY_VARIANT: Record<ActivityLevel, 'success' | 'warning' | 'danger' | 'neutral'> = {
   high: 'success',   // green
@@ -104,7 +105,7 @@ export default function MembersTableClient({
                         </div>
                         <div className="min-w-0">
                           <p className="text-white group-hover:text-purple-300 transition-colors">{u.name}</p>
-                          <p className="text-white/40 text-xs truncate">{u.email}</p>
+                           <MailLink email={u.email} className="text-white/40 text-xs truncate hover:text-white transition-colors" />
                           {u.designation && <p className="text-white/30 text-xs truncate">{u.designation}</p>}
                         </div>
                       </Link>
