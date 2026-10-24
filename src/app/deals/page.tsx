@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { getDeals, getDealsPage, type DealSortKey } from '@/services/deal.service'
 import { getOrgUserOptions } from '@/services/user.service'
 import { getSession } from '@/lib/session'
+import { PERMISSIONS } from '@/lib/permissions-data'
 import { canManageAssignments } from '@/lib/record-scope'
 import { formatCurrency } from '@/lib/utils'
 import { isOk } from '@/lib/result'
@@ -71,6 +72,8 @@ export default async function DealsPage({
     ])
     const owners = isOk(ownersResult) ? ownersResult.data : []
     const canAssign = session ? canManageAssignments(session.user) : false
+    const permissionList = (session?.user?.permissions as string[] | undefined) ?? []
+    const canCreate = permissionList.includes(PERMISSIONS['field_visits.create'].name)
     const exportReport = buildDealsReport({
       deals: allDeals.length ? allDeals : result.deals,
       generatedBy,
@@ -102,7 +105,7 @@ export default async function DealsPage({
             }
           />
           <SegmentTabs view="list" />
-          <DealsTable result={result} owners={owners} canAssign={canAssign} />
+          <DealsTable result={result} owners={owners} canAssign={canAssign} canCreate={canCreate} />
         </div>
       </MainLayout>
     )

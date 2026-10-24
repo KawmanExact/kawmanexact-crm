@@ -60,10 +60,12 @@ import { canManageAssignments } from '@/lib/record-scope'
 import { getUserPermissions } from '@/services/permission.service'
 import { findOrCreateContactByName } from '@/services/contact.service'
 import { findOrCreateCompanyByName } from '@/services/company.service'
-import { createFieldVisitAction } from '@/app/field-sales/actions'
+import { createFieldVisitAction, updateFieldVisitAction } from '@/app/field-sales/actions'
 import { sendPushToUser } from '@/services/push.service'
 
 const mockFieldVisitCreate = vi.mocked(prisma.fieldVisit.create)
+const mockFieldVisitFindFirst = vi.mocked(prisma.fieldVisit.findFirst)
+const mockFieldVisitUpdate = vi.mocked(prisma.fieldVisit.update)
 const mockContactCreate = vi.mocked(prisma.contact.create)
 const mockFindOrCreateContactByName = vi.mocked(findOrCreateContactByName)
 const mockFindOrCreateCompanyByName = vi.mocked(findOrCreateCompanyByName)
@@ -263,5 +265,63 @@ describe('createFieldVisitAction', () => {
       scheduledAt: '2026-10-15T10:00',
       assigneeId: 'user-2',
     }))).resolves.not.toThrow()
+  })
+})
+
+describe('updateFieldVisitAction', () => {
+  it('returns an error when the visit id is missing', async () => {
+    const result = await updateFieldVisitAction({} as never, formData({
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+    }))
+    expect(result.error).toBe('Missing visit id.')
+  })
+
+  it('returns an error when the visit does not exist', async () => {
+    mockFieldVisitFindFirst.mockResolvedValue(null)
+    const result = await updateFieldVisitAction({} as never, formData({
+      id: 'visit-missing',
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+    }))
+    expect(result.error).toBe('Visit not found.')
+    expect(mockFieldVisitUpdate).not.toHaveBeenCalled()
+  })
+
+  it('updates a visit, preserving the assignee when the user cannot reassign', async () => {
+    mockCanManageAssignments.mockReturnValue(false)
+    mockFieldVisitFindFirst.mockResolvedValue({
+      id: 'visit-1',
+      organizationId: 'org-A',
+      assigneeId: 'user-2',
+      companyId: null,
+      contactId: null,
+      latitude: null,
+      longitude: null,
+    } as never)
+    mockFieldVisitUpdate.mockResolvedValue({} as never)
+
+    await updateFieldVisitAction({} as never, formData({
+      id: 'visit-1',
+      title: 'Client Visit',
+      purpose: 'Discuss Q4 pipeline',
+      scheduledAt: '2026-10-15T10:00',
+      company: '',
+      contactName: '',
+    }))
+
+    expect(mockFieldVisitUpdate).toHaveBeenCalledWith({
+      where: { id: 'visit-1' },
+      data: expect.objectContaining({
+        title: 'Client Visit',
+        purpose: 'Discuss Q4 pipeline',
+        scheduledAt: new Date('2026-10-15T10:00'),
+        assigneeId: 'user-2',
+        companyId: null,
+        contactId: null,
+      }),
+    })
   })
 })
