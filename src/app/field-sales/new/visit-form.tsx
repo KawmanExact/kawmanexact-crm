@@ -43,13 +43,6 @@ export function VisitForm({
   const [preview, setPreview] = useState<string | null>(null)
   const previewUrlRef = useRef<string | null>(null)
 
-  useEffect(() => {
-    if (mode === 'edit') {
-      setLatInput(visit?.latitude != null ? String(visit.latitude) : '')
-      setLngInput(visit?.longitude != null ? String(visit.longitude) : '')
-    }
-  }, [mode, visit])
-
   function captureLocation() {
     setLocError(null)
     setLocLoading(true)
@@ -219,7 +212,7 @@ export function VisitForm({
         </Field>
         <Field label="Company" error={state.fieldErrors?.company}>
           <Input name="company" placeholder="Acme Nutraceuticals" defaultValue={visit?.company ?? ''} />
-          <p className="text-[11px] text-white/25 mt-1">Created if it doesn't exist.</p>
+          <p className="text-[11px] text-white/25 mt-1">Created if it doesn&apos;t exist.</p>
         </Field>
         <Field label="Contact Name" error={state.fieldErrors?.contactName}>
           <Input name="contactName" placeholder="Jane Doe" defaultValue={visit?.contact ?? ''} />
