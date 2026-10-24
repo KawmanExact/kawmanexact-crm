@@ -11,15 +11,28 @@ import type { FieldVisit } from '@/types/field-sales'
 
 type Mode = 'create' | 'edit'
 
+export interface VisitFormInitialValues {
+  company?: string
+  contactName?: string
+  contactEmail?: string
+  contactMobile?: string
+  address?: string
+  purpose?: string
+  latitude?: number | null
+  longitude?: number | null
+}
+
 export function VisitForm({
   mode = 'create',
   visit,
+  initialValues,
   owners,
   canAssign,
   currentUser,
 }: {
   mode?: Mode
   visit?: FieldVisit
+  initialValues?: VisitFormInitialValues
   owners: UserOption[]
   canAssign: boolean
   currentUser: UserOption
@@ -38,8 +51,12 @@ export function VisitForm({
   const streamRef = useRef<MediaStream | null>(null)
   const [cameraActive, setCameraActive] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
-  const [latInput, setLatInput] = useState(visit?.latitude != null ? String(visit.latitude) : '')
-  const [lngInput, setLngInput] = useState(visit?.longitude != null ? String(visit.longitude) : '')
+  const [latInput, setLatInput] = useState(
+    visit?.latitude != null ? String(visit.latitude) : initialValues?.latitude != null ? String(initialValues.latitude) : '',
+  )
+  const [lngInput, setLngInput] = useState(
+    visit?.longitude != null ? String(visit.longitude) : initialValues?.longitude != null ? String(initialValues.longitude) : '',
+  )
   const [preview, setPreview] = useState<string | null>(null)
   const previewUrlRef = useRef<string | null>(null)
 
@@ -179,7 +196,7 @@ export function VisitForm({
           <Input name="title" placeholder="Quarterly review with Acme" defaultValue={visit?.title} required />
         </Field>
         <Field label="Purpose *" error={state.fieldErrors?.purpose}>
-          <Input name="purpose" placeholder="Renewal discussion" defaultValue={visit?.purpose} required />
+          <Input name="purpose" placeholder="Renewal discussion" defaultValue={visit?.purpose ?? initialValues?.purpose ?? ''} required />
         </Field>
         <Field label="Scheduled date & time *" error={state.fieldErrors?.scheduledAt}>
           <Input name="scheduledAt" type="datetime-local" defaultValue={scheduledAtDefault} required />
@@ -211,20 +228,20 @@ export function VisitForm({
           )}
         </Field>
         <Field label="Company" error={state.fieldErrors?.company}>
-          <Input name="company" placeholder="Acme Nutraceuticals" defaultValue={visit?.company ?? ''} />
+          <Input name="company" placeholder="Acme Nutraceuticals" defaultValue={visit?.company ?? initialValues?.company ?? ''} />
           <p className="text-[11px] text-white/25 mt-1">Created if it doesn&apos;t exist.</p>
         </Field>
         <Field label="Contact Name" error={state.fieldErrors?.contactName}>
-          <Input name="contactName" placeholder="Jane Doe" defaultValue={visit?.contact ?? ''} />
+          <Input name="contactName" placeholder="Jane Doe" defaultValue={visit?.contact ?? initialValues?.contactName ?? ''} />
         </Field>
         <Field label="Contact Email" error={state.fieldErrors?.contactEmail}>
-          <Input name="contactEmail" type="email" placeholder="jane@example.com" />
+          <Input name="contactEmail" type="email" placeholder="jane@example.com" defaultValue={initialValues?.contactEmail ?? ''} />
         </Field>
         <Field label="Contact Mobile" error={state.fieldErrors?.contactMobile}>
-          <Input name="contactMobile" placeholder="+91 98765 43210" />
+          <Input name="contactMobile" placeholder="+91 98765 43210" defaultValue={initialValues?.contactMobile ?? ''} />
         </Field>
         <Field label="Address" error={state.fieldErrors?.address}>
-          <Input name="address" placeholder="Plot 14, MIDC, Andheri East, Mumbai" defaultValue={visit?.address ?? ''} />
+          <Input name="address" placeholder="Plot 14, MIDC, Andheri East, Mumbai" defaultValue={visit?.address ?? initialValues?.address ?? ''} />
         </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Latitude" error={state.fieldErrors?.latitude}>

@@ -1,12 +1,15 @@
 import { notFound } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import Link from 'next/link'
+import { Plus, MapPin } from 'lucide-react'
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { getDealById } from '@/services/deal.service'
 import { getOrgUserOptions } from '@/services/user.service'
 import { prisma } from '@/lib/db'
 import { requireApiSession } from '@/lib/session'
+import { PERMISSIONS } from '@/lib/permissions-data'
 import { canManageAssignments } from '@/lib/record-scope'
 import { formatCurrency } from '@/lib/utils'
 import { DealDetailForm } from './deal-detail-form'
@@ -27,6 +30,8 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
   const session = await requireApiSession()
   const canAssign = canManageAssignments(session.user)
   const currentUser: UserOption = { id: session.user.id, name: session.user.name ?? 'Me' }
+  const permissionList = (session.user.permissions as string[] | undefined) ?? []
+  const canCreateFieldVisit = permissionList.includes(PERMISSIONS['field_visits.create'].name)
   const [activities, followUps] = await Promise.all([
     prisma.activity.findMany({
       where: { dealId: id, organizationId: session.user.organizationId },
@@ -43,7 +48,20 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
   return (
     <MainLayout>
       <div className="space-y-6 max-w-4xl">
-        <PageHeader title={deal.name} subtitle={`${deal.company} · ${formatCurrency(deal.value)}`} />
+        <PageHeader
+          title={deal.name}
+          subtitle={`${deal.company} · ${formatCurrency(deal.value)}`}
+          action={
+            canCreateFieldVisit && (
+              <Button asChild variant="outline" size="sm" className="gap-1.5 border-white/10">
+                <Link href={`/field-sales/new?deal=${deal.id}`}>
+                  <MapPin className="h-4 w-4" />
+                  Field visit
+                </Link>
+              </Button>
+            )
+          }
+        />
         <DealDetailForm deal={deal} owners={owners} canAssign={canAssign} currentUser={currentUser} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

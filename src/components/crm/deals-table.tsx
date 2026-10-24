@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Search, ArrowUpDown, ChevronLeft, ChevronRight, Trash2, X } from 'lucide-react'
+import { Search, ArrowUpDown, ChevronLeft, ChevronRight, Trash2, X, MapPin } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -38,10 +38,12 @@ export function DealsTable({
   result,
   owners,
   canAssign,
+  canCreate = false,
 }: {
   result: DealPage
   owners: UserOption[]
   canAssign: boolean
+  canCreate?: boolean
 }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -210,6 +212,7 @@ export function DealsTable({
                 dir={sortDir}
                 onClick={toggleSort}
               />
+              <th className="px-4 py-3 font-medium">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -275,11 +278,20 @@ export function DealsTable({
                   <Badge variant={STAGE_VARIANT[deal.stage]}>{getStageLabel(deal.stage)}</Badge>
                 </td>
                 <td className="px-4 py-3 text-white/45">{deal.lastActivityAt || '—'}</td>
+                <td className="px-4 py-3">
+                  {canCreate && (
+                    <Button asChild variant="outline" size="sm" className="h-7 gap-1 border-white/10 text-xs">
+                      <Link href={`/field-sales/new?deal=${deal.id}`}>
+                        <MapPin className="h-3 w-3" /> Field visit
+                      </Link>
+                    </Button>
+                  )}
+                </td>
               </tr>
             ))}
             {deals.length === 0 && (
               <tr>
-                <td colSpan={13} className="px-4 py-10 text-center">
+                <td colSpan={24} className="px-4 py-10 text-center">
                   {hasActiveFilters ? (
                     <span className="text-white/40">No deals match your filters.</span>
                   ) : (
@@ -348,6 +360,14 @@ export function DealsTable({
               />
               <span className="text-xs text-white/30">Select</span>
               <MailLink email={deal.email} className="text-xs text-white/40 truncate ml-auto hover:text-white transition-colors" />
+              {canCreate && (
+                <Link
+                  href={`/field-sales/new?deal=${deal.id}`}
+                  className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-1 text-xs text-purple-300 hover:bg-purple-500/20"
+                >
+                  <MapPin className="h-3 w-3" /> Field visit
+                </Link>
+              )}
             </div>
           </div>
         ))}
