@@ -1,8 +1,9 @@
 'use client'
 
-import { formatFns } from '@/lib/utils'
+import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Building2, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { MapPin, Building2, ShieldCheck, ShieldAlert, Pencil } from 'lucide-react'
+import { formatFns } from '@/lib/utils'
 import { Badge, type BadgeVariant } from '@/components/ui/badge'
 import { DeleteRowButton } from '@/components/crm/delete-row-button'
 import type { FieldVisit, VisitStatus } from '@/types/field-sales'
@@ -47,6 +48,7 @@ interface VisitRowProps {
   showAssignee?: boolean
   showVerification?: boolean
   showMapLink?: boolean
+  canEdit?: boolean
   onCheckInSuccess?: (verificationStatus: string) => void
   onStatusChange?: (status: VisitStatus) => void
 }
@@ -56,6 +58,7 @@ export function VisitRow({
   showAssignee = false,
   showVerification = true,
   showMapLink = false,
+  canEdit = false,
   onCheckInSuccess,
   onStatusChange,
 }: VisitRowProps) {
@@ -127,6 +130,15 @@ export function VisitRow({
       )}
       <td className="px-4 py-3">
         <div className="flex items-center justify-end gap-2">
+          {canEdit && (
+            <Link
+              href={`/field-sales/${visit.id}/edit`}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md text-white/30 hover:bg-white/[0.05] hover:text-white"
+              title="Edit"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Link>
+          )}
           {canCheckIn && (
             <CheckInDialog
               visitId={visit.id}

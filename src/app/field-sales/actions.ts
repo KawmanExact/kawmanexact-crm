@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
+import type { Prisma } from '@/generated/prisma'
 import { requireApiSession } from '@/lib/session'
 import { PERMISSIONS } from '@/lib/permissions-data'
 import { isCloudinaryConfigured, uploadToCloudinary } from '@/lib/cloudinary'
@@ -211,6 +212,81 @@ export async function createFieldVisitAction(_prev: VisitFormState, formData: Fo
       console.error('[createFieldVisitAction] VISIT_ASSIGNED notification failed:', e)
     }
   }
+
+  revalidatePath('/field-sales')
+  revalidatePath('/field-sales/visits')
+  revalidatePath('/field-sales/assigned')
+  revalidatePath('/field-sales/checkins')
+  revalidatePath('/field-sales/live-map')
+  redirect('/field-sales')
+}
+
+export async function updateFieldVisitAction(_prev: VisitFormState, formData: FormData): Promise<VisitFormState> {
+  await validateCsrf()
+  const session = await assertPermission(PERMISSIONS['field_visits.update'].name)
+  const id = formData.get('id')?.toString().trim()
+  if (!id) return { error: 'Missing visit id.' }
+  const parsed = visitSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {}
+    for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] = issue.message
+    return { fieldErrors }
+  }
+  const data = parsed.data
+  const existing = await prisma.fieldVisit.findFirst({ where: { id, organizationId: session.user.organizationId } })
+  if (!existing) return { error: 'Visit not found.' }
+
+  const scheduledAt = new Date(data.scheduledAt)
+  if (Number.isNaN(scheduledAt.getTime())) {
+    return { fieldErrors: { scheduledAt: 'Enter a valid date/time' } }
+  }
+
+  const canAssign = canManageAssignments(session.user)
+  const assigneeId = canAssign ? data.assigneeId || session.user.id : existing.assigneeId
+
+  let companyId = existing.companyId
+  if (data.company?.trim()) {
+    const company = await findOrCreateCompanyByName({
+      name: data.company.trim(),
+      organizationId: session.user.organizationId,
+      ownerId: assigneeId,
+    })
+    companyId = company?.id ?? null
+  } else {
+    companyId = null
+  }
+
+  let contactId = existing.contactId
+  if (data.contactName?.trim()) {
+    const contact = await findOrCreateContactByName({
+      name: data.contactName.trim(),
+      email: data.contactEmail || null,
+      email2: data.contactEmail2 || null,
+      mobile: data.contactMobile || null,
+      mobile2: data.contactMobile2 || null,
+      organizationId: session.user.organizationId,
+      ownerId: assigneeId,
+      companyId,
+    })
+    contactId = contact?.id ?? null
+  } else {
+    contactId = null
+  }
+
+  const lat = data.latitude ?? undefined
+  const lng = data.longitude ?? undefined
+  const updateData: Prisma.FieldVisitUncheckedUpdateInput = {
+    title: data.title,
+    purpose: data.purpose,
+    scheduledAt,
+    address: data.address || null,
+    assigneeId,
+    companyId,
+    contactId,
+  }
+  if (lat != null) updateData.latitude = lat
+  if (lng != null) updateData.longitude = lng
+  await prisma.fieldVisit.update({ where: { id }, data: updateData })
 
   revalidatePath('/field-sales')
   revalidatePath('/field-sales/visits')

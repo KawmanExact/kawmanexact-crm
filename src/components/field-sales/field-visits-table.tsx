@@ -9,7 +9,9 @@ import type { FieldVisitPageResult } from '@/services/field-visit.service'
 import { updateVisitStatusAction } from '@/app/field-sales/actions'
 import { VisitRow, STATUS_LABEL } from './visit-row'
 
-type FieldVisitsTableProps = { visits: FieldVisit[]; result?: undefined } | { result: FieldVisitPageResult; visits?: undefined }
+type FieldVisitsTableProps =
+  | { visits: FieldVisit[]; result?: undefined; canEdit?: boolean }
+  | { result: FieldVisitPageResult; visits?: undefined; canEdit?: boolean }
 /**
  * Two modes, sharing all row-rendering and interactive-action markup
  * (check-in button, status dropdown):
@@ -22,6 +24,7 @@ type FieldVisitsTableProps = { visits: FieldVisit[]; result?: undefined } | { re
  */
 export function FieldVisitsTable(props: FieldVisitsTableProps) {
   const isServerMode = Boolean(props.result)
+  const canEdit = props.canEdit ?? false
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -142,6 +145,7 @@ export function FieldVisitsTable(props: FieldVisitsTableProps) {
               <VisitRow
                 key={v.id}
                 visit={v}
+                canEdit={canEdit}
                 showAssignee={true}
                 showVerification={true}
                 showMapLink={true}

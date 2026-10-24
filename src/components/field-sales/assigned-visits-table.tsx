@@ -9,9 +9,10 @@ import { VisitRow } from './visit-row'
 
 interface AssignedVisitsTableProps {
   visits: FieldVisit[]
+  canEdit?: boolean
 }
 
-export function AssignedVisitsTable({ visits }: AssignedVisitsTableProps) {
+export function AssignedVisitsTable({ visits, canEdit = false }: AssignedVisitsTableProps) {
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
@@ -57,6 +58,7 @@ export function AssignedVisitsTable({ visits }: AssignedVisitsTableProps) {
               <VisitRow
                 key={v.id}
                 visit={v}
+                canEdit={canEdit}
                 showVerification={true}
                 onStatusChange={(status) => updateVisitStatusAction(v.id, status)}
               />
