@@ -1,8 +1,8 @@
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
+import { VisitForm } from './visit-form'
 import { getOrgUserOptions } from '@/services/user.service'
 import type { UserOption } from '@/services/user.service'
-import { NewVisitForm } from './visit-form'
 import { isOk } from '@/lib/result'
 import { requireApiSession } from '@/lib/session'
 import { canManageAssignments } from '@/lib/record-scope'
@@ -20,7 +20,7 @@ export default async function NewFieldVisitPage() {
     <MainLayout>
       <div className="space-y-6 max-w-3xl">
         <PageHeader title="Schedule Visit" subtitle="Plan a field visit for a rep" />
-        <NewVisitForm owners={owners} canAssign={canAssign} currentUser={currentUser} />
+        <VisitForm mode="create" owners={owners} canAssign={canAssign} currentUser={currentUser} />
       </div>
     </MainLayout>
   )

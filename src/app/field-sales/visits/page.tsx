@@ -5,10 +5,16 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { getTodaysVisits } from '@/services/field-visit.service'
+import { requireSession } from '@/lib/session'
+import { PERMISSIONS } from '@/lib/permissions-data'
 
 export const metadata = { title: "Today's Visits | Kawman ExAct" }
 
 export default async function TodaysVisitsPage() {
+  const session = await requireSession()
+  const permissions = session.user.permissions as string[]
+  const canEdit = permissions.includes(PERMISSIONS['field_visits.update'].name)
+
   const visits = await getTodaysVisits()
 
   return (
@@ -26,7 +32,7 @@ export default async function TodaysVisitsPage() {
             </Button>
           }
         />
-        <FieldVisitsTable visits={visits} />
+        <FieldVisitsTable visits={visits} canEdit={canEdit} />
       </div>
     </MainLayout>
   )

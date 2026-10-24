@@ -2,10 +2,16 @@ import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
 import { AssignedVisitsTable } from '@/components/field-sales/assigned-visits-table'
 import { getAssignedVisits } from '@/services/field-visit.service'
+import { requireSession } from '@/lib/session'
+import { PERMISSIONS } from '@/lib/permissions-data'
 
 export const metadata = { title: 'Assigned to Me | Field Sales | Kawman ExAct' }
 
 export default async function AssignedVisitsPage() {
+  const session = await requireSession()
+  const permissions = session.user.permissions as string[]
+  const canEdit = permissions.includes(PERMISSIONS['field_visits.update'].name)
+
   const visits = await getAssignedVisits()
 
   return (
@@ -15,7 +21,7 @@ export default async function AssignedVisitsPage() {
           title="Assigned to Me"
           subtitle={`${visits.length} visit${visits.length === 1 ? '' : 's'} assigned to you — check in on-site with a face photo to verify`}
         />
-        <AssignedVisitsTable visits={visits} />
+        <AssignedVisitsTable visits={visits} canEdit={canEdit} />
       </div>
     </MainLayout>
   )

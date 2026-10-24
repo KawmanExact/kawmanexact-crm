@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { getFieldVisitsPage, type FieldVisitSortKey } from '@/services/field-visit.service'
 import type { VisitStatus } from '@/types/field-sales'
+import { requireSession } from '@/lib/session'
+import { PERMISSIONS } from '@/lib/permissions-data'
 
 export const metadata = { title: 'Field Visits | Kawman ExAct' }
 
@@ -21,6 +23,10 @@ export default async function FieldVisitsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
+  const session = await requireSession()
+  const permissions = session.user.permissions as string[]
+  const canEdit = permissions.includes(PERMISSIONS['field_visits.update'].name)
+
   const params = await searchParams
 
   const search = first(params.q)
@@ -50,7 +56,7 @@ export default async function FieldVisitsPage({
             </Button>
           }
         />
-        <FieldVisitsTable result={result} />
+        <FieldVisitsTable result={result} canEdit={canEdit} />
       </div>
     </MainLayout>
   )
