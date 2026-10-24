@@ -14,7 +14,7 @@ import {
   ShieldAlert,
   Clock3,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatDate, formatTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useFieldTracking } from '@/hooks/use-field-tracking'
 import type { LiveMapVisit, VisitStatus, ActiveUserPin } from '@/types/field-sales'
@@ -77,7 +77,7 @@ function relTime(iso: string | null): string {
   if (m < 60) return `${m}m ago`
   const h = Math.floor(m / 60)
   if (h < 24) return `${h}h ago`
-  return d.toLocaleString()
+  return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatAccuracy(m: number | null): string {
@@ -385,7 +385,7 @@ export function LiveMap({
       {/* Header row: refresh + toggles */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         <span className="flex items-center gap-1.5 text-white/40" suppressHydrationWarning>
-          <RefreshCw className="h-3 w-3" /> Live every ~12s · last sync {mounted && lastUpdated ? lastUpdated.toLocaleTimeString() : '—'}
+          <RefreshCw className="h-3 w-3" /> Live every ~12s · last sync {mounted && lastUpdated ? formatTime(lastUpdated) : '—'}
         </span>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-1.5 text-white/70 cursor-pointer select-none">

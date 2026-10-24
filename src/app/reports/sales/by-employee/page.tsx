@@ -37,7 +37,7 @@ function isoDay(d: Date): string {
 }
 
 function dayLabel(d: Date): string {
-  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
 }
 
 export default async function ProductSalesByEmployeePage({

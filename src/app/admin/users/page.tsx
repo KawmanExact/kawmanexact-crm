@@ -85,7 +85,7 @@ export default async function AdminUsersPage() {
                     <Badge variant={STATUS_VARIANT[u.status] ?? 'neutral'}>{u.status}</Badge>
                   </td>
                   <td className="px-4 py-3 text-white/40">
-                    {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN') : 'Never'}
+                    {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never'}
                   </td>
                 </tr>
               ))}

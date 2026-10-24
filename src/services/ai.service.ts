@@ -112,7 +112,7 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
       const assignee = v.assignee?.name ?? 'Unassigned'
       const company = v.company?.name ?? v.contact?.name ?? 'No company'
       const deal = v.deal ? ` (Deal: ${v.deal.name}, ${fmt(Number(v.deal.value))})` : ''
-      lines.push(`  - ${v.title} @ ${v.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} — ${assignee} → ${company}${deal} [${v.status}]`)
+      lines.push(`  - ${v.title} @ ${v.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} — ${assignee} → ${company}${deal} [${v.status}]`)
       if (v.purpose) lines.push(`    Purpose: ${v.purpose}`)
       if (v.address) lines.push(`    Address: ${v.address}`)
     }
@@ -125,8 +125,8 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
     for (const v of upcomingVisits) {
       const assignee = v.assignee?.name ?? 'Unassigned'
       const company = v.company?.name ?? 'No company'
-      const day = v.scheduledAt.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
-      lines.push(`  - ${day} ${v.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} — ${assignee} → ${company} [${v.status}]`)
+      const day = v.scheduledAt.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
+      lines.push(`  - ${day} ${v.scheduledAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} — ${assignee} → ${company} [${v.status}]`)
     }
     lines.push('')
   }
@@ -233,7 +233,7 @@ async function buildOrgContext(organizationId: string, user?: Session['user']): 
     for (const a of todaysActivities) {
       const actor = a.actor?.name ?? a.actor?.email ?? 'Unknown'
       const target = a.lead?.name ? `lead "${a.lead.name}"` : a.deal?.name ? `deal "${a.deal.name}"` : a.company?.name ? `company "${a.company.name}"` : a.contact?.name ? `contact "${a.contact.name}"` : ''
-      const ts = a.createdAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+      const ts = a.createdAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })
       lines.push(`  - ${ts} — ${actor} · ${a.type}${target ? ` · ${target}` : ''} · ${a.description.slice(0, 200)}`)
     }
     lines.push('')
@@ -588,7 +588,7 @@ export async function generateReport(type: ReportType): Promise<Result<{ id: str
     const row = await prisma.aIReport.create({
       data: {
         type,
-        title: `${meta.title} — ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`,
+        title: `${meta.title} — ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}`,
         content,
         organizationId,
         generatedById: session.user.id,

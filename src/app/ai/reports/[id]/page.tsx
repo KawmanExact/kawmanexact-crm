@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Markdown } from '@/components/ai/markdown'
 import { getReport } from '@/services/ai.service'
-import { format } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 import { ReportActions } from '@/components/ai/report-actions'
 
 export const metadata = { title: 'Report | Kawman ExAct' }
@@ -71,7 +71,7 @@ export default async function AIReportDetailPage({ params }: { params: Promise<{
             <div className="mt-4 flex flex-wrap gap-2.5 text-xs">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-white/60 print:border-zinc-200 print:bg-zinc-50 print:text-zinc-600">
                 <Calendar className="h-3.5 w-3.5 opacity-70" />
-                {format(created, 'd MMM yyyy · h:mm a')}
+                {formatFns(created, 'd MMM yyyy · h:mm a')}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-white/60 print:border-zinc-200 print:bg-zinc-50 print:text-zinc-600">
                 <User className="h-3.5 w-3.5 opacity-70" />
@@ -90,13 +90,13 @@ export default async function AIReportDetailPage({ params }: { params: Promise<{
           <CardContent className="px-6 sm:px-8 py-7 sm:py-8">
             {/* subtle report type eyebrow inside card for print */}
             <p className="hidden print:block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500 mb-3">
-              {typeMeta.label} — {format(created, 'd MMM yyyy')}
+              {typeMeta.label} — {formatFns(created, 'd MMM yyyy')}
             </p>
             <Markdown content={report.content} className="text-[14px] leading-relaxed print:text-zinc-800" />
           </CardContent>
           {/* footer strip */}
           <div className="border-t border-white/[0.06] bg-white/[0.02] px-6 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3 text-[11.5px] leading-relaxed text-white/40 print:border-zinc-200 print:bg-zinc-50 print:text-zinc-500">
-            <span>Generated {format(created, "d MMM yyyy 'at' h:mm a")} by {report.generatedByName} · Kawman ExAct AI</span>
+            <span>Generated {formatFns(created, "d MMM yyyy 'at' h:mm a")} by {report.generatedByName} · Kawman ExAct AI</span>
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 opacity-60" />
               Figures reflect live CRM snapshot at generation time

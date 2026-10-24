@@ -113,7 +113,7 @@ export function CompanyDetailForm({ company, owners, canAssign, currentUser }: {
       </form>
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/[0.06]">
-        <span className="text-xs text-white/40">Tracked since {new Date(company.createdAt).toLocaleDateString('en-IN')}</span>
+        <span className="text-xs text-white/40">Tracked since {new Date(company.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
         <Button type="button" variant="destructive" size="sm" onClick={() => setConfirmOpen(true)} disabled={deleting}>
           {deleting ? 'Deleting…' : 'Delete company'}
         </Button>

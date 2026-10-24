@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { DayPicker, DateRange } from 'react-day-picker'
-import { format } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 
 interface DatePickerProps {
   mode?: 'single' | 'range' | 'multiple'
@@ -30,8 +30,8 @@ function isDateRange(value: unknown): value is DateRange {
 }
 
 function formatDateRange(range: DateRange): string {
-  const fromStr = range.from ? format(range.from, 'PP') : '...'
-  const toStr = range.to ? format(range.to, 'PP') : '...'
+  const fromStr = range.from ? formatFns(range.from, 'PP') : '...'
+  const toStr = range.to ? formatFns(range.to, 'PP') : '...'
   return `${fromStr} - ${toStr}`
 }
 
@@ -55,11 +55,11 @@ export function DatePicker({
 
     if (Array.isArray(selected)) {
       if (selected.length === 0) return placeholder
-      return selected.map(d => format(d, 'PP')).join(', ')
+      return selected.map(d => formatFns(d, 'PP')).join(', ')
     }
 
     if (selected instanceof Date) {
-      return format(selected, 'PP')
+      return formatFns(selected, 'PP')
     }
 
     return placeholder

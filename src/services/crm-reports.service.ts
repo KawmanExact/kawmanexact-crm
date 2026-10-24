@@ -38,7 +38,7 @@ function monthsAgo(n: number): Date {
   return d
 }
 function monthLabel(d: Date): string {
-  return d.toLocaleDateString('en-IN', { month: 'short' })
+  return d.toLocaleDateString('en-IN', { month: 'short', timeZone: 'Asia/Kolkata' })
 }
 
 export interface CrmDashboardData {

@@ -13,7 +13,7 @@ export function buildAiReport(opts: {
     name: opts.title.replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 48) || 'AI-Report',
     title: opts.title,
     subtitle: `${typeLabel} · grounded in live CRM data · scoped to your permissions`,
-    periodLabel: new Date(opts.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+    periodLabel: new Date(opts.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }),
     metadata: {
       generatedAt: new Date(opts.createdAt).toISOString(),
       generatedBy: opts.generatedByName,
@@ -22,7 +22,7 @@ export function buildAiReport(opts: {
     sections: [
       {
         title: opts.title,
-        description: `${typeLabel} — ${new Date(opts.createdAt).toLocaleString('en-IN')}`,
+        description: `${typeLabel} — ${new Date(opts.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`,
         text: opts.content,
       },
     ],

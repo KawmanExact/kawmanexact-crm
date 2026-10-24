@@ -401,7 +401,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       company: f.company?.name ?? f.deal?.company?.name ?? f.lead?.company ?? '—',
       purpose: f.title,
       dateLabel: formatDueDateLabel(f.dueDate),
-      timeLabel: f.dueDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      timeLabel: f.dueDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }),
       assigneeInitials: initials(f.owner.name ?? 'U'),
       assigneeName: f.owner.name ?? 'Unassigned',
     })),
@@ -411,7 +411,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       icon: ACTIVITY_ICON[a.type] ?? 'lead',
       color: ACTIVITY_COLOR[a.type] ?? 'blue',
       description: a.description,
-      timeLabel: a.createdAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      timeLabel: a.createdAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }),
     })),
 
     storage: {
@@ -430,5 +430,5 @@ function formatDueDateLabel(date: Date): string {
   if (diffDays === 0) return 'Today'
   if (diffDays === 1) return 'Tomorrow'
   if (diffDays < 0) return 'Overdue'
-  return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', timeZone: 'Asia/Kolkata' })
 }

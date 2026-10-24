@@ -109,7 +109,7 @@ export function VisitReportForm({
               {visits.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.title}
-                  {v.company ? ` — ${v.company}` : ''} · {new Date(v.scheduledAt).toLocaleDateString('en-IN')}
+                  {v.company ? ` — ${v.company}` : ''} · {new Date(v.scheduledAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                 </option>
               ))}
             </select>

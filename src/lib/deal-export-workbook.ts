@@ -49,7 +49,7 @@ function colLetter(n: number): string {
 }
 
 function exportDate(date: Date): string {
-  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
 }
 
 function formatCellValue(raw: unknown, col: DealExportColumn): ExcelJS.CellValue {

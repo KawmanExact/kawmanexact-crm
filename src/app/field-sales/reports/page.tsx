@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ClipboardCheck, Plus } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 import { getVisitReports } from '@/services/field-visit.service'
 import { getSession } from '@/lib/session'
 import { ExportMenu } from '@/components/report-engine/export-menu'
@@ -62,7 +62,7 @@ export default async function VisitReportsPage() {
                     {r.companyName && <p className="text-white/40 text-xs mt-0.5">{r.companyName}</p>}
                   </div>
                   <p className="text-xs text-white/40 whitespace-nowrap">
-                    {r.createdBy} · {format(new Date(r.createdAt), 'd MMM yyyy')}
+                    {r.createdBy} · {formatFns(r.createdAt, 'd MMM yyyy')}
                   </p>
                 </div>
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">

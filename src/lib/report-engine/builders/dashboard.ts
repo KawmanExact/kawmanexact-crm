@@ -20,7 +20,7 @@ export function buildDashboardReport(opts: {
     name: 'Executive-Dashboard',
     title: 'Executive Dashboard Report',
     subtitle: `Welcome back, ${m.userName} — workspace snapshot`,
-    periodLabel: `Generated ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`,
+    periodLabel: `Generated ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}`,
     metadata: {
       generatedAt: new Date().toISOString(),
       generatedBy: opts.generatedBy ?? m.userName,

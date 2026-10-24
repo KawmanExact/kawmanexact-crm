@@ -136,7 +136,7 @@ export default function MembersTableClient({
                       <Badge variant={ACTIVITY_VARIANT[u.activityLevel]}>{ACTIVITY_LABEL[u.activityLevel]}</Badge>
                     </td>
                     <td className="px-4 py-3 text-white/40 text-xs">
-                      {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN') : 'Never'}
+                      {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never'}
                     </td>
                   </tr>
                 ))

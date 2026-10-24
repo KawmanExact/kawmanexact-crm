@@ -1,6 +1,6 @@
 'use client'
 
-import { format } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 import Image from 'next/image'
 import { MapPin, Building2, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { Badge, type BadgeVariant } from '@/components/ui/badge'
@@ -93,7 +93,7 @@ export function VisitRow({
           </span>
         </td>
       )}
-      <td className="px-4 py-3 text-white/60">{format(new Date(visit.scheduledAt), 'd MMM, h:mm a')}</td>
+      <td className="px-4 py-3 text-white/60">{formatFns(visit.scheduledAt, 'd MMM, h:mm a')}</td>
       <td className="px-4 py-3">
         <div className="flex flex-col gap-1">
           <Badge variant={STATUS_VARIANT[visit.status]}>{STATUS_LABEL[visit.status]}</Badge>

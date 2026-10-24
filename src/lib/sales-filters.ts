@@ -344,6 +344,7 @@ const FILTER_DATE_FMT = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit',
   month: 'short',
   year: 'numeric',
+  timeZone: 'Asia/Kolkata',
 })
 
 export function formatFilterDate(date: Date): string {

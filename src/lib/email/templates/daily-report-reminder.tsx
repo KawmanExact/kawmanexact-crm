@@ -21,6 +21,7 @@ export function DailyReportReminderTemplate({
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: 'Asia/Kolkata',
   })
 
   const html = BaseTemplate({

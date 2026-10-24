@@ -73,7 +73,7 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
                     >
                       {f.status}
                     </Badge>
-                    {new Date(f.dueDate).toLocaleDateString('en-IN')}
+                    {new Date(f.dueDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                   </span>
                 </li>
               ))}
@@ -86,7 +86,7 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
             <ul className="space-y-2">
               {activities.map((a) => (
                 <li key={a.id} className="text-sm text-white/70">
-                  <span className="text-white/40">{a.createdAt.toLocaleString('en-IN')}</span> — {a.description}
+                  <span className="text-white/40">{a.createdAt.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</span> — {a.description}
                 </li>
               ))}
             </ul>
