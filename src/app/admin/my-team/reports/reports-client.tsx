@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
-import { format, subDays } from 'date-fns'
+import { subDays } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 import { MainLayout } from '@/components/layout'
 import { PageHeader } from '@/components/crm/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -77,8 +78,8 @@ export default function ReportsClient() {
   const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1)
 
-  const [dateFrom, setDateFrom] = useState<string>(format(subDays(new Date(), 6), 'yyyy-MM-dd'))
-  const [dateTo, setDateTo] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
+  const [dateFrom, setDateFrom] = useState<string>(formatFns(subDays(new Date(), 6), 'yyyy-MM-dd'))
+  const [dateTo, setDateTo] = useState<string>(formatFns(new Date(), 'yyyy-MM-dd'))
   const [selectedUserId, setSelectedUserId] = useState<string>('__all__')
   const [statusFilter, setStatusFilter] = useState<string>('__all__')
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -148,7 +149,7 @@ export default function ReportsClient() {
   function convertToCSV(reports: DailyReport[]): string {
     const headers = ['Date', 'Employee', 'Email', 'Status', 'Work Description', 'Completed Work', 'Pending Work', 'Blockers', 'Tomorrow Plan', 'Tasks', 'CRM Updates', 'Leads', 'Files', 'Active Minutes']
     const rows = reports.map(r => [
-      format(new Date(r.date), 'yyyy-MM-dd'),
+      formatFns(new Date(r.date), 'yyyy-MM-dd'),
       r.userName,
       r.userEmail,
       r.status,
@@ -203,8 +204,8 @@ export default function ReportsClient() {
                 selected={{ from: dateFrom ? new Date(dateFrom) : undefined, to: dateTo ? new Date(dateTo) : undefined }}
                 onSelect={(date: Date | DateRange | Date[] | undefined) => {
                   if (date && typeof date === 'object' && 'from' in date) {
-                    if (date.from) setDateFrom(format(date.from, 'yyyy-MM-dd'))
-                    if (date.to) setDateTo(format(date.to, 'yyyy-MM-dd'))
+                    if (date.from) setDateFrom(formatFns(date.from, 'yyyy-MM-dd'))
+                    if (date.to) setDateTo(formatFns(date.to, 'yyyy-MM-dd'))
                   }
                 }}
               />
@@ -291,7 +292,7 @@ export default function ReportsClient() {
               ) : (
                 reports.map(report => (
                   <TableRow key={report.id}>
-                    <TableCell>{format(new Date(report.date), 'MMM d, yyyy')}</TableCell>
+                    <TableCell>{formatFns(new Date(report.date), 'MMM d, yyyy')}</TableCell>
                     <TableCell>{report.userName}</TableCell>
                     <TableCell>{getStatusBadge(report.status)}</TableCell>
                     <TableCell className="max-w-xs truncate">{report.workDescription ?? '-'}</TableCell>

@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/crm/page-header'
 import { Card } from '@/components/ui/card'
 import { Badge, type BadgeVariant } from '@/components/ui/badge'
 import { UserCheck, MapPin, ImageIcon } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatFns } from '@/lib/utils'
 import { getCheckIns } from '@/services/field-visit.service'
 import Image from 'next/image'
 
@@ -95,7 +95,7 @@ export default async function CheckInsPage() {
                           {VERIFICATION_LABEL[c.verificationStatus] ?? c.verificationStatus}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-white/50">{format(new Date(c.createdAt), 'd MMM, h:mm a')}</td>
+                      <td className="px-4 py-3 text-white/50">{formatFns(c.createdAt, 'd MMM, h:mm a')}</td>
                     </tr>
                   ))}
                 </tbody>

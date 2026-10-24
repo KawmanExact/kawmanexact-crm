@@ -67,7 +67,7 @@ export function CalendarView({ year, month, events }: { year: number; month: num
       <Card className="bg-[#0a111c]/80 border-white/[0.08] p-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-white font-semibold">
-            {monthStart.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+            {monthStart.toLocaleDateString('en-IN', { month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' })}
           </h2>
           <div className="flex items-center gap-1">
             <button
@@ -134,7 +134,7 @@ export function CalendarView({ year, month, events }: { year: number; month: num
 
       <Card className="bg-[#0a111c]/80 border-white/[0.08] p-4">
         <h3 className="text-sm font-medium text-white mb-1">
-          {selectedDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+           {selectedDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' })}
         </h3>
         <p className="text-xs text-white/40 mb-4">
           {selectedEvents.length} event{selectedEvents.length === 1 ? '' : 's'}
@@ -159,7 +159,7 @@ export function CalendarView({ year, month, events }: { year: number; month: num
                         {event.isOverdue && <Badge variant="danger">Overdue</Badge>}
                       </div>
                       <p className="text-xs text-white/40 truncate">
-                        {new Date(event.at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} ·{' '}
+                        {new Date(event.at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} ·{' '}
                         {event.subtitle}
                       </p>
                     </div>

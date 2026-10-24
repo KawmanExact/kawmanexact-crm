@@ -1,4 +1,5 @@
 import { getStageLabel } from '@/lib/deal-pipeline'
+import { formatFns } from '@/lib/utils'
 
 export interface DealExportColumn {
   key: keyof DealExportRow
@@ -335,16 +336,13 @@ export function toExportRow(deal: Record<string, unknown>, index: number): DealE
   }
 }
 
-function formatDateOrText(value: string | null | undefined): string | null {
+  function formatDateOrText(value: string | null | undefined): string | null {
   if (!value) return null
   // If it looks like a real ISO date, format it. Otherwise keep the raw text.
   if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
     const d = new Date(value)
     if (!Number.isNaN(d.getTime())) {
-      const day = String(d.getDate()).padStart(2, '0')
-      const month = d.toLocaleString('en-US', { month: 'short' })
-      const year = d.getFullYear()
-      return `${day}-${month}-${year}`
+      return formatFns(d, 'dd-MMM-yyyy')
     }
   }
   return value

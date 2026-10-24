@@ -28,7 +28,7 @@ export default async function AdminSettingsPage() {
                 <div className="min-w-0">
                   <p className="text-sm text-white/80">{s.userAgent ?? 'Unknown device'}</p>
                   <p className="text-xs text-white/40">
-                    {s.ipAddress ?? 'Unknown IP'} · Active until {s.expiresAt.toLocaleDateString('en-IN')}
+                    {s.ipAddress ?? 'Unknown IP'} · Active until {s.expiresAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     {s.token === session.session.token && <span className="text-emerald-400"> · this device</span>}
                   </p>
                 </div>

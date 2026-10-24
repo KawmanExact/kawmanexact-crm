@@ -158,7 +158,7 @@ export default async function MyTeamPage({ searchParams }: { searchParams: Promi
                     <div className="min-w-0">
                       <p className="text-white/80 truncate">{a.description}</p>
                       <p className="text-xs text-white/40">
-                        {a.actorName} · {new Date(a.createdAt).toLocaleString('en-IN')}
+                        {a.actorName} · {new Date(a.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                       </p>
                     </div>
                   </div>

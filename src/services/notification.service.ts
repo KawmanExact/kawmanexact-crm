@@ -356,8 +356,8 @@ export async function notifyDailyReportReminder(args: {
     type: 'DAILY_REPORT_SUBMITTED',
     title: isDraft ? 'Complete Your Daily Report' : 'Daily Report Reminder',
     message: isDraft
-      ? `You have a draft report for ${date.toLocaleDateString()}`
-      : `Don't forget to submit your daily report for ${date.toLocaleDateString()}`,
+      ? `You have a draft report for ${date.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`
+      : `Don't forget to submit your daily report for ${date.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}`,
     data: { date, reportUrl, isDraft },
     sendEmail: true,
     emailTemplate: 'daily-report-reminder',

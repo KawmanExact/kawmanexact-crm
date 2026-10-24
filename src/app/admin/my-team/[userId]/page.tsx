@@ -107,7 +107,7 @@ export default async function EmployeeProfilePage({ params, searchParams }: { pa
                 {profile.user.department && <Badge variant="neutral">{profile.user.department}</Badge>}
                 {profile.user.team && <Badge variant="neutral">{profile.user.team}</Badge>}
               </div>
-              <p className="text-xs text-white/40">Last activity: {profile.user.lastLoginAt ? new Date(profile.user.lastLoginAt).toLocaleString('en-IN') : 'Never'} · Joined {new Date(profile.user.createdAt).toLocaleDateString('en-IN')}</p>
+              <p className="text-xs text-white/40">Last activity: {profile.user.lastLoginAt ? new Date(profile.user.lastLoginAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Never'} · Joined {new Date(profile.user.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
             </div>
             <div className="ml-auto grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               <Stat label="Reports" value={profile.overview.totalReports} />

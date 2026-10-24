@@ -99,7 +99,7 @@ function addReportHeader(ws: ExcelJS.Worksheet, def: UniversalReportDefinition):
   if (def.metadata?.generatedAt) {
     const d = new Date(def.metadata.generatedAt)
     if (!isNaN(d.getTime())) {
-      metaParts.push(`Generated: ${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN')}`)
+      metaParts.push(`Generated: ${d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })} ${d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })}`)
     }
   }
   if (def.metadata?.generatedBy) metaParts.push(`By: ${def.metadata.generatedBy}`)
@@ -340,7 +340,7 @@ export async function generateReportExcelBuffer(def: UniversalReportDefinition):
         printTitlesRow: '1:1',
       }
       const titleForFooter = (report.title ?? report.name).replace(/&/g, 'and')
-      ws.headerFooter.oddFooter = `&L&8&K808080 Kawman ExAct  •  ${titleForFooter}   &C&8&K808080 ${new Date().toLocaleDateString('en-IN')}   &R&8&K808080 Page &P of &N`
+      ws.headerFooter.oddFooter = `&L&8&K808080 Kawman ExAct  •  ${titleForFooter}   &C&8&K808080 ${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}   &R&8&K808080 Page &P of &N`
     }
   }
 

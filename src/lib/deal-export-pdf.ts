@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf'
 import { applyPlugin, autoTable } from 'jspdf-autotable'
 import { DEAL_EXPORT_COLUMNS, type DealExportRow } from './deal-export-columns'
+import { formatFns } from '@/lib/utils'
 
 applyPlugin(jsPDF)
 
@@ -23,7 +24,7 @@ export function buildDealExportPdf(input: {
   doc.setFontSize(9)
   doc.text(input.organizationName || 'Organization', margin, margin + 24)
   doc.text(
-    `Generated: ${input.generatedAt.toLocaleDateString('en-IN')} ${input.generatedAt.toLocaleTimeString('en-IN')} by ${input.generatedBy || '—'}`,
+    `Generated: ${input.generatedAt.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })} ${input.generatedAt.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })} by ${input.generatedBy || '—'}`,
     pageWidth - margin,
     margin + 24,
     { align: 'right' }
@@ -57,12 +58,7 @@ export function buildDealExportPdf(input: {
         if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
           const d = new Date(str)
           if (!Number.isNaN(d.getTime())) {
-            const day = String(d.getDate()).padStart(2, '0')
-            const month = d.toLocaleString('en-US', { month: 'short' })
-            const year = d.getFullYear()
-            const hours = String(d.getHours()).padStart(2, '0')
-            const mins = String(d.getMinutes()).padStart(2, '0')
-            return `${day}-${month}-${year} ${hours}:${mins}`
+             return formatFns(d, 'dd-MMM-yyyy HH:mm')
           }
         }
         return str

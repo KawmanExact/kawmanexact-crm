@@ -178,7 +178,7 @@ function styleTotalRow(row: ExcelJS.Row, formats: Record<string, string>): void 
 }
 
 function exportDate(date: Date): string {
-  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
 }
 
 // ============================================================

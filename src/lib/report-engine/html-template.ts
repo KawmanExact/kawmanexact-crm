@@ -33,7 +33,7 @@ function fmtCell(value: unknown, format?: string): string {
   if (format === 'date' || format === 'datetime') {
     const d = new Date(String(value))
     if (isNaN(d.getTime())) return esc(s)
-    return esc(format === 'datetime' ? d.toLocaleString('en-IN') : d.toLocaleDateString('en-IN'))
+    return esc(format === 'datetime' ? d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }))
   }
   // preserve **bold** inline
   if (s.includes('**')) {
@@ -326,8 +326,8 @@ export function buildReportHtml(input: UniversalReportDefinition): { html: strin
   const landscape = shouldLandscape(def)
   const generatedAt = def.metadata?.generatedAt ?? new Date().toISOString()
   const genDate = new Date(generatedAt)
-  const dateLabel = genDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-  const timeLabel = genDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  const dateLabel = genDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
+  const timeLabel = genDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })
   const title = def.title ?? def.name
   const subtitle = def.subtitle ?? def.periodLabel ?? ''
   const orgName = def.metadata?.organizationName ?? 'Kawman ExAct'

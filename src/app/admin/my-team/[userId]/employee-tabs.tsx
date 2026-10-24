@@ -63,7 +63,7 @@ export function EmployeeTabs({ profile, aiConfigured, employeeReports }: { profi
                   <Badge variant="neutral">{a.type}</Badge>
                   <div className="min-w-0 flex-1">
                     <p className="text-white/80">{a.description}</p>
-                    <p className="text-xs text-white/40">{new Date(a.createdAt).toLocaleString('en-IN')}</p>
+                    <p className="text-xs text-white/40">{new Date(a.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
                   </div>
                 </div>
               ))}
@@ -96,7 +96,7 @@ export function EmployeeTabs({ profile, aiConfigured, employeeReports }: { profi
                 <tbody>
                   {profile.recentReports.map((r) => (
                     <tr key={r.id} className="border-b border-white/[0.04]">
-                      <td className="py-2 text-white/80">{new Date(r.date).toLocaleDateString('en-IN')}</td>
+                      <td className="py-2 text-white/80">{new Date(r.date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                       <td className="py-2"><Badge variant={r.status === 'SUBMITTED' ? 'success' : r.status === 'DRAFT' ? 'warning' : 'danger'}>{r.status}</Badge></td>
                       <td className="py-2 text-white/60">{r.tasksCompletedCount}</td>
                       <td className="py-2 text-white/60">{r.crmRecordsUpdatedCount}</td>
@@ -143,8 +143,8 @@ export function EmployeeTabs({ profile, aiConfigured, employeeReports }: { profi
                 <tbody>
                   {profile.loginHistory.map((s) => (
                     <tr key={s.id} className="border-b border-white/[0.04]">
-                      <td className="py-2 text-white/70">{new Date(s.createdAt).toLocaleString('en-IN')}</td>
-                      <td className="py-2 text-white/40">{s.endedAt ? new Date(s.endedAt).toLocaleString('en-IN') : '—'}</td>
+                      <td className="py-2 text-white/70">{new Date(s.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+                      <td className="py-2 text-white/40">{s.endedAt ? new Date(s.endedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—'}</td>
                       <td className="py-2 text-white/40">{s.ipAddress ?? '—'}</td>
                       <td className="py-2 text-white/40 truncate max-w-[240px]">{s.userAgent ?? '—'}</td>
                     </tr>

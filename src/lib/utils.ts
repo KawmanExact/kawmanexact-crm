@@ -1,5 +1,8 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { format } from 'date-fns'
+
+export const DEFAULT_TIMEZONE = 'Asia/Kolkata'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,7 +27,7 @@ export function formatDate(date: Date | string, options: Intl.DateTimeFormatOpti
   year: 'numeric',
 }): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return new Intl.DateTimeFormat('en-IN', options).format(d)
+  return new Intl.DateTimeFormat('en-IN', { ...options, timeZone: DEFAULT_TIMEZONE }).format(d)
 }
 
 export function formatDateTime(date: Date | string): string {
@@ -37,7 +40,22 @@ export function formatDateTime(date: Date | string): string {
   })
 }
 
-/** "5 minutes ago", "3 hours ago", "2 days ago", falling back to a short date. */
+export function formatTime(date: Date | string, options: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+}): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  return new Intl.DateTimeFormat('en-IN', { ...options, timeZone: DEFAULT_TIMEZONE }).format(d)
+}
+
+export function formatFns(date: Date | string, formatStr: string): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const zoned = new Date(d.toLocaleString('en-US', { timeZone: DEFAULT_TIMEZONE, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }))
+  return format(zoned, formatStr)
+}
+
+/** "5 minutes ago", "3 hours ago", "yesterday", falling back to a short date. */
 export function formatRelativeTime(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date
   const diffMs = Date.now() - d.getTime()

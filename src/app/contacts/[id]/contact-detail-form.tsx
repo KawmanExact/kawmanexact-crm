@@ -139,7 +139,7 @@ export function ContactDetailForm({
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/[0.06]">
         <span className="text-xs text-white/40">
-          Last activity {new Date(contact.lastActivityAt).toLocaleDateString('en-IN')}
+          Last activity {new Date(contact.lastActivityAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
         </span>
         <Button type="button" variant="destructive" size="sm" onClick={() => setConfirmOpen(true)} disabled={deleting}>
           {deleting ? 'Deleting…' : 'Delete contact'}
